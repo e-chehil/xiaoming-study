@@ -1,0 +1,6 @@
+Yuniversus.woff
+Source: https://shurufa.app/fonts/Yuniversus.woff
+Source project: https://github.com/forfudan/yu
+The original font file is retained without modification.
+The website's stated license is CC BY-NC-ND 4.0.
+See Yuhao-CC-BY-NC-ND-4.0.txt and THIRD_PARTY_NOTICES.md.

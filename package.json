@@ -1,0 +1,29 @@
+{
+  "name": "xiaoming-study",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node scripts/serve.mjs --open",
+    "dev": "node scripts/serve.mjs",
+    "test": "node --test tests/*.test.mjs",
+    "check": "node scripts/check-release.mjs && node scripts/check-data.mjs && npm test",
+    "build": "node scripts/build.mjs",
+    "test:browser": "node scripts/build.mjs && node scripts/test-browser.mjs",
+    "test:layout": "node scripts/test-browser.mjs frontend-layout.mjs",
+    "data:dictionary": "python scripts/prepare_cedict.py --update",
+    "manifest": "node scripts/update-manifest.mjs"
+  },
+  "dependencies": {
+    "ts-fsrs": "5.4.2"
+  },
+  "devDependencies": {
+    "playwright-core": "1.56.1",
+    "ajv": "8.20.0"
+  },
+  "description": "潇明输入法的简繁学习与间隔复习网站",
+  "license": "UNLICENSED",
+  "engines": {
+    "node": ">=22"
+  }
+}

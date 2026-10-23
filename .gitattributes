@@ -1,0 +1,9 @@
+* text=auto eol=lf
+*.woff binary
+*.ttf binary
+public/data/*-runtime.json -text
+public/data/traditional/*-runtime.json -text
+public/data/cedict/dictionary.json -text
+*.cmd -text whitespace=cr-at-eol
+public/data/cedict/NOTICE.txt whitespace=-blank-at-eol
+public/vendor/fsrs.mjs whitespace=-blank-at-eol

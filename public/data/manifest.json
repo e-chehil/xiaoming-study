@@ -1,0 +1,134 @@
+{
+  "version": "1.0.0",
+  "courses": {
+    "simplified": {
+      "file": "learning-runtime.json",
+      "bytes": 12864783,
+      "sha256": "2a7f65acbe815b29528941b988414904ccc84694f32044b3b5ae06c2e0e1c8ee",
+      "source": {
+        "name": "完整字词学习表_单字词去重.tsv",
+        "sha256": "0bf1b0db97ba42460003db2e8ef1315cb8f223c89451d06b0708df3a7192386a"
+      },
+      "stats": {
+        "total": 59192,
+        "roots": 397,
+        "characters": 5069,
+        "words": 53699,
+        "unsupported": 22,
+        "initials": 21,
+        "strokes": 6
+      },
+      "transferStats": {
+        "short": 720,
+        "variant": 0
+      },
+      "algorithm": "shared-full-prerequisite-dag-v1",
+      "optimization": {
+        "parameters": {
+          "densityPowers": [
+            0.75,
+            1.0,
+            1.25,
+            1.5
+          ],
+          "exactWindow": 8,
+          "passes": 4,
+          "refinedCandidates": 2
+        },
+        "baseline": {
+          "weightedLessons": 5223.893839635526,
+          "weightedKeystrokes": 25394.06610966776,
+          "practiceUnits": 59000
+        },
+        "selected": {
+          "weightedLessons": 5184.040028860121,
+          "weightedKeystrokes": 25188.119889364152,
+          "practiceUnits": 59000
+        },
+        "limits": "Heuristic and local exact optimization, not global optimum or measured learner time."
+      },
+      "upstream": [
+        {
+          "title": "潇明输入法官网",
+          "url": "https://shurufa.app/ime/xiaoming"
+        },
+        {
+          "title": "上游方案固定版本",
+          "url": "https://github.com/Dieken/code_genie/tree/55e783c3973b125d3f56baac534b796c76df87a5/moling/xiaoming-output/output-20261011-061440/thread-06"
+        }
+      ],
+      "upstreamInputs": {
+        "chaifen.json": "c9e72dd6d6753802a784be93bcfb1c7425d1730470ced6d2c27471c21c00011e",
+        "zigen-xiaoming.csv": "755a57d4383eb0e3991f57ea1dcb709432a06719dc96b38aa7c8c42d4a183e21",
+        "generate-xiaoming-words-dict.pl": "2fa35839b94fb49ce8389c5133b665120d92ad8f07f78e1a95d7b3cbe28ee740"
+      }
+    },
+    "traditional": {
+      "file": "traditional/learning-runtime.json",
+      "bytes": 12442409,
+      "sha256": "3698ac5ca22e63756e48aeb6ce7f1c6ad268f2067079df3b00f2a76345aeea59",
+      "source": {
+        "name": "完整繁中字詞學習表.tsv",
+        "sha256": "ef7d303dfe7a2148a3d2afc51ee7a3e5b1d679379fe5b3d3c72d17574135e7b0"
+      },
+      "stats": {
+        "total": 56409,
+        "roots": 397,
+        "characters": 5512,
+        "words": 50473,
+        "unsupported": 0,
+        "initials": 21,
+        "strokes": 6
+      },
+      "transferStats": {
+        "short": 535,
+        "variant": 455
+      },
+      "algorithm": "shared-full-prerequisite-dag-v1",
+      "optimization": {
+        "parameters": {
+          "densityPowers": [
+            0.75,
+            1.0,
+            1.25,
+            1.5
+          ],
+          "exactWindow": 8,
+          "passes": 4,
+          "refinedCandidates": 2
+        },
+        "baseline": {
+          "weightedLessons": 4509.4510733759225,
+          "weightedKeystrokes": 21883.691510778077,
+          "practiceUnits": 56236
+        },
+        "selected": {
+          "weightedLessons": 4471.596697984303,
+          "weightedKeystrokes": 21690.017768778856,
+          "practiceUnits": 56236
+        },
+        "limits": "Heuristic and local exact optimization, not global optimum or measured learner time."
+      },
+      "upstream": [
+        {
+          "title": "潇明输入法官网",
+          "url": "https://shurufa.app/ime/xiaoming"
+        },
+        {
+          "title": "上游方案固定版本",
+          "url": "https://github.com/Dieken/code_genie/tree/55e783c3973b125d3f56baac534b796c76df87a5/moling/xiaoming-output/output-20261011-061440/thread-06"
+        }
+      ],
+      "upstreamInputs": {
+        "chaifen.json": "c9e72dd6d6753802a784be93bcfb1c7425d1730470ced6d2c27471c21c00011e",
+        "zigen-xiaoming.csv": "755a57d4383eb0e3991f57ea1dcb709432a06719dc96b38aa7c8c42d4a183e21",
+        "generate-xiaoming-words-dict.pl": "2fa35839b94fb49ce8389c5133b665120d92ad8f07f78e1a95d7b3cbe28ee740"
+      }
+    }
+  },
+  "dictionary": {
+    "file": "cedict/dictionary.json",
+    "sha256": "19ff0ca3d6131b02557d27b11775b90e1b443da5c272a6970e3c7034bdfbfc98",
+    "bytes": 11145457
+  }
+}

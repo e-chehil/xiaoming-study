@@ -1,0 +1,56 @@
+{
+  "source": {
+    "name": "CC-CEDICT",
+    "publisher": "MDBG",
+    "date": "2026-10-23T09:11:46Z",
+    "entries": 125310,
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "url": "https://www.mdbg.net/chinese/export/cedict/cedict_1_0_ts_utf-8_mdbg.txt.gz",
+    "homepage": "https://cc-cedict.org/",
+    "archiveSha256": "46e34d0555e180873fe88f02c8171cf399accf0709cbaafb0178720565b80409",
+    "textSha256": "c9f2181b21d71810a86a37190e2e69d6354878ca19b309fc6bcd39b340791919",
+    "modifications": "Parsed into JSON arrays; all headwords, readings and definition senses preserved. Runtime matching, summaries and reference expansion are derived views."
+  },
+  "courses": {
+    "simplified": {
+      "sourceSha256": "0bf1b0db97ba42460003db2e8ef1315cb8f223c89451d06b0708df3a7192386a",
+      "total": 58768,
+      "matched": 47253,
+      "missing": 11515,
+      "exact": 46734,
+      "toneless": 473,
+      "other": 46,
+      "unread": 0,
+      "characters": {
+        "total": 5069,
+        "matched": 5069
+      },
+      "words": {
+        "total": 53699,
+        "matched": 42184
+      },
+      "coverage": 80.41
+    },
+    "traditional": {
+      "sourceSha256": "ef7d303dfe7a2148a3d2afc51ee7a3e5b1d679379fe5b3d3c72d17574135e7b0",
+      "total": 55985,
+      "matched": 48750,
+      "missing": 7235,
+      "exact": 45913,
+      "toneless": 2235,
+      "other": 602,
+      "unread": 0,
+      "characters": {
+        "total": 5512,
+        "matched": 5501
+      },
+      "words": {
+        "total": 50473,
+        "matched": 43249
+      },
+      "coverage": 87.08
+    }
+  },
+  "policy": "Exact headword in the selected script; reading-aware ranking. No automatic character-by-character translation or cross-script replacement. All dictionary entries remain searchable."
+}

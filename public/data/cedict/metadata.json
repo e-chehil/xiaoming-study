@@ -1,0 +1,13 @@
+{
+  "name": "CC-CEDICT",
+  "publisher": "MDBG",
+  "date": "2026-10-23T09:11:46Z",
+  "entries": 125310,
+  "license": "CC BY-SA 4.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+  "url": "https://www.mdbg.net/chinese/export/cedict/cedict_1_0_ts_utf-8_mdbg.txt.gz",
+  "homepage": "https://cc-cedict.org/",
+  "archiveSha256": "46e34d0555e180873fe88f02c8171cf399accf0709cbaafb0178720565b80409",
+  "textSha256": "c9f2181b21d71810a86a37190e2e69d6354878ca19b309fc6bcd39b340791919",
+  "modifications": "Parsed into JSON arrays; all headwords, readings and definition senses preserved. Runtime matching, summaries and reference expansion are derived views."
+}

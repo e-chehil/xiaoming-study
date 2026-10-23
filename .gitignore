@@ -1,0 +1,14 @@
+node_modules/
+dist/
+artifacts/
+.cache/
+.local/
+__pycache__/
+*.pyc
+*.log
+*.zip
+*.tar.gz
+.env
+.env.*
+.DS_Store
+Thumbs.db
