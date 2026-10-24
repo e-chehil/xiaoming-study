@@ -1,4 +1,5 @@
 import {createServer} from 'node:net';
+import {readFile} from 'node:fs/promises';
 import {once} from 'node:events';
 import {spawn} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
@@ -33,7 +34,15 @@ try{
   assert.equal((await page.request.post(base)).status(),405);
   for(const path of ['package.json','scripts/serve.mjs','tests/data.test.mjs','.env','%2e%2e/package.json'])assert.ok([403,404].includes((await page.request.get(base+path)).status()),path);
   assert.equal((await page.request.get(base+'%')).status(),400);
-  const manifest=await page.request.get(base+'asset-manifest.json').then(r=>r.json());assert.equal(manifest.version,'1.0.0');assert.ok(manifest.files.every(f=>!f.path.startsWith('tests/')&&!f.path.startsWith('scripts/')));
+  const manifest=await page.request.get(base+'asset-manifest.json').then(r=>r.json());assert.equal(manifest.version,JSON.parse(await readFile(new URL('../package.json',import.meta.url),'utf8')).version);assert.ok(manifest.files.every(f=>!f.path.startsWith('tests/')&&!f.path.startsWith('scripts/')));
+  const transient=await browser.newContext(),resilient=await transient.newPage();let attempts=0;
+  await resilient.route('**/data/learning-runtime.json',route=>++attempts===1?route.fulfill({status:503,body:'temporary failure'}):route.continue());
+  await resilient.goto(base);await resilient.locator('#code-input:not([readonly])').waitFor();assert.equal(attempts,2);await transient.close();
+  const missingModule=await browser.newContext(),fallback=await missingModule.newPage();
+  await fallback.route('**/practice.mjs*',route=>route.fulfill({status:503,contentType:'text/javascript',body:''}));
+  await fallback.goto(base);await fallback.waitForFunction(()=>document.querySelector('#loading-status')?.textContent.includes('未能打开'));
+  assert.equal(await fallback.locator('.loading a').getAttribute('href'),'./');
+  await fallback.unroute('**/practice.mjs*');await fallback.locator('.loading a').click();await fallback.locator('#code-input:not([readonly])').waitFor();await missingModule.close();
   const recovery=await browser.newContext(),retry=await recovery.newPage(),recoveryErrors=[];
   retry.on('pageerror',e=>recoveryErrors.push(e.message));retry.on('console',m=>{if(m.type()==='error'&&/Content Security Policy/.test(m.text()))recoveryErrors.push(m.text());});
   await retry.route('**/data/learning-runtime.json',r=>r.fulfill({status:503,body:'technical-response-canary'}));
@@ -45,5 +54,5 @@ try{
   await retry.waitForFunction(()=>document.querySelector('#toast').textContent.length>0);
   assert.doesNotMatch(await retry.locator('#toast').textContent(),/private-invalid-json-canary|SyntaxError|Unexpected|position/);
   assert.equal(await retry.locator('[data-action="confirm-import"]').count(),0);assert.deepEqual(recoveryErrors,[]);await recovery.close();
-  console.log('Release browser passed: built site under project subpath, both courses, CSP, learner-facing copy, load failure recovery, invalid backup, bundled notices, static asset boundary, HEAD and method validation.');
+  console.log('Release browser passed: built site under project subpath, both courses, CSP, learner-facing copy, transient retry, bootstrap failure recovery, load failure recovery, invalid backup, bundled notices, static asset boundary, HEAD and method validation.');
 }finally{await browser.close();if(server&&server.exitCode===null){server.kill();await once(server,'exit');}}

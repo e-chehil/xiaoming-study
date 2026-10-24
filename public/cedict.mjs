@@ -1,3 +1,4 @@
+import {requestJson} from './request.mjs';
 // The dictionary is shared by both courses; it never modifies lessons or FSRS data.
 const TONES={a:[...'āáǎà'],e:[...'ēéěè'],i:[...'īíǐì'],o:[...'ōóǒò'],u:[...'ūúǔù'],ü:[...'ǖǘǚǜ'],ê:['ê̄','ế','ê̌','ề'],m:['m̄','ḿ','m̌','m̀'],n:['n̄','ń','ň','ǹ']};
 export function markedPinyin(value){
@@ -116,9 +117,7 @@ export class Cedict{
 
 let loading;
 export function loadCedict({retry=false}={}){
-  if(!loading||retry)loading=fetch('./data/cedict/dictionary.json',{cache:'no-cache'}).then(response=>{
-    if(!response.ok)throw new Error('英文词典暂未载入');return response.json();
-  }).then(async data=>{
+  if(!loading||retry)loading=requestJson('./data/cedict/dictionary.json').then(async data=>{
     const dictionary=new Cedict(data,{deferIndex:true});
     for(let start=0;start<data.entries.length;start+=4096){
       dictionary.indexRange(start,Math.min(start+4096,data.entries.length));

@@ -1,3 +1,4 @@
+import {requestJson} from './request.mjs';
 import {traditionalLabel} from './learning-schema.mjs';
 export const COURSES=Object.freeze({
   simplified:{name:'简中',language:'zh-Hans',path:'./data/learning-runtime.json',directory:'./data/'},
@@ -9,9 +10,7 @@ export function selectedCourse(){
 let locale='simplified',characterMap={};
 export async function setLocale(course){
   if(course==='traditional'&&!Object.keys(characterMap).length){
-    const response=await fetch('./vendor/ui-traditional-map.json');
-    if(!response.ok)throw new Error('繁中界面暂未载入');
-    characterMap=await response.json();
+    characterMap=await requestJson('./vendor/ui-traditional-map.json');
   }
   locale=course;document.documentElement.lang=COURSES[course].language;document.title=t('潇明习字');
 }

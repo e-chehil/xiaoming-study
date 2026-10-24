@@ -1,5 +1,5 @@
 {
-  "version": "1.0.0",
+  "version": "1.0.1",
   "files": [
     {
       "path": ".gitattributes",
@@ -13,18 +13,18 @@
     },
     {
       "path": ".gitignore",
-      "bytes": 119,
-      "sha256": "d598387db762f8c689fb2c6f4ea338e4c1f22a36a91f917ec8abbc12eb4881f4"
+      "bytes": 141,
+      "sha256": "0eae8f63b21b1e7167b5adb15ca0b35fd2efb3811ee9d222c10b3d620cfce20b"
     },
     {
       "path": "CHANGELOG.md",
-      "bytes": 1015,
-      "sha256": "72b5013fb8954664e2ee7b0f4ae5d5bf991e325fd6ee48778e60afac6fdb71ae"
+      "bytes": 1297,
+      "sha256": "bacdac9087dea7f6395008e43bafece2d8ee0d515d5d40ce8e4f3e7a08fb71c7"
     },
     {
       "path": "README.md",
-      "bytes": 3391,
-      "sha256": "03ba9407c103180f71248d858f270e9495e6b5e2c7c8be56af1943e2f023fc4c"
+      "bytes": 3385,
+      "sha256": "97c60d0d251c65ee588eebf2760082d19445d4c9a08d0e99d8990dd132051b9a"
     },
     {
       "path": "data/curriculum-ranks.json",
@@ -38,18 +38,23 @@
     },
     {
       "path": "docs/deployment.md",
-      "bytes": 1889,
-      "sha256": "62e6faac338fbae84d951cd63376ee74d0907a909c4b37ea42d1c00d6c379569"
+      "bytes": 2761,
+      "sha256": "3266d5c32b8a6f9362461ee02c8d7a2cc53269febdad0799b240a5923da19597"
+    },
+    {
+      "path": "netlify.toml",
+      "bytes": 98,
+      "sha256": "66d1f80fe07441d35fe7467f7e4e0005722da73926a307abf2bc232482b4eff9"
     },
     {
       "path": "package-lock.json",
       "bytes": 3394,
-      "sha256": "faa6fddd5d8f92294ad7805967fd01115635153ce7973920f975efa208701ae3"
+      "sha256": "b16e80ff25a5e3bd55075641b8c78805552f1b3f982e502e6a49dc127346af57"
     },
     {
       "path": "package.json",
       "bytes": 905,
-      "sha256": "52ffa93096240c4a9ec26e59099c7321eef58d5fa9b464e051f832fc6e6b08ad"
+      "sha256": "ad332a791e916c5cb386f8fb9482129eb3b4e0da40e85b9e957c0fc3ec5ff34c"
     },
     {
       "path": "public/.nojekyll",
@@ -62,14 +67,19 @@
       "sha256": "1bfb3781161a8b9bed2e1a430d56095915a392e97e71bacd19cf39dcc3c8bdd8"
     },
     {
+      "path": "public/boot.mjs",
+      "bytes": 396,
+      "sha256": "e3500be8216ade22c6912bac049ed46dd764245b4b7e7a88957ed952ac6e10e6"
+    },
+    {
       "path": "public/cedict.mjs",
-      "bytes": 8470,
-      "sha256": "aef0e5288ac67e48868fd07dde7b800831a123c893334ec8177bb727fc9c4a67"
+      "bytes": 8390,
+      "sha256": "9a17457b7d23ab35828c093964fb4c6df1bb09955200c985a3360cef4f4ede13"
     },
     {
       "path": "public/courses.mjs",
-      "bytes": 2669,
-      "sha256": "f69650052eb15b4c15d70a69ce277f54ec1e9335cec03b622f15926d55c197c1"
+      "bytes": 2611,
+      "sha256": "d70fd8c3bd3966494c492b23e8c07adf3eb9e6d7c83e4a2b3f12760a3ee1c19c"
     },
     {
       "path": "public/data/cedict/NOTICE.txt",
@@ -128,8 +138,8 @@
     },
     {
       "path": "public/focus.css",
-      "bytes": 41145,
-      "sha256": "3527863b9d26962c5266268a744987324dffc78783e55f6590355b1725fb2a12"
+      "bytes": 41380,
+      "sha256": "6f6e477cc9bb1a05c2eef4011d900cfb6dafcca18bc99e73f9ef6924592ebaa3"
     },
     {
       "path": "public/fonts/NotoSerifTC-compat.ttf",
@@ -148,8 +158,8 @@
     },
     {
       "path": "public/index.html",
-      "bytes": 1124,
-      "sha256": "ca653278a0b134b6087de45c7a51aecc336617128999724cff6fb3cab5e26d02"
+      "bytes": 1260,
+      "sha256": "62a4cabd34c51c824b48bf6460f163f1d382e7201ec1574eae15c8e8667ca022"
     },
     {
       "path": "public/learning-schema.mjs",
@@ -163,8 +173,13 @@
     },
     {
       "path": "public/practice.mjs",
-      "bytes": 78105,
-      "sha256": "3bfe641ef404fd7bef01acecccd4012d0424f407cdf77c60d710dec802ab3005"
+      "bytes": 78251,
+      "sha256": "6d17361609f6aac2ff78ff0320525f69bcbb54cc5982ecf9c3b1e26c53dd591a"
+    },
+    {
+      "path": "public/request.mjs",
+      "bytes": 2030,
+      "sha256": "0e378f5ac637a47226c6751c2ca8d819e87160e0ccc2f636ac414b72ce1c802d"
     },
     {
       "path": "public/storage.mjs",
@@ -229,7 +244,7 @@
     {
       "path": "public/version.json",
       "bytes": 53,
-      "sha256": "c8c46137e8c37ae8514144c7355ff61a16596fa96bfac1721986d6961ea89631"
+      "sha256": "3ffc0cae09457cd6c38f615b8259099124bc7288d7a61cbf12bcae3c221ac58b"
     },
     {
       "path": "public/view-state.mjs",
@@ -248,8 +263,8 @@
     },
     {
       "path": "scripts/check-release.mjs",
-      "bytes": 3268,
-      "sha256": "98de97048a6bf5c3be25039bbe549301f3ad314a47cde393406922cd77b7bcd8"
+      "bytes": 3291,
+      "sha256": "70cfd635d011c6028dc50124a9da9e4eb2443e673b7a7930f569a03c876a5ab1"
     },
     {
       "path": "scripts/curriculum_order.py",
@@ -353,8 +368,13 @@
     },
     {
       "path": "tests/release-browser.mjs",
-      "bytes": 5310,
-      "sha256": "26b65d4e10d5f86f12bc4a8db2ef8a7cb44e9fda41f308b5c0ccdd98e0967706"
+      "bytes": 6481,
+      "sha256": "cbcdd93cef1da194e055929c574d7f6c1b6efe682f6ff8bebbb42a334505722f"
+    },
+    {
+      "path": "tests/request.test.mjs",
+      "bytes": 3044,
+      "sha256": "5d83d456871522281af981e0c52c3565ef58873f1026e477aa3fcc073adfe6a4"
     },
     {
       "path": "tests/server.test.mjs",

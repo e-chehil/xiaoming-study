@@ -303,6 +303,9 @@ tbody tr:focus-within{background:var(--surface)}
 .completion,.loading{min-height:calc(100svh - var(--header-height));display:flex;align-items:center;justify-content:center;flex-direction:column;padding:40px 24px;gap:20px;text-align:center}
 .completion{gap:var(--space-4)}
 .completion p{margin:0;font-size:14px;color:var(--muted)}
+.loading #loading-status{margin:0;font-size:14px;font-weight:400;line-height:1.7}
+.loading p{margin:0;font-size:14px;line-height:1.7}
+.loading a.plain-button{display:inline-flex;align-items:center;min-height:44px;text-decoration:none}
 .loading{min-height:100svh;color:var(--muted)}
 .loading h1,.completion h1{font-size:24px;font-weight:500;margin:0}
 .completion h1{font:500 28px/1.4 var(--serif)}

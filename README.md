@@ -1,6 +1,6 @@
 # 潇明习字
 
-潇明输入法的简繁学习网站，首个正式版本 **1.0.0**。
+潇明输入法的简繁学习网站，当前版本 **1.0.1**。
 
 [在线学习](https://e-chehil.github.io/xiaoming-study/) · [GitHub 仓库](https://github.com/e-chehil/xiaoming-study)
 

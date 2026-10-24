@@ -29,4 +29,14 @@ npm run check
 npm run test:browser
 ```
 
-浏览器测试命令会构建并检查实际静态产物。正式版本用 `v1.0.0` 标签标识；仓库只提交 `release-files.json` 列出的源码与资源。`node_modules/`、构建产物、截图、缓存、个人进度备份和本机配置均不提交。
+浏览器测试命令会构建并检查实际静态产物。正式版本使用与 package.json 一致的版本标签，例如 `v1.0.1`；仓库只提交 `release-files.json` 列出的源码与资源。`node_modules/`、构建产物、截图、缓存、个人进度备份和本机配置均不提交。
+
+## Netlify 与 Cloudflare Pages
+
+可继续用 GitHub 保存源码，将同一仓库部署到其他静态托管平台。没有服务端运行依赖，无需为网站另购云服务器。
+
+- Netlify：导入 GitHub 仓库后沿用根目录 `netlify.toml`，构建命令为 `npm run build`，发布目录为 `dist`，Node.js 为 22。
+- Cloudflare Pages：导入同一仓库，框架预设选 None，构建命令 `npm run build`，输出目录 `dist`，Node.js 配置为 22。
+- 自定义域名在选定平台完成绑定后，再按平台给出的记录配置 DNS。代码和课程使用相对路径，不需要把资源改成跨域 GitHub 地址。
+- 普通境外节点对中国大陆的实际连接仍需实测，不将换域名视为线路可用性的保证。
+- 不同网址不会共享浏览器进度，迁移前先导出备份。

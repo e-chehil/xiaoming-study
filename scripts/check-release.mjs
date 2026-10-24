@@ -6,7 +6,7 @@ import {resolve,relative,sep} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import assert from 'node:assert/strict';
 const root=fileURLToPath(new URL('../',import.meta.url));
-const ignored=new Set(['.git','node_modules','dist','artifacts','.cache','.local','__pycache__']);
+const ignored=new Set(['.git','node_modules','dist','artifacts','.cache','.local','.netlify','.wrangler','__pycache__']);
 export async function sourceFiles(directory=root){
   const files=[];
   for(const entry of await readdir(directory,{withFileTypes:true})){

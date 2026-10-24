@@ -1,3 +1,4 @@
+import {requestJson} from './request.mjs';
 import { cleanSettings, dayKey, pickContinuous, evaluateAttempt, emptyDaily, validateBackup, itemIndex,cardFor,createSelectionContext } from './engine.mjs';
 import { encodingSteps, fullEncodingSteps, displayLetter, displayCode, ROLE_NAMES } from './encoding.mjs';
 import { openDatabase, readProgress, saveReview, undoReview, clearCorrection, saveSettings, replaceProgress, ProgressConflictError } from './storage.mjs';
@@ -853,9 +854,9 @@ window.addEventListener('focus',()=>{windowActive=true;clockResume();});
 async function loadCourse(id){
   let data=courseDatasets.get(id);
   if(!data){
-    const response=await fetch(COURSES[id].path,{cache:'no-cache'});
-    if(!response.ok)throw new Error('课程未能加载');
-    data=hydrateCourse(await response.json());
+    const status=document.querySelector('#loading-status');if(status)status.textContent=t('正在加载课程…');
+    const raw=await requestJson(COURSES[id].path,{onRetry:()=>{if(status)status.textContent=t('连接较慢，正在重试…');}});
+    data=hydrateCourse(raw);
     courseDatasets.set(id,data);
   }
   let database=null,progress={cards:[],logs:[],daily:[],settings:null};
