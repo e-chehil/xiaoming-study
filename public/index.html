@@ -3,19 +3,19 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data:; connect-src 'self'; base-uri 'self'; object-src 'none'; form-action 'none'">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data:; connect-src 'self' https://cdn.jsdmirror.com https://cdn.jsdelivr.net https://e-chehil.github.io https://xiaoming-study.netlify.app; worker-src 'self'; base-uri 'self'; object-src 'none'; form-action 'none'">
   <meta name="theme-color" content="#1e2327">
-  <script src="./theme-init.js?v=1.0.1"></script>
+  <script src="./theme-init.js?v=1.1.0"></script>
   <meta name="description" content="从声母、首笔和字根循序学习潇明输入法，支持简繁课程、取码说明、简码和字形对照。">
   <title>潇明习字</title>
   <link rel="icon" type="image/svg+xml" href="./favicon.svg">
-  <link rel="stylesheet" href="./focus.css?v=1.0.1">
+  <link rel="stylesheet" href="./focus.css?v=1.1.0">
 </head>
 <body>
   <a class="skip-link" href="#main-content">跳至正文</a>
-  <div id="app"><main class="loading" id="main-content"><div class="brand-symbol">潇</div><h1 id="loading-status" role="status">正在打开学习页面…</h1><a class="plain-button" href="./">重新加载</a></main></div>
+  <div id="app"><main class="loading" id="main-content"><div class="brand-symbol">潇</div><h1 id="loading-status" role="status">正在打开学习页面…</h1><progress id="download-progress" max="100" value="0" aria-label="课程下载进度" hidden></progress><a class="plain-button" href="./">重新加载</a></main></div>
   <div id="modal-root"></div>
   <div id="toast" role="status" aria-live="polite"></div>
-  <script type="module" src="./boot.mjs?v=1.0.1"></script>
+  <script type="module" src="./boot.mjs?v=1.1.0"></script>
 </body>
 </html>

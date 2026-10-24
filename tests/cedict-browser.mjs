@@ -2,6 +2,7 @@ import {loadCourse} from './support/course.mjs';
 import {launchBrowser} from './support/browser.mjs';
 import {readFile,mkdir,writeFile} from 'node:fs/promises';
 import assert from 'node:assert/strict';
+import {createHash} from 'node:crypto';
 import {applyRating} from '../public/engine.mjs';
 const data=await loadCourse('simplified');
 const metadata=JSON.parse(await readFile(new URL('../public/data/cedict/metadata.json',import.meta.url),'utf8'));
@@ -21,7 +22,7 @@ const frame=()=>page.evaluate(()=>{
 async function dictionaryPage(){await page.keyboard.press('Escape');await page.locator('[data-view="dictionary"]').click();}
 async function lookup(query){await page.locator('#dictionary-search').fill(query);await page.waitForTimeout(200);await page.locator('.dictionary-result').first().waitFor();}
 try{
-  await page.goto(base);await ready();await dictionaryReady();
+  await page.goto(base);await ready();await page.locator('header [data-view="library"]').click();await dictionaryReady();await page.locator('header [data-action="resume"]').first().click();
   assert.equal(await page.locator('.practice-gloss').count(),0);
   const character=data.items.find(item=>item.id===1);
   const foundations=data.items.filter(item=>['initial','stroke','rule','root'].includes(item.type));
@@ -76,15 +77,17 @@ try{
   assert.deepEqual(errors,[]);assert.deepEqual(remote,[]);
   // A dictionary failure must leave typing and FSRS usable, with an explicit retry in the dictionary.
   const failure=await browser.newContext(),broken=await failure.newPage();
-  await broken.route('**/data/cedict/dictionary.json',r=>r.fulfill({status:503,body:'unavailable'}));await broken.goto(base);
-  await broken.waitForFunction(()=>document.documentElement.dataset.dictionary==='error');await broken.locator('#code-input:not([readonly])').waitFor();
+  await broken.route('**/data/cedict/dictionary.json',r=>r.fulfill({status:503,body:'unavailable'}));await broken.goto(base);await broken.locator('#code-input:not([readonly])').waitFor();await broken.locator('header [data-view="library"]').click();
+  await broken.waitForFunction(()=>document.documentElement.dataset.dictionary==='error');await broken.locator('header [data-action="resume"]').first().click();await broken.locator('#code-input:not([readonly])').waitFor();
   await broken.keyboard.type('b');await broken.keyboard.press('Escape');await broken.locator('[data-view="dictionary"]').click();
   await broken.locator('[data-action="dictionary-retry"]').waitFor();await broken.unroute('**/data/cedict/dictionary.json');await broken.locator('[data-action="dictionary-retry"]').click();
   await broken.waitForFunction(()=>document.documentElement.dataset.dictionary==='ready');assert.match(await broken.locator('#dictionary-results').textContent(),/输入字词/);await failure.close();
   const escaped=await browser.newContext(),safe=await escaped.newPage();
   const malicious='<img src=x onerror="window.dictionaryInjected=true"> & <script>window.dictionaryInjected=true</script>';
-  await safe.route('**/data/cedict/dictionary.json',r=>r.fulfill({contentType:'application/json',body:JSON.stringify({version:1,source:{...metadata,entries:1},entries:[['測試','测试','ce4 shi4',[malicious],1]]})}));
-  await safe.goto(base);await safe.waitForFunction(()=>document.documentElement.dataset.dictionary==='ready');await safe.keyboard.press('Escape');await safe.locator('main [data-view="dictionary"]').click();
+  const testDictionary=JSON.stringify({version:1,source:{...metadata,entries:1},entries:[['測試','测试','ce4 shi4',[malicious],1]]});
+  await safe.route('**/resource-catalog.mjs',async route=>{const r=await route.fetch();await route.fulfill({response:r,body:(await r.text())+'\nRESOURCES.dictionary.bytes='+Buffer.byteLength(testDictionary)+';RESOURCES.dictionary.sha256="'+createHash('sha256').update(testDictionary).digest('hex')+'";'});});
+  await safe.route('**/data/cedict/dictionary.json',r=>r.fulfill({contentType:'application/json',body:testDictionary}));
+  await safe.goto(base);await safe.locator('#code-input:not([readonly])').waitFor();await safe.locator('header [data-view="library"]').click();await safe.waitForFunction(()=>document.documentElement.dataset.dictionary==='ready');await safe.locator('header [data-action="resume"]').first().click();await safe.keyboard.press('Escape');await safe.locator('main [data-view="dictionary"]').click();
   await safe.locator('#dictionary-search').fill('测试');await safe.locator('.dictionary-result').click();
   assert.equal(await safe.locator('.dictionary-senses img,.dictionary-senses script').count(),0);
   assert.ok((await safe.locator('.dictionary-senses').textContent()).includes(malicious));assert.equal(await safe.evaluate(()=>!!window.dictionaryInjected),false);await escaped.close();

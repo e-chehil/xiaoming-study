@@ -19,7 +19,7 @@ const baseCards=()=>foundations.map(item=>({...applyRating(null,3).card,id:item.
 const fixture=(extra=[])=>({cards:[...baseCards(),...extra],logs:[],daily:[],settings:{theme:'dark',newPerDay:20,retention:.9,pinyin:true}});
 const ready=()=>page.locator('.practice[data-phase="typing"] #code-input:not([readonly])').waitFor();
 const progress=()=>page.evaluate(async()=>{const s=await import('/storage.mjs'),db=await s.openDatabase(),p=await s.readProgress(db);db.close();return p;});
-async function install(payload){await page.evaluate(async payload=>{const s=await import('/storage.mjs'),db=await s.openDatabase();await s.replaceProgress(db,payload);db.close();},payload);await page.reload();await ready();}
+async function install(payload){await page.evaluate(async payload=>{const s=await import('/storage.mjs'),db=await s.openDatabase();await s.replaceProgress(db,payload);db.close();},payload);await page.evaluate(()=>history.replaceState(null,'',location.pathname+'?course=simplified'));await page.reload();await ready();}
 async function theme(value){if(await page.locator('html').getAttribute('data-theme')!==value)await page.locator('[data-action="theme"]').click();}
 async function geometry(){return page.evaluate(()=>{
   const bounds=selector=>{const r=document.querySelector(selector).getBoundingClientRect();return {x:r.x,y:r.y,width:r.width,height:r.height};};

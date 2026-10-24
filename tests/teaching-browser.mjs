@@ -18,7 +18,7 @@ async function install(data,track,target){
   const pool=track==='core'?data.items.filter(i=>['initial','stroke','root'].includes(i.type)):practicePool(data,track).filter(i=>!['short','variant'].includes(i.type)&&!i.practiceAlias);
   const cards=pool.map(i=>card(i));if(target){const existing=cards.findIndex(c=>c.id===target.id);if(existing>=0)cards.splice(existing,1);cards.push(card(target,Date.now()-10000));}
   await page.evaluate(async({course,track,cards})=>{
-    localStorage.setItem('xiaoming-course',course);localStorage.setItem('xiaoming-track:'+course,track);
+    localStorage.setItem('xiaoming-course',course);history.replaceState(null,'',location.pathname+'?course='+course);localStorage.setItem('xiaoming-track:'+course,track);
     const s=await import('/storage.mjs'),db=await s.openDatabase(course);await s.replaceProgress(db,{cards,logs:[],daily:[],settings:{newPerDay:200,theme:'dark',retention:.9}});db.close();
   },{course:data.course,track,cards});await page.reload();await ready();
   if(target)assert.equal(Number(await page.locator('.practice').getAttribute('data-item-id')),target.id);

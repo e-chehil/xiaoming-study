@@ -19,7 +19,7 @@ const foundations=()=>data.items.filter(i=>['initial','stroke'].includes(i.type)
 const fixture=item=>({cards:item?[...foundations(),card(item,false,new Date(Date.now()-10000).toISOString())]:[],logs:[],daily:[],settings:{newPerDay:20}});
 async function seed(item){
   await page.evaluate(async value=>{sessionStorage.clear();const s=await import('/storage.mjs'),db=await s.openDatabase();await s.replaceProgress(db,value);db.close();},fixture(item));
-  await page.reload();await ready(page);
+  await page.evaluate(()=>history.replaceState(null,'',location.pathname+'?course=simplified'));await page.reload();await ready(page);
 }
 async function lookup(item,{selfTest=false,preview=false}={}){
   await page.locator('header [data-view="library"]').click();await page.locator('#type-filter').selectOption(item.type);await page.locator('#search').fill(item.text);

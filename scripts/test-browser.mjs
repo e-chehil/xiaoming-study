@@ -3,7 +3,7 @@ import {createServer} from 'node:net';
 import {once} from 'node:events';
 import {fileURLToPath} from 'node:url';
 const root=fileURLToPath(new URL('../',import.meta.url));
-const suites=['browser-local.mjs','design-local.mjs','lesson-ui.mjs','integrity-browser.mjs','courses-browser.mjs','filtered-practice-browser.mjs','cedict-browser.mjs','teaching-browser.mjs','frontend-layout.mjs','release-browser.mjs'];
+const suites=['browser-local.mjs','design-local.mjs','lesson-ui.mjs','integrity-browser.mjs','courses-browser.mjs','filtered-practice-browser.mjs','cedict-browser.mjs','teaching-browser.mjs','frontend-layout.mjs','release-browser.mjs','offline-browser.mjs'];
 const selected=process.argv.slice(2);if(selected.some(name=>!suites.includes(name)))throw new Error('Unknown browser suite');
 const probe=createServer();probe.listen(0,'127.0.0.1');await once(probe,'listening');const port=probe.address().port;await new Promise(resolve=>probe.close(resolve));
 const server=spawn(process.execPath,['scripts/serve.mjs'],{cwd:root,env:{...process.env,XIAOMING_PORT:String(port)},stdio:['ignore','pipe','pipe'],windowsHide:true});

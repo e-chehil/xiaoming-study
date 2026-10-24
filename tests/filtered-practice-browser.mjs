@@ -37,7 +37,7 @@ try{
       await page.setViewportSize({width:1440,height:900});
     }
     await page.goto(process.env.TEST_URL||'http://127.0.0.1:47831/');await ready();
-    await page.waitForFunction(()=>document.documentElement.dataset.dictionary==='ready');
+    await page.locator('header [data-view="library"]').click();await page.waitForFunction(()=>document.documentElement.dataset.dictionary==='ready');await page.locator('header [data-action="resume"]').first().click();
     const words=data.items.filter(i=>i.type==='word'&&i.code&&i.text.includes('人')).slice(0,65);assert.equal(words.length,65);
     const known=[...data.items.filter(i=>['initial','stroke','root'].includes(i.type)),...words];
     const seed={cards:known.map(i=>({...applyRating(null,3).card,id:i.id,answerCode:i.code,verified:true,due:new Date(Date.now()+3600000).toISOString()})),logs:[],daily:[],settings:{theme:'light',newPerDay:20}};

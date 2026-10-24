@@ -1,4 +1,5 @@
-import {requestJson} from './request.mjs';
+import {readLocation,viewURL} from './view-location.mjs';
+import {resourceStore} from './resource-store.mjs';
 import { cleanSettings, dayKey, pickContinuous, evaluateAttempt, emptyDaily, validateBackup, itemIndex,cardFor,createSelectionContext } from './engine.mjs';
 import { encodingSteps, fullEncodingSteps, displayLetter, displayCode, ROLE_NAMES } from './encoding.mjs';
 import { openDatabase, readProgress, saveReview, undoReview, clearCorrection, saveSettings, replaceProgress, ProgressConflictError } from './storage.mjs';
@@ -15,13 +16,15 @@ const esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;
 const num=value=>new Intl.NumberFormat('zh-CN').format(value);
 const labels=LESSON_TYPES,grades={1:'重来',2:'困难',3:'良好',4:'轻松'};
 const strokeLabels={k:'横画',i:'竖画',j:'撇画',f:'点画',e:'逆时针折画',d:'顺时针折画'};
-let dataset,items,index,db,cards={},logs=[],days={},settings=cleanSettings(),route='practice';
+const initialLocation=readLocation(location.href);
+let dataset,items,index,db,cards={},logs=[],days={},settings=cleanSettings(),route=initialLocation.view,courseCacheSaved=true,restoringLocation=false;
 let current=null,free=false,freeSession=null,reviewOnly=false,completed=0,undoStack=[],pendingCorrection=null,busy=false;
-let search='',filter='all',stateFilter='all',page=1,toastTimer,hintTimer,pendingImport,storageError='';
+let {search,filter,stateFilter,page}=initialLocation;
+let toastTimer,hintTimer,pendingImport,storageError='';
 let rootKey='all',rootSearch='',dialogOpener=null,renderedRoute='',typeAhead='',lastCompletion=false,windowActive=true,practiceReturn=null;
 let shownAt=0,elapsedBeforePause=0;
-let courseId=selectedCourse();
-const courseSessions=new Map(),courseDatasets=new Map(),trackSessions=new Map();
+let courseId=initialLocation.course||selectedCourse();
+const courseSessions=new Map(),courseDatasets=new Map(),courseCacheStates=new Map(),trackSessions=new Map();
 let practiceTrack='core',rootFacts=new Map();
 function activePool(){return practicePool(dataset,practiceTrack);}
 const trackPositions=new WeakMap();
@@ -179,7 +182,7 @@ function header(){
   const courseLabel=`当前${COURSES[courseId].name}，切换到${COURSES[courseId==='simplified'?'traditional':'simplified'].name}`;
   return `<header class="app-header">
     <button class="brand" data-action="resume" aria-label="潇明习字，返回练习"><strong>潇明习字</strong></button>
-    <nav class="header-nav" aria-label="学习导航">${[['practice','练习'],['library','课程'],['roots','字根'],['stats','记录']].map(([view,title])=>`<button data-action="${view==='practice'?'resume':'navigate'}" data-view="${view}" ${route===view?'aria-current="page"':''}>${title}</button>`).join('')}</nav>
+    <nav class="header-nav" aria-label="学习导航">${[['practice','练习'],['library','课程'],['roots','字根'],['stats','记录']].map(([view,title])=>`<a href="${esc(viewURL(location.href,{view,course:courseId,search,filter,stateFilter,page}))}" data-action="${view==='practice'?'resume':'navigate'}" data-view="${view}" ${route===view?'aria-current="page"':''}>${title}</a>`).join('')}</nav>
     <div class="header-tools">
       <button id="course-toggle" class="icon-button course-toggle" data-action="course" data-course="${courseId}" aria-label="${courseLabel}" title="${courseLabel}" ${busy?'disabled aria-busy="true"':''}><span aria-hidden="true">${courseId==='simplified'?'简':'繁'}</span></button>
       <button class="icon-button" data-action="theme" aria-label="切换${settings.theme==='dark'?'浅色':'深色'}主题" aria-pressed="${settings.theme==='light'}" title="切换主题">${icon(settings.theme==='dark'?'sun':'moon')}</button>
@@ -196,6 +199,9 @@ async function toggleTheme(){
   themeSave=persistSettings({theme});
   try{await themeSave;}catch{notify('主题已切换，设置暂未保存。');}finally{busy=false;savingTheme=false;themeSave=null;drainTypeAhead();}
 }
+function syncLocation(push=false){if(restoringLocation)return;const href=viewURL(location.href,{view:route,course:courseId,search,filter,stateFilter,page});if(href!==location.href)history[push?'pushState':'replaceState'](null,'',href);}
+let locationTurn=0;
+window.addEventListener('popstate',async()=>{const turn=++locationTurn,target=readLocation(location.href);restoringLocation=true;try{while(busy&&turn===locationTurn)await new Promise(resolve=>setTimeout(resolve,100));if(turn!==locationTurn)return;if(target.course&&target.course!==courseId)await switchCourse(target.course);if(turn!==locationTurn)return;({search,filter,stateFilter,page}=target);route=target.view;render();}finally{if(turn===locationTurn)restoringLocation=false;}});
 function render({transition=false}={}){
   const oldInput=document.querySelector('#code-input');
   const selection=oldInput?{start:oldInput.selectionStart,end:oldInput.selectionEnd}:null;
@@ -216,7 +222,8 @@ function render({transition=false}={}){
     clockResume();
   }else if(changedRoute){(route==='menu'?document.querySelector('.resume-button'):document.querySelector('main h1'))?.focus({preventScroll:true});}
   else restoreViewState(app,viewState);
-  renderedRoute=route;
+  syncLocation(!!renderedRoute&&changedRoute);renderedRoute=route;
+  if(!dictionary&&!dictionaryError&&!dictionaryPreparing&&(route==='library'||route==='dictionary'||route==='practice'&&['char','word'].includes(current?.item.type)))void prepareDictionary();
 }
 function coloredCode(code){return [...code].map((letter,i)=>`<span class="code-letter role-${'asb'[i]}" title="${ROLE_NAMES['asb'[i]]}">${displayLetter(letter,'asb'[i])}</span>`).join('');}
 function inlineCode(item){return (item.type==='short'?encodingSteps(item):fullEncodingSteps(item)).map(step=>`<span class="code-letter role-${step.role}">${displayLetter(step.letter,step.role)}</span>`).join('');}
@@ -325,17 +332,19 @@ function dictionaryResults(){
 }
 function dictionaryView(){return `<main class="page narrow">${subHeading('中英词典')}<div class="toolbar"><label class="search-field" for="dictionary-search">查词<input id="dictionary-search" name="query" placeholder="中文、英文或拼音…" value="${esc(dictionarySearch)}" type="search" autocomplete="off" spellcheck="false"></label></div><div id="dictionary-results">${dictionaryResults()}</div></main>`;}
 function refreshDictionaryResults(){const target=document.querySelector('#dictionary-results');if(target){target.innerHTML=dictionaryResults();localize(target);}}
+let dictionaryPreparing=false;
 async function prepareDictionary(){
+  if(dictionaryPreparing)return;dictionaryPreparing=true;
   dictionaryError='';
   document.documentElement.dataset.dictionary='loading';
   try{dictionary=await loadCedict();searchCache=new WeakMap();}
   catch(error){dictionaryError=error.message;}
-  document.documentElement.dataset.dictionary=dictionary?'ready':'error';
+  dictionaryPreparing=false;document.documentElement.dataset.dictionary=dictionary?'ready':'error';
   const target=document.querySelector('#practice-meaning');
   if(target&&current){target.innerHTML=practiceMeaning(current.item);localize(target);}
   const pending=overlay.querySelector('[data-meaning-id]');
   if(pending&&itemOf(pending.dataset.meaningId)){pending.outerHTML=meaningSection(itemOf(pending.dataset.meaningId));localize(overlay);}
-  if(route==='library'){document.querySelector('#library-results').innerHTML=libraryRows();localize(document.querySelector('#library-results'));}
+  if(route==='library'){document.querySelector('#library-results').innerHTML=libraryRows();localize(document.querySelector('#library-results'));syncLocation();}
   refreshDictionaryResults();
 }
 function freeCompletionView(){
@@ -570,6 +579,8 @@ function rootResults(){
 function updateRoots(){document.querySelector('#root-results').innerHTML=rootResults();localize(document.querySelector('#root-results'));document.querySelectorAll('[data-action="root-key"]').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.key===rootKey)));}
 function rootsView(){return `<main class="page">${subHeading('字根')}<div class="toolbar"><label class="search-field" for="root-search">查找字根<input id="root-search" name="query" type="search" autocomplete="off" spellcheck="false" placeholder="字形、读音或完整编码…" value="${esc(rootSearch)}"></label></div><div class="root-key-index" role="group" aria-label="按大码筛选字根">${rootKeys().map(key=>`<button data-action="root-key" data-key="${key}" aria-pressed="${rootKey===key}" title="${key==='all'?'全部字根':key.toUpperCase()+' 键字根，可用方向键切换'}">${key==='all'?'全部':key.toUpperCase()}</button>`).join('')}</div><div id="root-results">${rootResults()}</div></main>`;}
 function statsView(){const verified=Object.values(cards).filter(card=>index.has(card.id)&&!index.get(card.id).practiceAlias&&card.verified),recalls=logs.filter(log=>!log.firstExposure&&!log.guided),correct=recalls.filter(log=>log.firstTry).length;return `<main class="page">${subHeading('练习记录')}<div class="stat-grid"><div><small>已独立完成</small><strong>${num(verified.length)}</strong></div><div><small>累计输入</small><strong>${num(logs.length)}</strong></div><div><small>无提示正确率</small><strong>${recalls.length?Math.round(correct/recalls.length*100)+'%':'—'}</strong></div><div><small>待复习</small><strong>${dueCount()}</strong></div></div><div class="table-wrap"><table><thead><tr><th>内容</th><th>过程</th><th>用时</th><th>删改 / 提示</th><th>判定</th></tr></thead><tbody>${logs.slice(-30).reverse().map(log=>`<tr><td class="table-text root-font">${esc(itemOf(log.itemId)?.text)}</td><td>${log.automatic?(log.firstExposure?'首次认识':log.supplemental?'巩固练习':'间隔复习'):'练习'}${log.skill==='short'?' · 简码':log.skill==='variant'?' · 台湾字形':''}</td><td>${((log.elapsedMs??(log.seconds||0)*1000)/1000).toFixed(1)}s</td><td>${log.backspaces||0} / ${log.hintCount||Number(log.hinted)||0}</td><td>${log.supplemental&&!log.scheduleUpdated?(log.correct?'巩固完成':log.outcome==='blank'?'已看答案':'错码'):log.outcome==='incorrect'?'错码 · 重学':log.outcome==='blank'?'已看答案 · 重学':log.firstExposure?'安排巩固':grades[log.grade]}</td></tr>`).join('')||'<tr><td colspan="5">完成输入后，这里会记录你的练习。</td></tr>'}</tbody></table></div></main>`;}
+function offlineSummary(){return !courseCacheSaved?'课程尚未保存，请保持联网。':document.documentElement.dataset.offline==='ready'?'课程已保存，可离线练习。':document.documentElement.dataset.offline==='unavailable'?'课程已保存，离线启动暂不可用。':'课程已保存，正在准备离线页面…';}
+document.addEventListener('xiaoming-offline-state',()=>{const note=document.querySelector('#offline-summary');if(note)note.textContent=t(offlineSummary());});
 function settingsView(){
   return `<main class="page narrow">${subHeading('设置')}
     <form id="settings-form">
@@ -579,7 +590,7 @@ function settingsView(){
       </fieldset>
       <button class="solid-button" type="submit">保存</button>
     </form>
-    <section class="backup-section"><h2>学习进度</h2><p>进度仅保存在当前浏览器。换设备或清理网站数据前，请先导出备份。</p><div><button class="plain-button" data-action="export">导出备份</button><button class="plain-button" data-action="import">导入备份</button></div><input id="backup-input" aria-label="选择进度备份" type="file" accept=".json,application/json" hidden></section>
+    <section class="backup-section"><h2>学习进度</h2><p id="offline-summary" role="status">${offlineSummary()}</p><p>进度保存在当前浏览器。换设备或清理网站数据前，请先导出备份。</p><div><button class="plain-button" data-action="export">导出备份</button><button class="plain-button" data-action="import">导入备份</button></div><input id="backup-input" aria-label="选择进度备份" type="file" accept=".json,application/json" hidden></section>
   </main>`;
 }
 function helpView(){
@@ -690,9 +701,10 @@ document.addEventListener('click',event=>{
   if(event.target.id==='code-input')selectRetainedInput(event.target);
   const button=event.target.closest('[data-action]');
   if(!button&&route==='practice'&&!overlay.firstChild&&event.target.closest('.practice')&&!event.target.closest('input,button,a,select,label')&&window.getSelection()?.isCollapsed)document.querySelector('#code-input')?.focus({preventScroll:true});
+  if(button?.tagName==='A'){if(event.ctrlKey||event.metaKey||event.shiftKey||event.altKey||event.button!==0)return;event.preventDefault();}
   if(!button||button.disabled||busy)return;
   const {action,id,view}=button.dataset;
-  if(action==='reload'){location.reload();return;}
+  if(action==='reload'){app.innerHTML='<main class="loading" id="main-content"><div class="brand-symbol">潇</div><h1 id="loading-status" role="status">正在打开课程…</h1><progress id="download-progress" max="100" value="0" aria-label="课程下载进度" hidden></progress></main>';void initialize();return;}
   else if(action==='theme')void toggleTheme();
   else if(action==='course')void switchCourse(courseId==='simplified'?'traditional':'simplified');
   else if(action==='skip')void submit(true);
@@ -723,7 +735,7 @@ document.addEventListener('click',event=>{
   else if(action==='export')void exportBackup();
   else if(action==='import')document.querySelector('#backup-input').click();
   else if(action==='confirm-import')void confirmImport();
-  else if(action==='page'){page+=Number(button.dataset.delta);document.querySelector('#library-results').innerHTML=libraryRows();localize(document.querySelector('#library-results'));}
+  else if(action==='page'){page+=Number(button.dataset.delta);document.querySelector('#library-results').innerHTML=libraryRows();localize(document.querySelector('#library-results'));syncLocation();}
   else if(action==='reset-filters'){search='';filter='all';stateFilter='all';page=1;render();document.querySelector('#search')?.focus({preventScroll:true});}
   else if(action==='root-key'){rootKey=button.dataset.key;updateRoots();}
 });
@@ -760,7 +772,7 @@ document.addEventListener('paste',event=>{
 });
 document.addEventListener('input',event=>{
   if(event.target.id==='code-input'&&!event.isComposing)acceptInput(event.target);
-  else if(event.target.id==='search'){search=event.target.value;page=1;document.querySelector('#library-results').innerHTML=libraryRows();localize(document.querySelector('#library-results'));}
+  else if(event.target.id==='search'){search=event.target.value;page=1;document.querySelector('#library-results').innerHTML=libraryRows();localize(document.querySelector('#library-results'));syncLocation();}
   else if(event.target.id==='root-search'){rootSearch=event.target.value;updateRoots();}
   else if(event.target.id==='dictionary-search'){dictionarySearch=event.target.value;dictionaryPage=1;clearTimeout(dictionaryTimer);dictionaryTimer=setTimeout(refreshDictionaryResults,120);}
 });
@@ -768,8 +780,8 @@ document.addEventListener('compositionend',event=>{
   if(event.target.id==='code-input')acceptInput(event.target);
 });
 document.addEventListener('change',event=>{
-  if(event.target.id==='type-filter'){filter=event.target.value;page=1;document.querySelector('#library-results').innerHTML=libraryRows();localize(document.querySelector('#library-results'));}
-  else if(event.target.id==='state-filter'){stateFilter=event.target.value;page=1;document.querySelector('#library-results').innerHTML=libraryRows();localize(document.querySelector('#library-results'));}
+  if(event.target.id==='type-filter'){filter=event.target.value;page=1;document.querySelector('#library-results').innerHTML=libraryRows();localize(document.querySelector('#library-results'));syncLocation();}
+  else if(event.target.id==='state-filter'){stateFilter=event.target.value;page=1;document.querySelector('#library-results').innerHTML=libraryRows();localize(document.querySelector('#library-results'));syncLocation();}
   else if(event.target.id==='backup-input'){void importFile(event.target.files[0]);event.target.value='';}
 });
 document.addEventListener('submit',async event=>{
@@ -854,9 +866,15 @@ window.addEventListener('focus',()=>{windowActive=true;clockResume();});
 async function loadCourse(id){
   let data=courseDatasets.get(id);
   if(!data){
-    const status=document.querySelector('#loading-status');if(status)status.textContent=t('正在加载课程…');
-    const raw=await requestJson(COURSES[id].path,{onRetry:()=>{if(status)status.textContent=t('连接较慢，正在重试…');}});
-    data=hydrateCourse(raw);
+    clearTimeout(toastTimer);data=await resourceStore.load(id,{onStatus:state=>{
+      const name=id==='traditional'?'繁中课程':'简中课程';
+      const text=state.phase==='downloading'?`正在下载${name}… ${Math.min(100,Math.floor(state.received/state.total*100))}%`:state.phase==='switching'?'连接较慢，正在尝试其他来源…':state.phase==='verifying'?'正在检查课程…':state.phase==='ready'?'正在准备练习…':`正在打开${name}…`;
+      const status=document.querySelector('#loading-status');
+      if(status&&status.textContent!==t(text))status.textContent=t(text);
+      const bar=document.querySelector('#download-progress');if(bar&&state.phase==='downloading'){bar.hidden=false;bar.value=state.received/state.total*100;}
+      if(!status){const toast=document.querySelector('#toast');if(toast.textContent!==t(text))toast.textContent=t(text);toast.classList.add('visible');}
+      if(state.phase==='ready')courseCacheStates.set(id,state.persisted);
+    }});
     courseDatasets.set(id,data);
   }
   let database=null,progress={cards:[],logs:[],daily:[],settings:null};
@@ -865,11 +883,11 @@ async function loadCourse(id){
   return {data,database,progress};
 }
 function adoptCourse({data,database,progress},{keepTheme=false}={}){
-  dataset=data;items=allLessons(data);index=itemIndex(items);db=database;rootFacts=new Map(data.items.filter(item=>item.type==='root').map(item=>[item.text,item]));
+  courseCacheSaved=courseCacheStates.get(data.course)??false;dataset=data;items=allLessons(data);index=itemIndex(items);db=database;rootFacts=new Map(data.items.filter(item=>item.type==='root').map(item=>[item.text,item]));
   try{practiceTrack=localStorage.getItem('xiaoming-track:'+courseId)||'core';}catch{practiceTrack='core';}
   if(!TRACKS[practiceTrack]||!practicePool(data,practiceTrack).length)practiceTrack='core';
   adoptProgress(progress,{keepTheme});
-  storageError=database?'':'进度无法保存，请检查浏览器的网站数据设置。';
+  storageError=[database?'':'进度无法保存，请检查浏览器的网站数据设置。',courseCacheSaved?'':'课程尚未保存到此浏览器，暂时无法保证离线使用。'].filter(Boolean).join(' ');
 }
 function adoptProgress(progress,{keepTheme=false}={}){
   selectionCache=null;
@@ -924,7 +942,7 @@ async function initialize(){
     await setLocale(courseId);adoptCourse(await loadCourse(courseId));
     if(!restoreCorrection())setCurrent(next());
     render();
-    void prepareDictionary();
-  }catch(error){console.error('Course initialization failed',error);app.innerHTML=`<main class="loading" id="main-content" tabindex="-1"><div class="brand-symbol">潇</div><h1>课程暂时无法加载</h1><p role="alert">请稍后重新加载。</p><button class="solid-button" data-action="reload">重新加载</button></main>`;}
+    const toast=document.querySelector('#toast');toast.classList.remove('visible');toast.textContent='';
+  }catch(error){console.error('Course initialization failed',error);app.innerHTML=`<main class="loading" id="main-content" tabindex="-1"><div class="brand-symbol">潇</div><h1>课程暂时无法加载</h1><p role="alert">请检查网络后重试。已保存的课程和学习进度不会被清除。</p><button class="solid-button" data-action="reload">重新加载</button></main>`;}
 }
 initialize();
