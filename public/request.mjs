@@ -5,9 +5,10 @@ function retryable(error){return error?.name==='TimeoutError'||error?.name==='Ab
 export async function requestJson(url,{attempts=2,idleTimeoutMs=15000,totalTimeoutMs=90000,retryDelayMs=600,onRetry,fetcher=globalThis.fetch}={}){
   for(let attempt=0;attempt<attempts;attempt++){
     const controller=new AbortController();let idleTimer,totalTimer,reader;
-    const timeout=()=>controller.abort(new DOMException('资源加载超时','TimeoutError'));
+    const timeoutError=new DOMException('资源加载超时','TimeoutError');
+    const timeout=()=>controller.abort(timeoutError);
     const resetIdle=()=>{clearTimeout(idleTimer);idleTimer=setTimeout(timeout,idleTimeoutMs);};
-    const aborted=new Promise((_,reject)=>controller.signal.addEventListener('abort',()=>reject(controller.signal.reason),{once:true}));
+    const aborted=new Promise((_,reject)=>controller.signal.addEventListener('abort',()=>reject(timeoutError),{once:true}));
     try{
       resetIdle();totalTimer=setTimeout(timeout,totalTimeoutMs);
       const response=await Promise.race([fetcher(url,{cache:attempt?'reload':'default',signal:controller.signal}),aborted]);

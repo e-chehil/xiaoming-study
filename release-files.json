@@ -68,8 +68,8 @@
     },
     {
       "path": "public/boot.mjs",
-      "bytes": 396,
-      "sha256": "e3500be8216ade22c6912bac049ed46dd764245b4b7e7a88957ed952ac6e10e6"
+      "bytes": 387,
+      "sha256": "f0cd1638797259c84d7434cb48ae2fc1f417a249a44952a2a2fb5ec67b103424"
     },
     {
       "path": "public/cedict.mjs",
@@ -178,8 +178,8 @@
     },
     {
       "path": "public/request.mjs",
-      "bytes": 2030,
-      "sha256": "0e378f5ac637a47226c6751c2ca8d819e87160e0ccc2f636ac414b72ce1c802d"
+      "bytes": 2055,
+      "sha256": "9f7e6f3ae08752e42d3a9f692db41efc474e4f5fcb897c13bb5709cf821b6886"
     },
     {
       "path": "public/storage.mjs",
