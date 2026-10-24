@@ -2,7 +2,7 @@
 
 ## 当前实现
 
-应用版本 1.1.0。完整简中、繁中与 CC-CEDICT 三个 JSON 不拆分。public/resource-catalog.mjs 固化每个文件的字节数、SHA-256 与数据提交 52fdfea8754904c0054e417472cf34ba70cc7a76。课程、词典与学习算法均未改动。
+应用版本 1.1.1。完整简中、繁中与 CC-CEDICT 三个 JSON 不拆分。public/resource-catalog.mjs 固化每个文件的字节数、SHA-256 与数据提交 52fdfea8754904c0054e417472cf34ba70cc7a76。课程、词典与学习算法均未改动。
 
 读取顺序为：当前版本的有效本地缓存；缺少时顺序尝试 JSDMirror .com、本站、jsDelivr 官方、GitHub Pages、Netlify，去除重复地址。不会同时竞争下载完整文件；同一资源的并发请求合并，浏览器支持 Web Locks 时跨标签页合并。开发用 localhost 不向外部 CDN 发请求。
 
@@ -18,7 +18,7 @@ FSRS 继续使用原 IndexedDB 数据库 xiaoming-study-dev-v5 及繁中后缀�
 
 ## 页面与版本更新
 
-模块 Service Worker 在应用目录注册，兼容根目录和 GitHub Pages 子目录。安装时校验并缓存页面、样式、程序、字体和小型界面资源；不把三份大数据放进页面预取清单。
+模块 Service Worker 在应用目录注册，兼容根目录和 GitHub Pages 子目录。安装时校验并缓存页面、样式、程序、字体和小型界面资源；对 Netlify 插入的唯一固定托管注释，先精确移除再核对原 HTML 哈希，其他改写一律拒绝；不把三份大数据放进页面预取清单。
 
 更新时先准备完整的新页面，并校验已安装课程是否可供新程序读取。课程下载或保存失败则拒绝新 Worker 安装，保留旧版页面与课程。等待旧标签页关闭后再接管，不在练习途中强制刷新。只清理本应用的过旧页面缓存，课程资源和学习进度保持独立。
 

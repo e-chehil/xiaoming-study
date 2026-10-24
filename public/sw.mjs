@@ -1,12 +1,11 @@
+import {verifyShellBytes} from './offline-integrity.mjs';
 import {SHELL_VERSION,SHELL_FILES} from './offline-shell.mjs';
 import {resourceStore,scopePrefix} from './resource-store.mjs';
 const base=new URL('./',import.meta.url),prefix=scopePrefix(base),shellName=prefix+'shell-'+SHELL_VERSION;
 const files=new Map(SHELL_FILES.map(file=>[new URL(file.path,base).pathname,file]));
 async function fetchFile(file){
   const response=await fetch(new URL(file.path,base),{cache:'reload',signal:AbortSignal.timeout(20000)});if(!response.ok)throw new Error('离线页面下载失败');
-  const bytes=await response.arrayBuffer();
-  const hash=[...new Uint8Array(await crypto.subtle.digest('SHA-256',bytes))].map(b=>b.toString(16).padStart(2,'0')).join('');
-  if(bytes.byteLength!==file.bytes||hash!==file.sha256)throw new Error('离线页面校验失败');
+  const bytes=await verifyShellBytes(new Uint8Array(await response.arrayBuffer()),file);
   const headers=new Headers(response.headers);headers.delete('content-encoding');headers.delete('content-length');return new Response(bytes,{headers});
 }
 self.addEventListener('install',event=>event.waitUntil((async()=>{

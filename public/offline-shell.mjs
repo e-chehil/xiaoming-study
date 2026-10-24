@@ -1,4 +1,4 @@
-export const SHELL_VERSION="872f40c885f7365a75113bf3ad153c93d0b575cd2585e6d43ceb033b6074a533";
+export const SHELL_VERSION="3bf4a0bf99176beb1b5370a3e36122d4b056d2cca2c6a8386105c8bae32abdc2";
 export const SHELL_FILES=[
   {
     "path": "answer-exposure.mjs",
@@ -83,7 +83,7 @@ export const SHELL_FILES=[
   {
     "path": "index.html",
     "bytes": 1495,
-    "sha256": "13a773834ff90111c68d518d3b05fa57e801a0119690559fc60386240908af65"
+    "sha256": "3ef88992014dd8d5081f03a44573b3ea0ec6568f429dc75e15b1611d72918bc4"
   },
   {
     "path": "learning-schema.mjs",
@@ -97,8 +97,13 @@ export const SHELL_FILES=[
   },
   {
     "path": "offline-client.mjs",
-    "bytes": 935,
-    "sha256": "9d5766683eb253fe37f12f4d2d641ec1b6d7f28468cad68dfd4d70c6bec048de"
+    "bytes": 1106,
+    "sha256": "43d3eb9602ac2ee3ff8645d203d60bc9b0aea0db15aec180106852171644557e"
+  },
+  {
+    "path": "offline-integrity.mjs",
+    "bytes": 899,
+    "sha256": "48d1c7c342f9b1da4688dbe3d460fd83f6fdc16eee302029dcc8f1942d2d011a"
   },
   {
     "path": "practice.mjs",
@@ -127,8 +132,8 @@ export const SHELL_FILES=[
   },
   {
     "path": "sw.mjs",
-    "bytes": 2568,
-    "sha256": "fb3a8b3580c52e46e7de2b76d55dad601f95f6b8d011f309197d1b15f47898e1"
+    "bytes": 2444,
+    "sha256": "ab2161e62742d686e1aeea9441749f5c7d4942ef3dc6841ab783cc6027c1a96e"
   },
   {
     "path": "teaching.mjs",

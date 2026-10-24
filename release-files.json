@@ -1,5 +1,5 @@
 {
-  "version": "1.1.0",
+  "version": "1.1.1",
   "files": [
     {
       "path": ".gitattributes",
@@ -18,13 +18,13 @@
     },
     {
       "path": "CHANGELOG.md",
-      "bytes": 2074,
-      "sha256": "f2c71fc2a58beb6777cac5afff4a4bac18c0fe11680a60bfcb9a9fc3227caab9"
+      "bytes": 2316,
+      "sha256": "1467da168c433d587b9fa94403b8ab2085ed2cc594dad9f974538a8c3731d7dc"
     },
     {
       "path": "README.md",
       "bytes": 3614,
-      "sha256": "4536df8923154eb517c376727ec8e0903eb657847c17e86d637bae7e050bd41f"
+      "sha256": "71d66c271693ad994ae011439a48acf4f8125d29f633160bcc967eda6e09797b"
     },
     {
       "path": "data/curriculum-ranks.json",
@@ -43,8 +43,8 @@
     },
     {
       "path": "docs/offline.md",
-      "bytes": 4669,
-      "sha256": "04baf4ceab94717d62081a40b77ba26b7b3218abd9a3bf1d87adf143df302f4d"
+      "bytes": 4786,
+      "sha256": "18f71e5c216353f6ede456cc4303b9d048a505c0c1ed9d6f141fdafebbb73241"
     },
     {
       "path": "netlify.toml",
@@ -54,12 +54,12 @@
     {
       "path": "package-lock.json",
       "bytes": 3394,
-      "sha256": "30c859899e857ae089e3e6127eb33b687667d1f6a8592b0ef2c126022a1037b5"
+      "sha256": "98aeda2e1423a8fc020730d4bdcf398737923d7f69eb556ada42b07617859dc0"
     },
     {
       "path": "package.json",
       "bytes": 983,
-      "sha256": "6f4de7c817fc1aa1840316a0144086d31e99b4ac25b09df86260bade2c22a615"
+      "sha256": "730fc8f10878021bde6b6420f7ba1e11a177267a6949e9e3c51c844b10b1d29a"
     },
     {
       "path": "public/.nojekyll",
@@ -164,7 +164,7 @@
     {
       "path": "public/index.html",
       "bytes": 1495,
-      "sha256": "13a773834ff90111c68d518d3b05fa57e801a0119690559fc60386240908af65"
+      "sha256": "3ef88992014dd8d5081f03a44573b3ea0ec6568f429dc75e15b1611d72918bc4"
     },
     {
       "path": "public/learning-schema.mjs",
@@ -178,13 +178,18 @@
     },
     {
       "path": "public/offline-client.mjs",
-      "bytes": 935,
-      "sha256": "9d5766683eb253fe37f12f4d2d641ec1b6d7f28468cad68dfd4d70c6bec048de"
+      "bytes": 1106,
+      "sha256": "43d3eb9602ac2ee3ff8645d203d60bc9b0aea0db15aec180106852171644557e"
+    },
+    {
+      "path": "public/offline-integrity.mjs",
+      "bytes": 899,
+      "sha256": "48d1c7c342f9b1da4688dbe3d460fd83f6fdc16eee302029dcc8f1942d2d011a"
     },
     {
       "path": "public/offline-shell.mjs",
-      "bytes": 5841,
-      "sha256": "436c5e20d4470fc2dd6f481d224a03d18917b6e36d9c9698bb864535c73f9c67"
+      "bytes": 5987,
+      "sha256": "30ab3d4d4e49e759bd8ab55df86841d4cbee4e064acce0ec2b7661a9f0f3b28c"
     },
     {
       "path": "public/practice.mjs",
@@ -213,8 +218,8 @@
     },
     {
       "path": "public/sw.mjs",
-      "bytes": 2568,
-      "sha256": "fb3a8b3580c52e46e7de2b76d55dad601f95f6b8d011f309197d1b15f47898e1"
+      "bytes": 2444,
+      "sha256": "ab2161e62742d686e1aeea9441749f5c7d4942ef3dc6841ab783cc6027c1a96e"
     },
     {
       "path": "public/teaching.mjs",
@@ -408,8 +413,13 @@
     },
     {
       "path": "tests/offline-browser.mjs",
-      "bytes": 10901,
-      "sha256": "cae6cc296c779ca1e7710ea82db045e80d5d5d46fd7dcd15e023d2c470df4d6f"
+      "bytes": 11262,
+      "sha256": "9be12a156f10faf4f9c8f8d1d631b5622c66ff97cee53fb934d8fddfebb6441e"
+    },
+    {
+      "path": "tests/offline-integrity.test.mjs",
+      "bytes": 1283,
+      "sha256": "173078f27d9479aaab25aefb203709c6447473acbc4d16297a4ffcab8455565a"
     },
     {
       "path": "tests/release-browser.mjs",
