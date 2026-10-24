@@ -8,8 +8,8 @@
     },
     {
       "path": ".github/workflows/site.yml",
-      "bytes": 1654,
-      "sha256": "f9c920360773b1229e93a3ccf35708f7c2b072c9a9dada63ddcf6a9ed40948fd"
+      "bytes": 1652,
+      "sha256": "a7d136a117c867d3c60b44fd5f7a5f35d2ab78cfbd961c4da55fd069e3696e92"
     },
     {
       "path": ".gitignore",
@@ -38,8 +38,8 @@
     },
     {
       "path": "docs/deployment.md",
-      "bytes": 1860,
-      "sha256": "6b41cfdaf7248a1c16972b92b36fb02633e11adb6c59227f9ecb265a2ee267de"
+      "bytes": 1889,
+      "sha256": "62e6faac338fbae84d951cd63376ee74d0907a909c4b37ea42d1c00d6c379569"
     },
     {
       "path": "package-lock.json",

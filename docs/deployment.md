@@ -11,7 +11,7 @@
 3. 在 Settings → Secrets and variables → Actions → Variables 设置 `PAGES_ENABLED` 为 `true`。
 4. 手动运行 `Check and deploy` 工作流，或推送到 `main`。
 
-工作流先校验文件白名单、数据和测试，再生成纯静态产物。只有 `main` 且启用 `PAGES_ENABLED` 才部署；PR 仅运行检查。未配置 Pages 时不会自动公开网站。默认项目子路径 `/仓库名/` 已纳入浏览器验证。
+工作流在固定的 Ubuntu 24.04 环境校验文件白名单、数据和测试，再生成纯静态产物。只有 `main` 且启用 `PAGES_ENABLED` 才部署；PR 仅运行检查。未配置 Pages 时不会自动公开网站。默认项目子路径 `/仓库名/` 已纳入浏览器验证。
 
 GitHub Free 的 Pages 适用于公开仓库；私有仓库是否可用取决于账户计划。公开仓库或网站前须完成第三方资料的再分发许可核对，见第三方声明中的待确认项。
 
