@@ -43,14 +43,14 @@ try{
   assert.equal((await letters()).join(''),first.code);assert.equal(await page.locator('.stroke-glyph').textContent(),first.strokeGlyph);assert.equal(await page.locator('.stroke-target svg').count(),0);
   assert.equal(await page.locator('#prompt-code b').evaluate(node=>getComputedStyle(node).textTransform),'none');
   assert.equal(await page.locator('.practice p').count(),0);await page.screenshot({path:'artifacts/v7-stroke-dark.png',fullPage:true});
-  await page.keyboard.press('Enter');await page.keyboard.press('?');await page.keyboard.press('Control+z');assert.equal((await progress()).logs.length,0);
+  await page.keyboard.press('Enter');await page.keyboard.press('?');await page.locator('.derivation-panel').waitFor();await page.keyboard.press('Escape');await page.keyboard.press('Control+z');assert.equal((await progress()).logs.length,0);
   await page.keyboard.type('Z');await count(1);await page.locator('.practice[data-phase="correction"]').waitFor();
   assert.equal(await page.locator('#code-input').inputValue(),'z');assert.equal(await page.locator('#code-input').getAttribute('readonly'),null);
   assert.equal(await page.locator('#code-input').getAttribute('aria-invalid'),'true');assert.equal(await page.locator('.entry-slots .mismatch').count(),1);
   await assertReplacementSelection();await page.locator('#code-input').click();await assertReplacementSelection();
   assert.equal((await letters()).join(''),first.code);
   const failed=await progress();assert.equal(failed.logs[0].grade,1);assert.equal(failed.logs[0].submitted,'z');
-  await page.keyboard.press('?');await page.keyboard.press('Space');await page.keyboard.press('Tab');assert.equal(await page.locator('#code-input').inputValue(),'z');
+  await page.keyboard.press('?');await page.locator('.derivation-panel').waitFor();await page.keyboard.press('Escape');await page.keyboard.press('Space');await page.keyboard.press('Tab');assert.equal(await page.locator('#code-input').inputValue(),'z');
   await page.keyboard.press('ArrowLeft');assert.equal(await page.locator('#code-input').inputValue(),'z');await assertReplacementSelection();
   await page.keyboard.press('Backspace');assert.equal(await page.locator('#code-input').inputValue(),'');assert.equal(await page.locator('#code-input').getAttribute('aria-invalid'),null);
   await page.keyboard.type('z');assert.equal(await page.locator('#code-input').inputValue(),'z');assert.equal((await progress()).logs.length,1);
@@ -70,8 +70,17 @@ try{
   await page.keyboard.type(first.code);await ready();assert.notEqual((await current()).id,first.id);
   assert.equal(await page.locator('#target').evaluate(node=>getComputedStyle(node).animationName),'question-arrive');
   assert.equal(await page.locator('#code-input').evaluate(node=>getComputedStyle(node).animationName),'none');
+  await page.locator('#code-input').evaluate(input=>{
+    window.mobileEditor=input;window.editorInterruptions=[];
+    input.addEventListener('blur',()=>window.editorInterruptions.push('blur'));
+    new MutationObserver(records=>window.editorInterruptions.push(...records.map(r=>r.attributeName)))
+      .observe(input,{attributes:true,attributeFilter:['readonly','disabled']});
+  });
   const afterCorrection=await progress();assert.deepEqual(afterCorrection.cards,blank.cards);assert.deepEqual(afterCorrection.logs,blank.logs);assert.deepEqual(afterCorrection.daily,blank.daily);assert.equal(afterCorrection.pendingCorrection,undefined);
   const second=await current();await type(second.code);await ready();const third=await current();await type(third.code);await ready();
+  assert.deepEqual(await page.locator('#code-input').evaluate(input=>[
+    input===window.mobileEditor,input===document.activeElement,...window.editorInterruptions
+  ]),[true,true]);
   await page.keyboard.press('Control+z');await count(2);assert.equal((await current()).id,third.id);assert.equal(await page.locator('#code-input').inputValue(),'');
   await page.keyboard.press('Control+z');await count(1);assert.equal((await current()).id,second.id);assert.deepEqual((await progress()).cards,afterCorrection.cards);assert.deepEqual((await progress()).daily,afterCorrection.daily);
   await page.keyboard.press('Control+z');await count(0);assert.equal((await current()).id,first.id);assert.equal((await progress()).cards.length,0);assert.equal((await progress()).daily[0].newCount,0);

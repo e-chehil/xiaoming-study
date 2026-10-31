@@ -1,4 +1,5 @@
 import {encodingSteps,encodingCandidates,displayLetter,displayCode,ROLE_NAMES} from './encoding.mjs';
+import {mnemonicFor, storyShape} from './mnemonics.mjs';
 const esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 export const sourceTextMarkup=value=>esc(value).replace(/「([^」]*)」/g,(_match,text)=>'「<span class="root-font" data-source-text>'+text+'</span>」');
 const initialLabel=root=>root?.mapping?.initial==='0'?'零声母':root?.mapping?.initial||'';
@@ -46,6 +47,52 @@ export function briefStepBasis(item,position,roots){
   return '「'+s.root+'」 · '+(s.role==='a'?'大码 '+letter:s.role==='b'?'首笔'+(r?.mapping?.stroke||'')+' → '+letter:r?.mapping?.smallSource==='stroke'?'无音，小码同补码 '+letter:'小码 '+initialLabel(r)+' → '+letter);
 }
 
+function marked(text, match) {
+  if (!match) return esc(text);
+  return text.split(match).map(esc).join(`<mark>${esc(match)}</mark>`);
+}
+
+export function verseMarkup(verse, match) {
+  return verse.match(/[^，。]+[，。]?/gu).map(clause =>
+    `<span class="verse-clause">${marked(clause, match)}</span>`).join('');
+}
+
+export function mnemonicMarkup(item, step, roots) {
+  const entry = mnemonicFor(step);
+  if (!entry) return '';
+  const {role, letter} = step;
+  const name = {a: '大码', s: '小码', b: '补码'}[role];
+  const heading = `<span class="mnemonic-key role-${role}">${name} <b>${displayLetter(letter, role)}</b></span>`;
+  if (role === 'a') {
+    const shape = storyShape(step.root);
+    const forms = entry.forms.map(([glyph, label]) =>
+      `<span><b class="root-font">${marked(glyph, step.root)}</b> ${esc(label)}</span>`).join('');
+    return `<article class="mnemonic" data-mnemonic-key="${letter}" data-role="a">
+      <h3>${heading}<span data-source-text>${esc(entry.scene)}<small>${esc(entry.cue)}</small></span></h3>
+      <p class="mnemonic-verse root-font" data-source-text>${verseMarkup(entry.verse, step.root)}</p>
+      <p class="mnemonic-story" data-source-text>${marked(entry.story, shape)}</p>
+      <p class="mnemonic-forms"><span>认形</span><span data-source-text>${forms}</span></p>
+      <p class="mnemonic-note" data-source-text>${esc(entry.note)}</p>
+    </article>`;
+  }
+
+  const mapping = item.type === 'root' ? item.mapping : roots?.get(step.root)?.mapping;
+  const byStroke = role === 'b' || mapping?.smallSource === 'stroke';
+  const initial = byStroke ? '' : item.type === 'initial' ? item.initial : mapping?.initial;
+  const index = initial ? entry.initials.indexOf(initial) : -1;
+  const motion = entry.stroke[0];
+  const image = entry.image.split(motion).map(esc).join(`<strong>${byStroke ? marked(motion, motion) : motion}</strong>`);
+  return `<article class="mnemonic" data-mnemonic-key="${letter}" data-role="${role}">
+    <h3>${heading}</h3>
+    <p class="mnemonic-verse root-font" data-source-text><span class="verse-clause">${image}，</span><span class="verse-clause">${marked(entry.rhyme, entry.rhyme[index])}。</span></p>
+    <dl class="mnemonic-maps">
+      <div><dt>声母</dt><dd><code data-source-text>${marked(entry.initials, initial)}</code></dd></div>
+      <div><dt>首笔</dt><dd>${esc(entry.stroke)}</dd></div>
+    </dl>
+    ${entry.note ? `<p class="mnemonic-note">${esc(entry.note)}</p>` : ''}
+  </article>`;
+}
+
 export function derivation(item,roots){
   const steps=encodingSteps(item),candidates=encodingCandidates(item);
   return {summary:ruleSummary(item),steps:steps.map((step,i)=>({...step,basis:stepBasis(item,i,roots)})),omitted:candidates.slice(steps.length)};
@@ -61,7 +108,7 @@ export function explanationMarkup(item,roots,{position=0}={}){
   }).join('')+'</div></div>').join('');
   return '<section class="derivation-panel" data-lesson-id="'+item.id+'" aria-label="取码过程"><p class="derivation-rule">'+esc(value.summary)+'</p>'+
     (groups?'<div class="derivation-groups" data-character-count="'+item.parts.length+'">'+groups+'</div>':'<div class="derivation-subject root-font" data-source-text>'+esc(item.text)+'</div>')+'<div class="derivation-result" style="--result-count:'+value.steps.length+'">'+value.steps.map((step,i)=>'<button class="derivation-step role-'+step.role+'" data-action="explain-step" data-step-index="'+i+'" data-root-key="'+(['key','commit'].includes(step.role)?'':step.charIndex+':'+step.rootIndex)+'" data-root-role="'+step.role+'" aria-pressed="'+(i===position)+'"><small>第'+(i+1)+'位</small><b>'+displayLetter(step.letter,step.role)+'</b><span class="derivation-role">'+esc(ROLE_NAMES[step.role])+'</span></button>').join('')+'</div>'+
-    '<p class="derivation-basis" data-step-basis aria-live="polite" aria-atomic="true">'+sourceTextMarkup(selected?.basis||'')+'</p>'+
+    '<p class="derivation-basis" data-step-basis aria-live="polite" aria-atomic="true">'+sourceTextMarkup(selected?.basis||'')+'</p><div data-step-mnemonic>'+mnemonicMarkup(item,selected,roots)+'</div>'+
     (value.omitted.length?'<p class="derivation-note">按规则先得到 '+esc(candidatesToText(encodingCandidates(item)))+'；词码最多五位，后 '+value.omitted.length+' 位不输入。</p>':'')+
     (value.steps.length>1?'<p class="derivation-note">选择码位，查看'+(fixed?'按键说明':'对应字根和取码依据')+'。</p>':'')+(splitNote(item)?'<p class="derivation-note">'+sourceTextMarkup(splitNote(item))+'</p>':'')+fullReference+'</section>';
 }

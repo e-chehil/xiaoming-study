@@ -1,5 +1,6 @@
 // Keep the persistent namespace stable for existing learning progress.
 import {encodingSteps} from './encoding.mjs';
+import {mnemonicFor, storyShape} from './mnemonics.mjs';
 
 const identity=item=>item.practiceAlias||item.id;
 export function exposesAnswer(target,shown){
@@ -10,6 +11,18 @@ export function exposesAnswer(target,shown){
   // Looking up a root used by this answer also supplies part of the answer.
   return shown.type==='root'&&encodingSteps(target).some(step=>['a','s','b'].includes(step.role)&&step.root===shown.text);
 }
+export function exposesMnemonic(target, clue) {
+  const entry = mnemonicFor(clue);
+  if (!target?.code || !entry) return false;
+  // These six rhymes explicitly teach both the initial group and the stroke.
+  if (clue.role !== 'a') return ['initial', 'stroke'].includes(target.type) && target.code === clue.letter;
+  return encodingSteps(target).some(step => {
+    if (step.role !== 'a' || step.letter !== clue.letter) return false;
+    if (entry.verse.includes(step.root)) return true;
+    return clue.full && (entry.story.includes(storyShape(step.root)) || entry.forms.some(([form]) => form === step.root));
+  });
+}
+
 export class AnswerExposure {
   constructor(storage){
     this.memory=new Set();

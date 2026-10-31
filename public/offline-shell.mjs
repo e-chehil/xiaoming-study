@@ -1,9 +1,9 @@
-export const SHELL_VERSION="3bf4a0bf99176beb1b5370a3e36122d4b056d2cca2c6a8386105c8bae32abdc2";
+export const SHELL_VERSION="37eae8248e426bf16c86a3026e589f81c2dd2f8b0eea3a2ffbb1d77bd71fc66d";
 export const SHELL_FILES=[
   {
     "path": "answer-exposure.mjs",
-    "bytes": 1408,
-    "sha256": "1bfb3781161a8b9bed2e1a430d56095915a392e97e71bacd19cf39dcc3c8bdd8"
+    "bytes": 2083,
+    "sha256": "5665998cf22e837d55c7bf6762a5a1d996fa671654774cd971a68c1963713bfa"
   },
   {
     "path": "boot.mjs",
@@ -62,8 +62,8 @@ export const SHELL_FILES=[
   },
   {
     "path": "focus.css",
-    "bytes": 41710,
-    "sha256": "932e379840801794178a012320469102dc0680b6ce1b72f2793ff40f39c3ae51"
+    "bytes": 44583,
+    "sha256": "04e1ed0d2c3992c1bc0ab3b92a72514e6710731006e21db2132c4487d4fd52a6"
   },
   {
     "path": "fonts/NotoSerifTC-compat.ttf",
@@ -83,7 +83,7 @@ export const SHELL_FILES=[
   {
     "path": "index.html",
     "bytes": 1495,
-    "sha256": "3ef88992014dd8d5081f03a44573b3ea0ec6568f429dc75e15b1611d72918bc4"
+    "sha256": "4f28302c106da9ecff752f0b4fa6f20a8f492056417f1e9a8d35ccfb71600a98"
   },
   {
     "path": "learning-schema.mjs",
@@ -94,6 +94,11 @@ export const SHELL_FILES=[
     "path": "lesson-data.mjs",
     "bytes": 5592,
     "sha256": "87823853d12e763aea7c9658fc6923787c9e4a62ef302f4070a8360447377113"
+  },
+  {
+    "path": "mnemonics.mjs",
+    "bytes": 8419,
+    "sha256": "21df574f1a2eff9a62897fd1a419d0c6e20121e76d66b9c4319fe69e1331040f"
   },
   {
     "path": "offline-client.mjs",
@@ -107,8 +112,8 @@ export const SHELL_FILES=[
   },
   {
     "path": "practice.mjs",
-    "bytes": 81725,
-    "sha256": "c2cd9a70f229adf7a10aa582e236a5dff5ebbe68815c17bb1020287b9e9518ea"
+    "bytes": 88531,
+    "sha256": "1cf10269e91f8335a6ed46d77acd848055337c7d16485cbf2bad52df02f9d88f"
   },
   {
     "path": "request.mjs",
@@ -137,8 +142,8 @@ export const SHELL_FILES=[
   },
   {
     "path": "teaching.mjs",
-    "bytes": 8735,
-    "sha256": "7cdfd64ed529d3671bb9fb750c58f045824d042a7b163017f6279cd665c3c898"
+    "bytes": 11350,
+    "sha256": "0c1e0a053faa418363b9bf50c2c0c886a601cd30c50b1659bc3874b9c790e783"
   },
   {
     "path": "theme-init.js",

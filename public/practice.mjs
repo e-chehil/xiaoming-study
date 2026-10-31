@@ -3,13 +3,14 @@ import {resourceStore} from './resource-store.mjs';
 import { cleanSettings, dayKey, pickContinuous, evaluateAttempt, emptyDaily, validateBackup, itemIndex,cardFor,createSelectionContext } from './engine.mjs';
 import { encodingSteps, fullEncodingSteps, displayLetter, displayCode, ROLE_NAMES } from './encoding.mjs';
 import { openDatabase, readProgress, saveReview, undoReview, clearCorrection, saveSettings, replaceProgress, ProgressConflictError } from './storage.mjs';
-import {AnswerExposure,exposesAnswer} from './answer-exposure.mjs';
+import {AnswerExposure,exposesAnswer,exposesMnemonic} from './answer-exposure.mjs';
 import { COURSES,selectedCourse,setLocale,localize,t,readingMarkup } from './courses.mjs';
 import { loadCedict,REFERENCE,markedPinyin } from './cedict.mjs';
 import { LESSON_TYPES } from './learning-schema.mjs';
 import { captureViewState,restoreViewState,trapDialogTab } from './view-state.mjs';
 import {hydrateCourse,allLessons,practicePool,TRACKS} from './lesson-data.mjs';
-import {ruleSummary,stepBasis,briefStepBasis,explanationMarkup,glyphMarkup,sourceTextMarkup} from './teaching.mjs';
+import {ruleSummary,stepBasis,briefStepBasis,explanationMarkup,glyphMarkup,sourceTextMarkup,mnemonicMarkup,verseMarkup} from './teaching.mjs';
+import {mnemonicFor} from './mnemonics.mjs';
 
 const app=document.querySelector('#app'),overlay=document.querySelector('#modal-root');
 const esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -43,10 +44,64 @@ function switchTrack(track){
   elapsedBeforePause=session?.elapsedBeforePause||0;lastCompletion=session?.lastCompletion||false;shownAt=0;route='practice';
   if(!current)setCurrent(next());render();
 }
+function practicePosition(item) {
+  if (current?.item.id !== item.id) return 0;
+  if (current.phase === 'correction') {
+    const submitted = current.submittedAnswer ?? current.input;
+    return Math.max(0, [...item.code].findIndex((letter, i) => submitted[i] !== letter));
+  }
+  return Math.min(current.input.length, item.code.length - 1);
+}
+
+function guidedMnemonicStep(selection) {
+  if (selection?.phase !== 'typing' || !(selection.firstExposure || selection.guided)) return;
+  if (['initial', 'stroke', 'root'].includes(selection.item.type)) {
+    return encodingSteps(selection.item)[selection.input.length];
+  }
+}
+
+function previewVerse(step) {
+  const verse = verseMarkup(mnemonicFor(step).verse);
+  return `<small class="role-${step.role}">${displayLetter(step.letter, step.role)}</small><span class="root-font" data-source-text>${verse}</span><span aria-hidden="true">›</span>`;
+}
+
+function studyCue(item, visible) {
+  const summary = `<span class="learning-cue">${sourceTextMarkup(learningCue(item, visible))}</span>`;
+  const step = visible && guidedMnemonicStep(current);
+  if (!step) return summary;
+  return `<button class="study-mnemonic" data-action="mnemonic" aria-haspopup="dialog" aria-keyshortcuts="/" title="展开口诀与联想（/）">${summary}<span class="sr-only">助记口诀</span><span class="study-mnemonic-line" data-mnemonic-preview>${previewVerse(step)}</span></button>`;
+}
+
+function openPracticeMnemonic() {
+  if (!current) return;
+  const {item, phase} = current;
+  if (!['typing', 'correction'].includes(phase)) return;
+  const position = practicePosition(item);
+  const step = encodingSteps(item)[position];
+  if (!mnemonicFor(step)) { notify('此位按简码或上屏规则输入，可按 ? 查看取码说明。'); return; }
+  publishExposure(item, step);
+  const original = phase === 'correction' && current.submittedAnswer?.[position];
+  const submitted = original ? `原输入 <code>${esc(displayLetter(original, step.role))}</code> · ` : '';
+  const character = item.type === 'word' ? `第 ${step.charIndex + 1} 字「${item.parts[step.charIndex].char}」的` : '';
+  const context = `第 ${position + 1} 位 · ${submitted}${sourceTextMarkup(character + briefStepBasis(item, position, rootFacts))}`;
+  dialog(phase === 'correction' ? '回顾口诀' : '助记口诀',
+    `<div class="mnemonic-reading"><p class="mnemonic-context">${context}</p>${mnemonicMarkup(item, step, rootFacts)}</div>`,
+    `<button class="solid-button" data-action="close-dialog">${phase === 'correction' ? '继续订正' : '继续练习'}</button>`, 'mnemonic-dialog');
+}
+
+function openKeyMnemonic(letter) {
+  const step = {role: 'a', letter};
+  const entry = mnemonicFor(step);
+  if (!entry) return;
+  publishExposure(null, step);
+  dialog('大码口诀', `<div class="mnemonic-reading">${mnemonicMarkup(null, step, rootFacts)}</div>`,
+    '<button class="solid-button" data-action="close-dialog">返回字根</button>', 'mnemonic-dialog');
+}
+
 function openDerivation(id=current?.item.id){
   const item=itemOf(id);if(!item?.code)return;
-  publishExposure(item);
-  const position=current?.item.id===item.id&&current.phase==='correction'?Math.max(0,[...item.code].findIndex((letter,i)=>(current.submittedAnswer??current.input)[i]!==letter)):0;
+  const position=practicePosition(item);
+  publishExposure(item,encodingSteps(item)[position]);
   dialog('取码说明',explanationMarkup(item,rootFacts,{position}),(['char','variant'].includes(item.type)&&dataset.glyphVariants?.[item.text]?'<button class="plain-button" data-action="glyph" data-id="'+id+'">字形对照</button>':'')+'<button class="solid-button" data-action="close-dialog">'+(route==='practice'?'继续练习':'关闭')+'</button>','teaching-dialog');
 }
 function openGlyph(id){
@@ -57,11 +112,16 @@ function openGlyph(id){
   dialog('字形与拆分对照',glyphMarkup(item,dataset),'<button class="solid-button" data-action="close-dialog">'+(route==='practice'?'继续练习':'关闭')+'</button>','teaching-dialog');
 }
 function highlightDerivation(button){
+  if(button.getAttribute('aria-pressed')==='true')return;
   const panel=button.closest('.derivation-panel'),item=itemOf(panel?.dataset.lessonId);if(!item)return;
   for(const node of panel.querySelectorAll('.derivation-step'))node.setAttribute('aria-pressed',String(node===button));
   for(const node of panel.querySelectorAll('.derivation-root'))node.dataset.active=String(node.dataset.rootKey===button.dataset.rootKey);
   for(const node of panel.querySelectorAll('[data-root-role]'))node.classList.toggle('active-code-role',node.dataset.rootRole===button.dataset.rootRole&&node.closest('[data-root-key]')?.dataset.rootKey===button.dataset.rootKey);
-  panel.querySelector('[data-step-basis]').innerHTML=sourceTextMarkup(stepBasis(item,Number(button.dataset.stepIndex),rootFacts));
+  const position=Number(button.dataset.stepIndex);
+  panel.querySelector('[data-step-basis]').innerHTML=sourceTextMarkup(stepBasis(item,position,rootFacts));
+  const step=encodingSteps(item)[position];
+  panel.querySelector('[data-step-mnemonic]').innerHTML=mnemonicMarkup(item,step,rootFacts);
+  publishExposure(null,step);
   localize(panel);
 }
 function commitSpace(){
@@ -75,7 +135,7 @@ function commitSpace(){
 function learningCue(item,visible){
   if(!visible)return '';
   if(current.phase==='correction'){
-    const i=Math.max(0,[...item.code].findIndex((letter,j)=>(current.submittedAnswer??current.input)[j]!==letter));
+    const i=practicePosition(item);
     return '第 '+(i+1)+' 位：'+briefStepBasis(item,i,rootFacts);
   }
   return ruleSummary(item);
@@ -90,8 +150,8 @@ let themeSave=null;
 const answerExposure=new AnswerExposure();
 const answerChannel=typeof BroadcastChannel==='function'?new BroadcastChannel('xiaoming-study-dev-v5-answers'):null;
 if(answerChannel)answerChannel.onmessage=event=>{
-  const {course,id}=event.data||{},data=courseDatasets.get(course);
-  if(data)expose(itemIndex(allLessons(data)).get(id),course);
+  const {course,id,mnemonic}=event.data||{},data=courseDatasets.get(course);
+  if(data)expose(id?itemIndex(allLessons(data)).get(id):null,course,mnemonic);
 };
 const exposureObserver=new IntersectionObserver(entries=>{
   for(const entry of entries)if(entry.isIntersecting&&entry.target.isConnected&&!entry.target.closest('[inert]'))publishExposure(itemOf(entry.target.dataset.answerId));
@@ -100,14 +160,15 @@ new MutationObserver(()=>{
   exposureObserver.disconnect();
   document.querySelectorAll('.course-table [data-answer-id],.root-grid [data-answer-id],.dialog [data-answer-id]').forEach(node=>exposureObserver.observe(node));
 }).observe(document.body,{childList:true,subtree:true});
-function publishExposure(shown){
-  if(!shown?.code)return;
-  expose(shown);answerChannel?.postMessage({course:courseId,id:shown.id});
+function publishExposure(shown,step,full=true){
+  const mnemonic=mnemonicFor(step)&&{role:step.role,letter:step.letter,full};
+  if(!shown?.code&&!mnemonic)return;
+  expose(shown,courseId,mnemonic);answerChannel?.postMessage({course:courseId,id:shown?.id,mnemonic});
 }
-function expose(shown,course=courseId){
+function expose(shown,course=courseId,mnemonic){
   const states=[course===courseId?{free,current,practiceReturn}:courseSessions.get(course),...[...trackSessions].filter(([key])=>key.startsWith(course+'|')).map(([,state])=>state)];
   for(const state of states){const attempt=state?.free?state.practiceReturn?.current:state?.current;
-    if(attempt?.phase==='typing'&&exposesAnswer(attempt.item,shown)){attempt.revealed=true;answerExposure.remember(course,attempt.item);}
+    if(attempt?.phase==='typing'&&(exposesAnswer(attempt.item,shown)||exposesMnemonic(attempt.item,mnemonic))){attempt.revealed=true;answerExposure.remember(course,attempt.item);}
   }
 }
 const today=()=>days[dayKey()]||emptyDaily();
@@ -132,7 +193,7 @@ function setCurrent(selection){
   clearTimeout(hintTimer);
   shownAt=0;elapsedBeforePause=0;
   current=selection?{...selection,track:practiceTrack,phase:'typing',firstExposure:free?!selection.selfTest:!cards[selection.item.id],input:'',mistakes:0,backspaces:0,hints:0,revealed:!free&&answerExposure.has(courseId,selection.item),pasted:false}:null;
-  if(free&&current?.firstExposure)publishExposure(current.item);
+  if(free&&current?.firstExposure)publishExposure(current.item,guidedMnemonicStep(current),false);
   if(route==='practice')clockResume();
 }
 function advance(){
@@ -202,6 +263,28 @@ async function toggleTheme(){
 function syncLocation(push=false){if(restoringLocation)return;const href=viewURL(location.href,{view:route,course:courseId,search,filter,stateFilter,page});if(href!==location.href)history[push?'pushState':'replaceState'](null,'',href);}
 let locationTurn=0;
 window.addEventListener('popstate',async()=>{const turn=++locationTurn,target=readLocation(location.href);restoringLocation=true;try{while(busy&&turn===locationTurn)await new Promise(resolve=>setTimeout(resolve,100));if(turn!==locationTurn)return;if(target.course&&target.course!==courseId)await switchCourse(target.course);if(turn!==locationTurn)return;({search,filter,stateFilter,page}=target);route=target.view;render();}finally{if(turn===locationTurn)restoringLocation=false;}});
+
+// Keep the native editing session attached while replacing the question around it.
+// Even detaching and immediately reinserting a focused input can dismiss a mobile IME.
+function updatePracticeAroundInput(input, nextInput){
+  if(input.value!==nextInput.value)input.value=nextInput.value;
+  let live=input, next=nextInput;
+  while(live!==app){
+    for(const name of live.getAttributeNames()){
+      if(!next.hasAttribute(name))live.removeAttribute(name);
+    }
+    for(const {name,value} of next.attributes){
+      if(live.getAttribute(name)!==value)live.setAttribute(name,value);
+    }
+    const parent=live.parentElement, nextParent=next.parentElement;
+    if(parent===app)break;
+    while(live.previousSibling)live.previousSibling.remove();
+    while(live.nextSibling)live.nextSibling.remove();
+    while(next.previousSibling)live.before(nextParent.firstChild);
+    while(next.nextSibling)live.after(nextParent.lastChild);
+    live=parent;next=nextParent;
+  }
+}
 function render({transition=false}={}){
   const oldInput=document.querySelector('#code-input');
   const selection=oldInput?{start:oldInput.selectionStart,end:oldInput.selectionEnd}:null;
@@ -209,13 +292,17 @@ function render({transition=false}={}){
   const viewState=!changedRoute&&route!=='practice'?captureViewState(app):null;
   applyTheme();
   const views={practice:practiceView,menu:menuView,library:libraryView,roots:rootsView,stats:statsView,settings:settingsView,help:helpView,dictionary:dictionaryView};
-  app.innerHTML=`<div class="workspace ${route==='practice'?'immersive':'utility'}">${header()}${storageError?`<div class="storage-error">${esc(storageError)}</div>`:''}${(views[route]||practiceView)()}</div>`;
+  const template=document.createElement('template');
+  template.innerHTML=`<div class="workspace ${route==='practice'?'immersive':'utility'}">${header()}${storageError?`<div class="storage-error">${esc(storageError)}</div>`:''}${(views[route]||practiceView)()}</div>`;
+  const nextInput=template.content.querySelector('#code-input');
+  if(!changedRoute&&oldInput&&nextInput)updatePracticeAroundInput(oldInput,nextInput);
+  else app.replaceChildren(template.content);
   localize(app);
   const main=app.querySelector('main');if(main){main.id='main-content';main.tabIndex=-1;}
   if(route==='practice'){
     if(transition)document.querySelector('.target-wrap')?.classList.add('question-arrive');
     const input=document.querySelector('#code-input');
-    input?.focus({preventScroll:true});
+    if(input&&document.activeElement!==input)input.focus({preventScroll:true});
     if(input&&['typing','correction'].includes(current.phase)){
       if(!selectRetainedInput(input))input.setSelectionRange(Math.min(selection?.start??current.input.length,current.input.length),Math.min(selection?.end??current.input.length,current.input.length));
     }
@@ -266,6 +353,7 @@ function practiceView(){
   if(!current)return freeSession?freeCompletionView():completionView();
   const item=current.item,result=current.phase==='result',correction=current.phase==='correction';
   const visible=current.firstExposure||current.guided||result||correction;
+  const reviewMnemonic=correction&&mnemonicFor(encodingSteps(item)[practicePosition(item)]);
   const state=result?'correct':correction?'correction':'typing';
   const status=correction?'订正':free?(current.selfTest?'无提示自测':freeSession?'自由练习':'单项练习'):current.firstExposure?'初识':current.guided?'熟悉':current.supplemental?'巩固':'复习';
   const length=[...item.text].length;
@@ -282,9 +370,9 @@ function practiceView(){
         <div class="entry-slots" aria-hidden="true">${[...item.code].map((letter,i)=>`<span class="${i<current.input.length?'filled':i===current.input.length?'active':''}${current.replaceOnType&&current.input[i]!==letter?' mismatch':''}"></span>`).join('')}</div>
         </div>
       </div>
-      <div class="attempt-status" id="attempt-status" role="status" aria-live="polite">${!result&&!correction?'<span class="learning-cue">'+sourceTextMarkup(learningCue(item,visible))+'</span>':''}${result?'<span class="status-mark">✓</span><span>正确</span>':correction?`<span>${current.replaceOnType?'输入有误 · 直接重新输入':current.outcome==='blank'?'已看答案 · 照着答案输入':'照着答案输入'}</span><span class="correction-cue">${sourceTextMarkup(learningCue(item,true))}</span>`:''}</div>
+      <div class="attempt-status" id="attempt-status" role="status" aria-live="polite">${!result&&!correction?studyCue(item,visible):''}${result?'<span class="status-mark">✓</span><span>正确</span>':correction?`<span>${current.replaceOnType?'输入有误 · 直接重新输入':current.outcome==='blank'?'已看答案 · 照着答案输入':'照着答案输入'}</span><span class="correction-cue">${sourceTextMarkup(learningCue(item,true))}</span>`:''}</div>
     </section>
-    <div class="practice-bottom"><span class="session-count">${lastCompletion?'<span class="success-mark" aria-label="上一题已完成">✓</span>':''}${freeSession?'已完成 '+num(freeSession.position)+' / '+num(freeSession.ids.length):'本轮 '+completed}</span><div class="practice-actions"><button class="quiet-button" data-action="derivation">取码说明</button>${item.type==='variant'?'<button class="quiet-button" data-action="glyph" data-id="'+item.id+'">字形对照</button>':''}<button class="quiet-button" data-action="skip" ${result||correction?'disabled':''} title="未输入编码时按空格查看答案">查看答案<kbd>空格</kbd></button></div></div>
+    <div class="practice-bottom"><span class="session-count">${lastCompletion?'<span class="success-mark" aria-label="上一题已完成">✓</span>':''}${freeSession?'已完成 '+num(freeSession.position)+' / '+num(freeSession.ids.length):'本轮 '+completed}</span><div class="practice-actions"><button class="quiet-button" data-action="derivation" aria-keyshortcuts="Shift+/" title="取码说明（?）">取码说明<kbd>?</kbd></button>${item.type==='variant'?'<button class="quiet-button" data-action="glyph" data-id="'+item.id+'">字形对照</button>':''}${reviewMnemonic?'<button class="quiet-button" data-action="mnemonic" aria-haspopup="dialog" aria-keyshortcuts="/" title="回顾首个错位的口诀（/）">回顾口诀<kbd>/</kbd></button>':`<button class="quiet-button" data-action="skip" ${result||correction?'disabled':''} title="未输入编码时按空格查看答案">查看答案<kbd>空格</kbd></button>`}</div></div>
   </main>`;
 }
 function practiceMeaning(item){
@@ -381,7 +469,7 @@ function showResult(selected,outcome,due){
   if(free&&outcome!=='correct')publishExposure(selected.item);
 }
 function lockInput(){
-  const input=document.querySelector('#code-input');if(input)input.readOnly=true;
+  // beforeinput and the busy/phase guards lock submissions without closing the keyboard.
   const practice=document.querySelector('.practice');if(practice){practice.dataset.phase='saving';practice.setAttribute('aria-busy','true');}
 }
 async function submit(skip=false){
@@ -494,6 +582,12 @@ function acceptInput(input){
   current.input=input.value.toLowerCase().replace(/[^a-z]/g,'').slice(0,current.item.code.length);
   input.value=displayCode(current.item,current.input);
   document.querySelectorAll('.entry-slots span').forEach((slot,i)=>{slot.classList.toggle('filled',i<current.input.length);slot.classList.toggle('active',i===current.input.length);});
+  const preview=document.querySelector('[data-mnemonic-preview]');
+  if(preview&&current.input.length<current.item.code.length){
+    const step=guidedMnemonicStep(current);
+    preview.innerHTML=previewVerse(step);
+    if(free)publishExposure(null,step,false);
+  }
   if(nativeSpace&&current.input.length===current.item.code.length-1){commitSpace();return;}
   if(current.input.length===current.item.code.length){
     if(current.phase==='typing')void submit();
@@ -574,7 +668,9 @@ function libraryView(){return `<main class="page library-page">${subHeading('课
 function rootKeys(){return ['all',...[...new Set(items.filter(item=>item.type==='root').map(item=>item.code[0]))].sort()];}
 function rootResults(){
   const q=rootSearch.trim().toLowerCase(),roots=items.filter(item=>item.type==='root'&&(rootKey==='all'||item.code[0]===rootKey)&&(!q||searchable(item).includes(q)));
-  return roots.length?`<div class="root-grid">${[...new Set(roots.map(item=>item.code[0]))].sort().map(key=>{const group=roots.filter(item=>item.code[0]===key);return `<section class="root-group"><h2>${key.toUpperCase()}<small>${group.length} 根</small></h2><div>${group.map(item=>`<button data-action="detail" data-id="${item.id}" data-answer-id="${item.id}" aria-label="${esc(item.text)}，${displayCode(item,item.fullCode,true)}" title="${esc(item.pinyin)}"><strong class="root-font">${esc(item.text)}</strong><small>${coloredCode(item.fullCode)}</small></button>`).join('')}</div></section>`;}).join('')}</div>`:'<p class="root-empty">没有匹配字根，可切换键位或调整搜索。</p>';
+  const scene=mnemonicFor({role:'a',letter:rootKey});
+  const lookup=scene?`<button class="quiet-button root-mnemonic-link" data-action="key-mnemonic" data-key="${rootKey}" aria-haspopup="dialog"><span class="role-a">${rootKey.toUpperCase()}</span> 键口诀 · <span data-source-text>${esc(scene.scene)}</span> <span aria-hidden="true">›</span></button>`:'';
+  return roots.length?`${lookup}<div class="root-grid">${[...new Set(roots.map(item=>item.code[0]))].sort().map(key=>{const group=roots.filter(item=>item.code[0]===key);return `<section class="root-group"><h2>${key.toUpperCase()}<small>${group.length} 根</small></h2><div>${group.map(item=>`<button data-action="detail" data-id="${item.id}" data-answer-id="${item.id}" aria-label="${esc(item.text)}，${displayCode(item,item.fullCode,true)}" title="${esc(item.pinyin)}"><strong class="root-font">${esc(item.text)}</strong><small>${coloredCode(item.fullCode)}</small></button>`).join('')}</div></section>`;}).join('')}</div>`:'<p class="root-empty">没有匹配字根，可切换键位或调整搜索。</p>';
 }
 function updateRoots(){document.querySelector('#root-results').innerHTML=rootResults();localize(document.querySelector('#root-results'));document.querySelectorAll('[data-action="root-key"]').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.key===rootKey)));}
 function rootsView(){return `<main class="page">${subHeading('字根')}<div class="toolbar"><label class="search-field" for="root-search">查找字根<input id="root-search" name="query" type="search" autocomplete="off" spellcheck="false" placeholder="字形、读音或完整编码…" value="${esc(rootSearch)}"></label></div><div class="root-key-index" role="group" aria-label="按大码筛选字根">${rootKeys().map(key=>`<button data-action="root-key" data-key="${key}" aria-pressed="${rootKey===key}" title="${key==='all'?'全部字根':key.toUpperCase()+' 键字根，可用方向键切换'}">${key==='all'?'全部':key.toUpperCase()}</button>`).join('')}</div><div id="root-results">${rootResults()}</div></main>`;}
@@ -599,12 +695,14 @@ function helpView(){
     <section class="help-section"><h2>怎么练</h2>
       <p>从声母、首笔和字根开始，逐步练习汉字与词语。初次显示编码，之后尝试独立输入；输完编码会自动判定。答错或看过答案后，照着订正再继续。</p>
       <p><span class="role-a">大码 A</span> 记字根键位，<span class="role-s">小码 S</span> 按声母取码，<span class="role-b">补码 B</span> 按首笔取码。字根不取读音时，S 与 B 相同。大码显示为大写，小码和补码显示为小写；输入时都可用小写。</p>
-      <p>“取码说明”可查看每一码的来由；台湾字形课还可打开“字形对照”。</p>
+      <p>初识声母、首笔或字根时，点口诀看联想。订正时按 <kbd>/</kbd> 回顾首个错位。打开“取码说明”可逐位对照口诀和取码依据。台湾字形课另有“字形对照”。</p>
     </section>
     <section class="help-section"><h2>常用按键</h2>
       <dl class="shortcut-list">
         <div><dt><kbd>空格</kbd></dt><dd>未输入编码时看答案；末位标有“空格”时，输入字母后按空格提交。</dd></div>
         <div><dt><kbd>Tab</kbd></dt><dd>编码隐藏时，短暂提示下一码。</dd></div>
+        <div><dt><kbd>/</kbd></dt><dd>回顾当前码位的口诀，订正时定位到首个错位。</dd></div>
+        <div><dt><kbd>?</kbd></dt><dd>查看取码说明，左右方向键切换码位，Esc 返回输入。</dd></div>
         <div><dt><kbd>;</kbd></dt><dd>查看当前字词的英文释义。</dd></div>
         <div><dt><kbd>Ctrl+Z</kbd></dt><dd>${undoHint}Mac 使用 ⌘Z。</dd></div>
         <div><dt><kbd>Esc</kbd></dt><dd>暂停或返回练习；有弹窗时先关闭弹窗。</dd></div>
@@ -718,6 +816,8 @@ document.addEventListener('click',event=>{
   else if(action==='detail')detail(Number(id));
   else if(action==='meaning')openMeaning();
   else if(action==='track')switchTrack(button.dataset.track);
+  else if(action==='mnemonic')openPracticeMnemonic();
+  else if(action==='key-mnemonic')openKeyMnemonic(button.dataset.key);
   else if(action==='derivation')openDerivation(id?Number(id):current?.item.id);
   else if(action==='glyph')openGlyph(Number(id));
   else if(action==='explain-step')highlightDerivation(button);
@@ -800,6 +900,15 @@ document.addEventListener('keydown',event=>{
   if(event.isComposing||event.keyCode===229)return;
   if(overlay.firstChild){
     if(event.key==='Escape'){event.preventDefault();closeDialog();}
+    if(!event.altKey&&!event.ctrlKey&&!event.metaKey&&!event.shiftKey&&['ArrowLeft','ArrowRight','Home','End'].includes(event.key)){
+      const steps=[...overlay.querySelectorAll('.derivation-step')];
+      if(steps.length){
+        event.preventDefault();
+        const i=steps.findIndex(step=>step.getAttribute('aria-pressed')==='true');
+        const next=event.key==='Home'?0:event.key==='End'?steps.length-1:(i+(event.key==='ArrowRight'?1:-1)+steps.length)%steps.length;
+        steps[next].focus();
+      }
+    }
     trapDialogTab(event,overlay.querySelector('.dialog'));
     return;
   }
@@ -825,6 +934,13 @@ document.addEventListener('keydown',event=>{
   }
   if(route!=='practice'||event.target.id!=='code-input')return;
   if(event.ctrlKey||event.metaKey||event.altKey)return;
+  if(event.key==='/'||event.key==='?'){
+    event.preventDefault();
+    if(!busy&&!event.repeat&&current&&['typing','correction'].includes(current.phase)){
+      if(event.key==='/')openPracticeMnemonic();else openDerivation();
+    }
+    return;
+  }
   if(event.key===';'&&!busy&&dictionary&&['char','word','short','variant'].includes(current?.item.type)){
     event.preventDefault();if(!event.repeat)openMeaning();return;
   }

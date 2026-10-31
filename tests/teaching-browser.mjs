@@ -31,14 +31,44 @@ async function geometry(){
 }
 try{
   await page.goto(process.env.TEST_URL||'http://127.0.0.1:47831/');await ready();
+  const preview = page.locator('[data-mnemonic-preview]');
+  assert.match(await preview.textContent(), /鸡尾一撇，赖皮抢肉屑/);
+  await page.locator('[data-action="mnemonic"]').click();
+  assert.equal(await page.locator('.mnemonic-maps code').textContent(), 'lpqrx');
+  assert.equal(await page.locator('.mnemonic-verse mark').textContent(), '撇');
+  await page.keyboard.press('Escape');
+
+  const white = sc.items.find(i => i.type === 'root' && i.text === '白');
+  await page.locator('header [data-view="library"]').click();
+  await page.locator('#type-filter').selectOption('root');
+  await page.locator('#search').fill('白');
+  await page.locator('tbody [data-id="' + white.id + '"]').click();
+  await page.locator('[data-action="free-one"]').click();
+  assert.match(await preview.textContent(), /夕上白月/);
+  await page.keyboard.type('o');
+  assert.match(await preview.textContent(), /逆向折回，不算晚/);
+  await page.keyboard.press('/');
+  assert.equal(await page.locator('.mnemonic-verse mark').textContent(), '不');
+  await page.keyboard.press('Escape');
+  assert.equal(await page.locator('#code-input').inputValue(), 'O');
+  await page.keyboard.type('e');
+  assert.match(await preview.textContent(), /鸡尾一撇/);
+  await page.keyboard.type('j');
+  await page.locator('#search').waitFor();
+  results.push('guided ASB changes verse by position without losing input or saving free practice');
+
   const good=sc.items.find(i=>i.type==='char'&&i.text==='好');
   await install(sc,'core',good);
+  assert.equal(await page.locator('[data-mnemonic-preview], [data-action="mnemonic"], .mnemonic-verse').count(), 0);
   await page.keyboard.type('c');await page.keyboard.press('Tab');
   assert.match(await page.locator('#attempt-status').textContent(),/n.*k/);
-  await page.locator('[data-action="derivation"]').click();
-  await page.locator('.derivation-step[data-step-index="1"]').focus();
+  await page.keyboard.press('Shift+Slash');
+  await page.locator('.derivation-panel').waitFor();
+  await page.keyboard.press('Home');
+  await page.keyboard.press('ArrowRight');
   assert.match(await page.locator('[data-step-basis]').textContent(),/n.*k/);
   assert.equal(await page.locator('.derivation-root[data-active="true"]>.root-font').textContent(),'女');
+  assert.equal(await page.locator('[data-step-mnemonic] .mnemonic-verse mark').textContent(), '难');
   await page.screenshot({path:output+'/derivation-good-desktop.png'});
   await page.keyboard.press('Escape');assert.equal(await page.locator('#code-input').inputValue(),'C');
   await page.keyboard.type('kgi');let p=await logged('simplified',1);assert.equal(p.logs[0].revealed,true);assert.equal(p.cards.find(i=>i.id===good.id).verified,false);
@@ -47,11 +77,43 @@ try{
   await install(sc,'core',good);await page.keyboard.type('cjgi');
   await page.locator('.practice[data-phase="correction"]').waitFor();
   assert.match(await page.locator('.correction-cue').textContent(),/第 2 位.*n.*k/);
+  await page.reload();
+  await page.locator('.practice[data-phase="correction"]').waitFor();
+  await page.locator('[data-action="mnemonic"]').click();
+  assert.match(await page.locator('.mnemonic-context').textContent(), /第 2 位.*女.*n.*k/);
+  assert.equal(await page.locator('.mnemonic').getAttribute('data-role'), 's');
+  assert.equal(await page.locator('.mnemonic-verse mark').textContent(), '难');
+  assert.equal(await page.locator('.mnemonic-maps code').textContent(), 'cjkn');
+  await page.keyboard.press('Escape');
+  assert.deepEqual(await page.locator('#code-input').evaluate(n => [n === document.activeElement, n.selectionStart, n.selectionEnd]), [true, 0, 4]);
+
   await page.locator('[data-action="derivation"]').click();
   assert.equal(await page.locator('.derivation-step[data-step-index="1"]').getAttribute('aria-pressed'),'true');
   await page.keyboard.press('Escape');await page.keyboard.type(good.code);await ready();
   p=await progress('simplified');assert.equal(p.logs.length,1);assert.equal(p.pendingCorrection,undefined);
   results.push('first wrong position explained; correction never adds a review');
+
+  const they = sc.items.find(i => i.type === 'word' && i.text === '他们');
+  await page.locator('header [data-view="library"]').click();
+  await page.locator('#type-filter').selectOption('word');
+  await page.locator('#search').fill('他们');
+  await page.locator('tbody [data-id="' + they.id + '"]').click();
+  await page.locator('[data-action="free-one"]').click();
+  await page.keyboard.type('z' + they.code.slice(1));
+  await page.locator('.practice[data-phase="correction"]').waitFor();
+  await page.keyboard.press('/');
+  assert.match(await page.locator('.mnemonic-context').textContent(), /第 1 位.*原输入 Z.*他.*大码 W/);
+  assert.equal(await page.locator('.mnemonic-story mark').textContent(), '亻');
+  await page.setViewportSize({width:320,height:568});
+  await geometry();
+  assert.ok((await page.locator('.dialog-actions button').boundingBox()).y < 568);
+  await page.keyboard.press('Escape');
+  await page.keyboard.type(they.code);
+  await page.locator('#search').waitFor();
+  await page.setViewportSize({width:1440,height:900});
+  assert.equal((await progress('simplified')).logs.length, 1);
+  results.push('a wrong word initial leads to its actual character, root and original full scene');
+
 
   await install(sc,'core',good);await page.keyboard.type('c');await page.keyboard.press('Escape');
   await page.locator('[data-action="track"][data-track="short"]').click();await ready();
@@ -65,6 +127,7 @@ try{
   await install(sc,'short',one);
   await page.locator('[data-action="derivation"]').click();await page.locator('.derivation-step').last().focus();
   assert.equal(await page.locator('.derivation-root[data-active="true"]').count(),0);
+  assert.equal(await page.locator('[data-step-mnemonic] .mnemonic').count(), 0);
   assert.match(await page.locator('[data-step-basis]').textContent(),/空格/);await page.keyboard.press('Escape');await page.keyboard.type('h');
   assert.equal((await progress('simplified')).logs.length,0);assert.equal(await page.locator('#code-input').inputValue(),'H');
   await page.keyboard.press('Space');p=await logged('simplified',1);
@@ -115,6 +178,16 @@ try{
   results.push('Taiwan font, official default/compatible comparison and independent variant progress');
 
   const originalRoot=tc.items.find(i=>i.type==='root'&&i.text==='门');await install(tc,'core',originalRoot);await page.locator('[data-action="derivation"]').click();await page.locator('.derivation-step[data-step-index="0"]').focus();assert.ok((await page.locator('[data-step-basis] [data-source-text]').allTextContents()).includes('门'));assert.ok(!(await page.locator('[data-step-basis] [data-source-text]').allTextContents()).includes('門'));await page.keyboard.press('Escape');results.push('traditional UI preserves exact original root glyphs inside explanations');
+
+  await page.locator('header [data-view="roots"]').click();
+  await page.locator('[data-action="root-key"][data-key="b"]').click();
+  await page.locator('[data-action="key-mnemonic"]').click();
+  assert.equal(await page.locator('.mnemonic-verse').textContent(), '且弋七爪鱼，石厂瓜皿冊。');
+  assert.match(await page.locator('.mnemonic-story').textContent(), /用网（罒）兜进方筐（匚）/);
+  assert.equal(await page.locator('.mnemonic-forms b').count(), 2);
+  await page.keyboard.press('Escape');
+  assert.equal(await page.locator('[data-action="key-mnemonic"]').evaluate(n => n === document.activeElement), true);
+  results.push('key index preserves original source forms and returns focus to its lookup');
 
   await install(sc,'short',one);
   for(const size of [{width:320,height:568},{width:375,height:740},{width:844,height:390}]){

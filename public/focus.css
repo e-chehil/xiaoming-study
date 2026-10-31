@@ -66,7 +66,7 @@ kbd{font:12px/1.4 var(--sans);border:1px solid var(--soft-line);padding:3px 6px;
 .practice-context .free-return{flex-shrink:0;font-size:12px;min-height:44px;padding:4px 8px;white-space:nowrap}
 .practice-context i{font-style:normal;color:var(--faint);padding:0 6px}
 .path-position{font-size:12px;color:var(--faint);white-space:nowrap;font-variant-numeric:tabular-nums}
-.focus-stage{--support-height:48px;--target-height:196px;--glyph-row:164px;--caption-row:32px;display:grid;grid-template-rows:minmax(var(--target-height),max-content) minmax(var(--support-height),max-content) 148px 44px;gap:8px;align-content:center;justify-items:center;padding:12px 0 20px;min-width:0}
+.focus-stage{--support-height:48px;--target-height:196px;--glyph-row:164px;--caption-row:32px;display:grid;grid-template-rows:minmax(var(--target-height),max-content) minmax(var(--support-height),max-content) 148px var(--feedback-row,44px);gap:8px;align-content:center;justify-items:center;padding:12px 0 20px;min-width:0}
 .practice[data-item-type='root'] .focus-stage{--support-height:0px}
 .practice:is([data-item-type='initial'],[data-item-type='stroke'],[data-item-type='rule']) .focus-stage{--support-height:0px}
 .target-wrap{width:100%;min-height:var(--target-height);display:grid;grid-template-rows:var(--glyph-row) minmax(var(--caption-row),auto);text-align:center;align-items:center}
@@ -319,7 +319,7 @@ tbody tr:focus-within{background:var(--surface)}
   :root{--header-height:64px;--cell:44px;--cell-gap:10px;--page-gutter:16px}
   .app-header{gap:8px}.brand{min-width:0}.brand strong{font-size:19px}.header-nav{display:none}.header-tools{margin-left:auto}
   .practice{width:calc(100% - 40px);padding:12px 0 max(12px,env(safe-area-inset-bottom));grid-template-rows:32px minmax(416px,1fr) 48px}
-  .focus-stage{--target-height:176px;--glyph-row:144px;grid-template-rows:minmax(var(--target-height),max-content) minmax(var(--support-height),max-content) 140px 44px;gap:8px;padding:12px 0}
+  .focus-stage{--target-height:176px;--glyph-row:144px;grid-template-rows:minmax(var(--target-height),max-content) minmax(var(--support-height),max-content) 140px var(--feedback-row,44px);gap:8px;padding:12px 0}
   .target{font-size:108px}.target[data-length='pair']{font-size:84px}.target[data-length='short']{font-size:66px}
   .target.long{font-size:clamp(22px,calc(360px / var(--target-length)),48px)}
   .mapping-target{font-size:80px}.target.mapping-target.long{font-size:64px}
@@ -354,13 +354,13 @@ tbody tr:focus-within{background:var(--surface)}
 @media(max-height:650px) and (min-width:621px){
   :root{--header-height:60px}
   .practice{padding-block:8px;grid-template-rows:28px minmax(360px,1fr) 44px}
-  .focus-stage{--support-height:40px;--target-height:140px;--glyph-row:112px;--caption-row:28px;grid-template-rows:minmax(var(--target-height),max-content) minmax(var(--support-height),max-content) 140px 44px;gap:4px;padding:4px 0}
+  .focus-stage{--support-height:40px;--target-height:140px;--glyph-row:112px;--caption-row:28px;grid-template-rows:minmax(var(--target-height),max-content) minmax(var(--support-height),max-content) 140px var(--feedback-row,44px);gap:4px;padding:4px 0}
   .target{font-size:96px}.mapping-target{font-size:76px}.stroke-glyph{font-size:92px}.target.stroke-target{gap:4px}
 }
 @media(max-height:520px){
   :root{--header-height:52px}
   .practice{padding-block:4px;grid-template-rows:24px minmax(254px,1fr) 44px}
-  .focus-stage{--support-height:32px;--target-height:88px;--glyph-row:66px;--caption-row:22px;grid-template-rows:minmax(var(--target-height),max-content) minmax(var(--support-height),max-content) 102px 40px;gap:4px;padding:0}
+  .focus-stage{--support-height:32px;--target-height:88px;--glyph-row:66px;--caption-row:22px;grid-template-rows:minmax(var(--target-height),max-content) minmax(var(--support-height),max-content) 102px var(--feedback-row,40px);gap:4px;padding:0}
   .target{font-size:54px}.target[data-length='pair']{font-size:48px}.target[data-length='short']{font-size:42px}
   .target.long{font-size:clamp(20px,calc(280px / var(--target-length)),36px)}
   .mapping-target{font-size:40px}.target.mapping-target.long{font-size:36px}
@@ -454,7 +454,7 @@ tbody tr:focus-within{background:var(--surface)}
 }
 @media(max-height:700px) and (min-height:521px) and (max-width:620px){
   .practice,.practice[data-self-test='true']{grid-template-rows:28px minmax(344px,1fr) auto}
-  .focus-stage{--target-height:132px;--glyph-row:100px;--support-height:40px;grid-template-rows:minmax(var(--target-height),max-content) minmax(var(--support-height),max-content) 120px 44px;gap:6px;padding:8px 0}
+  .focus-stage{--target-height:132px;--glyph-row:100px;--support-height:40px;grid-template-rows:minmax(var(--target-height),max-content) minmax(var(--support-height),max-content) 120px var(--feedback-row,44px);gap:6px;padding:8px 0}
   .target{font-size:80px}.target[data-length='pair']{font-size:68px}.target[data-length='short']{font-size:54px}.target.long{font-size:clamp(20px,calc((100vw - 80px) / var(--target-length)),40px)}
   .mapping-target{font-size:60px}.target.mapping-target.long{font-size:48px}.stroke-glyph{font-size:72px}.target.stroke-target{font:14px/1.5 var(--sans);gap:4px}
   .initial-unit{gap:4px}.initial-symbols{gap:8px}
@@ -477,3 +477,45 @@ tbody tr:focus-within{background:var(--surface)}
 .loading progress[hidden]{display:none}
 
 .header-nav a{display:inline-flex;align-items:center;justify-content:center;min-height:var(--control-height);border-radius:var(--control-radius);text-decoration:none}
+
+/* A single quiet line on the practice desk. Longer scenes use the reading dialog. */
+.study-mnemonic{display:grid;align-content:center;justify-items:center;gap:1px;max-width:100%;padding:0 4px}
+.study-mnemonic-line{display:flex;align-items:baseline;justify-content:center;gap:6px;color:var(--ink);font:14px/1.4 var(--glyph)}
+.study-mnemonic-line small{font:12px var(--mono)}
+.study-mnemonic-line [aria-hidden]{color:var(--muted)}
+.study-mnemonic:hover,.root-mnemonic-link:hover{background:var(--hover)}
+.root-mnemonic-link{margin:-8px 0 12px;padding-inline:8px}
+.root-mnemonic-link .role-a{font-family:var(--mono)}
+.mnemonic-dialog{display:flex;flex-direction:column;width:min(580px,100%);max-height:calc(100svh - 32px);overflow:hidden}
+.mnemonic-dialog>.dialog-header,.mnemonic-dialog>.dialog-actions{flex-shrink:0}
+.mnemonic-reading{min-height:0;overflow-y:auto;overscroll-behavior:contain}
+.mnemonic-context{font-size:14px;margin:0 0 14px}
+.derivation-panel .mnemonic{margin:16px 0;padding:16px 0 0;border-top:1px solid var(--soft-line)}
+.mnemonic{--mnemonic-ink:var(--role-a)}
+.mnemonic[data-role=s]{--mnemonic-ink:var(--role-s)}
+.mnemonic[data-role=b]{--mnemonic-ink:var(--role-b)}
+.mnemonic h3{display:flex;align-items:baseline;flex-wrap:wrap;gap:8px 14px;margin:0;font:500 15px/1.6 var(--sans)}
+.mnemonic h3 small{margin-inline-start:10px;color:var(--muted);font-size:13px;font-weight:400}
+.mnemonic-key{font-size:13px}
+.mnemonic-key b{font:600 17px/1 var(--mono)}
+.dialog .mnemonic-verse{margin:10px 0;color:var(--ink);font:400 clamp(18px,3.7vw,23px)/1.65 var(--glyph);overflow-wrap:anywhere}
+.mnemonic-verse strong{font-weight:600;color:var(--role-b)}
+.mnemonic mark{color:var(--mnemonic-ink);background:none;text-decoration:underline;text-underline-offset:.19em}
+.dialog .mnemonic-story{margin:8px 0 12px;color:var(--ink);font-size:15px;line-height:1.85}
+.mnemonic-forms,.mnemonic-maps,.mnemonic-forms>[data-source-text]{display:flex;align-items:baseline;flex-wrap:wrap;gap:4px 14px}
+.mnemonic-forms,.mnemonic-maps,.dialog .mnemonic-note{margin:8px 0 0;font-size:13px;color:var(--muted)}
+.mnemonic-forms b{font-size:16px;font-weight:400;color:var(--ink)}
+.mnemonic-maps>div{display:flex;gap:8px;align-items:baseline}
+.mnemonic-maps dd{margin:0;color:var(--ink)}
+.mnemonic-maps code{font:15px var(--mono);letter-spacing:.13em}
+@media(max-width:400px),(max-height:520px){
+  .study-mnemonic{min-height:40px}
+  .study-mnemonic-line{font-size:13px;gap:4px}
+}
+
+@media(max-width:360px){
+  .practice:is([data-item-type='root'],[data-item-type='initial'],[data-item-type='stroke']) .focus-stage{--feedback-row:60px}
+}
+.study-mnemonic-line .root-font{text-wrap:balance}
+.verse-clause{display:inline-block}
+.mnemonic-context code{font-family:var(--mono);color:var(--ink)}
