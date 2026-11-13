@@ -20,7 +20,13 @@ const fixture=(extra=[])=>({cards:[...baseCards(),...extra],logs:[],daily:[],set
 const ready=()=>page.locator('.practice[data-phase="typing"] #code-input:not([readonly])').waitFor();
 const progress=()=>page.evaluate(async()=>{const s=await import('/storage.mjs'),db=await s.openDatabase(),p=await s.readProgress(db);db.close();return p;});
 async function install(payload){await page.evaluate(async payload=>{const s=await import('/storage.mjs'),db=await s.openDatabase();await s.replaceProgress(db,payload);db.close();},payload);await page.evaluate(()=>history.replaceState(null,'',location.pathname+'?course=simplified'));await page.reload();await ready();}
-async function theme(value){if(await page.locator('html').getAttribute('data-theme')!==value)await page.locator('[data-action="theme"]').click();}
+async function theme(value){
+  if(await page.locator('html').getAttribute('data-theme')===value)return;
+  const button=page.locator('[data-action="theme"]'),paused=!(await button.isVisible());
+  if(paused)await page.locator('.pause-button').click();
+  await button.click();
+  if(paused)await page.locator('.resume-button').click();
+}
 async function geometry(){return page.evaluate(()=>{
   const bounds=selector=>{const r=document.querySelector(selector).getBoundingClientRect();return {x:r.x,y:r.y,width:r.width,height:r.height};};
   const columns=[...document.querySelectorAll('#prompt-code>[data-code-position]')].map(n=>{const r=n.getBoundingClientRect();return r.x+r.width/2;});
@@ -124,7 +130,7 @@ try{
     await page.setViewportSize({width,height});
     for(const value of ['dark','light']){
       await install(fixture([due]));await theme(value);const before=await geometry();assertColumns(before);assert.ok(before.input.y+before.input.height<=height,`Input below viewport: ${width}×${height}`);
-      const targets=await page.locator('.header-tools button').evaluateAll(nodes=>nodes.map(node=>{const r=node.getBoundingClientRect();return [r.width,r.height];}));assert.ok(targets.every(([w,h])=>w>=44&&h>=44));
+      const targets=await page.locator('.header-tools button:visible').evaluateAll(nodes=>nodes.map(node=>{const r=node.getBoundingClientRect();return [r.width,r.height];}));assert.ok(targets.every(([w,h])=>w>=44&&h>=44));
       await page.keyboard.press('Space');await page.locator('[data-phase="correction"]').waitFor();assert.deepEqual(await geometry(),before);
       report.layout.push({width,height,theme:value,targetY:before.target.y,inputY:before.input.y});
       await page.screenshot({path:`${dir}/practice-${width}-${value}.png`});

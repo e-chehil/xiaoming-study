@@ -1,4 +1,4 @@
-export const SHELL_VERSION="3c819359215474a473eec80d11f24419f88e649b72d0151fad05e1f9b1158dce";
+export const SHELL_VERSION="7204f4ca84c40b7234ff47b470ac6bed7923bdc9ebe603f5a6b16e16e3551abc";
 export const SHELL_FILES=[
   {
     "path": "answer-exposure.mjs",
@@ -62,8 +62,8 @@ export const SHELL_FILES=[
   },
   {
     "path": "focus.css",
-    "bytes": 50143,
-    "sha256": "c5fa589bece0360045bd0c460c7bf720699e027cd70c4bb16bb74d1ee69050e6"
+    "bytes": 50704,
+    "sha256": "93588c09d4f5116447515f52b1eaf2cc8981c1b384fc062b810589b3561ed1d9"
   },
   {
     "path": "fonts/NotoSerifTC-compat.ttf",

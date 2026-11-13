@@ -143,8 +143,8 @@
     },
     {
       "path": "public/focus.css",
-      "bytes": 50143,
-      "sha256": "c5fa589bece0360045bd0c460c7bf720699e027cd70c4bb16bb74d1ee69050e6"
+      "bytes": 50704,
+      "sha256": "93588c09d4f5116447515f52b1eaf2cc8981c1b384fc062b810589b3561ed1d9"
     },
     {
       "path": "public/fonts/NotoSerifTC-compat.ttf",
@@ -194,7 +194,7 @@
     {
       "path": "public/offline-shell.mjs",
       "bytes": 6126,
-      "sha256": "db7868b1871dd8e04d9b7bd0ffd8d9b5ac289ac54f704f0565802a84de0d728a"
+      "sha256": "34382d0dda285c6c1e7083736b322ea684b04b720d36ec9d5c95e3835b6f627d"
     },
     {
       "path": "public/practice.mjs",
@@ -388,8 +388,8 @@
     },
     {
       "path": "tests/design-local.mjs",
-      "bytes": 17322,
-      "sha256": "73d27144ef2eab003ba57fabf726bd01a13c4263ce8a54b03a51931c4bf6e8e8"
+      "bytes": 17517,
+      "sha256": "7d4e150f8a2c87d446e89311b592449005279f54f89aec319a649a26ee888485"
     },
     {
       "path": "tests/filtered-practice-browser.mjs",
