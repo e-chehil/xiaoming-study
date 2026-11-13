@@ -143,8 +143,8 @@
     },
     {
       "path": "public/focus.css",
-      "bytes": 50704,
-      "sha256": "93588c09d4f5116447515f52b1eaf2cc8981c1b384fc062b810589b3561ed1d9"
+      "bytes": 50869,
+      "sha256": "d289457f9de1e6da63deca21965323f121d3f8d4f85669e449a821b8f348b24c"
     },
     {
       "path": "public/fonts/NotoSerifTC-compat.ttf",
@@ -194,7 +194,7 @@
     {
       "path": "public/offline-shell.mjs",
       "bytes": 6126,
-      "sha256": "34382d0dda285c6c1e7083736b322ea684b04b720d36ec9d5c95e3835b6f627d"
+      "sha256": "4dd1855516f75ec1a4c9b71169134bbd1a113060dd3666ac2be3ebf576f7d64f"
     },
     {
       "path": "public/practice.mjs",
@@ -373,8 +373,8 @@
     },
     {
       "path": "tests/courses-browser.mjs",
-      "bytes": 10706,
-      "sha256": "7d2117c0792c9bb790f5ebcb82a102088b3d624c7e1c03c28488e81fb3822713"
+      "bytes": 10877,
+      "sha256": "e10417417ff7e7232bc1dc74d31e83f52dc6a2d3d19db34a372f4db5798fad35"
     },
     {
       "path": "tests/curriculum.test.mjs",

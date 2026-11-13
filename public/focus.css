@@ -530,7 +530,7 @@ html.compact-practice{overflow:hidden;scrollbar-gutter:auto}
 .compact-practice .brand strong{font-size:17px}
 .compact-practice .header-nav{display:none}
 .compact-practice .header-tools{margin-left:auto}
-.compact-practice .practice,.compact-practice .practice[data-self-test]{width:calc(100% - 32px);flex:1;margin:0 auto;min-height:calc(var(--visible-height) - 44px);padding:0 0 4px;grid-template-rows:28px 1fr auto;gap:2px}
+.compact-practice .practice,.compact-practice .practice[data-self-test]{width:calc(100% - 32px);flex:1;margin:0 auto;min-height:calc(var(--visible-height) - 44px);padding:0 0 4px;grid-template-rows:44px 1fr auto;gap:2px}
 .compact-practice .practice .focus-stage{--glyph-row:clamp(44px,calc(var(--visible-height) - 360px),88px);--target-height:0px;--caption-row:22px;--support-height:30px;--feedback-row:auto;grid-template-rows:auto minmax(var(--support-height),max-content) 84px auto;align-content:center;gap:4px;padding:0}
 .compact-practice .practice .target-wrap{--glyph-row:inherit;min-height:0;grid-template-rows:var(--glyph-row) minmax(22px,auto) 24px}
 .compact-practice .practice:is([data-item-type='initial'],[data-item-type='stroke']) .target-wrap{grid-template-rows:calc(var(--glyph-row) + 22px) 24px;row-gap:4px}
@@ -563,10 +563,10 @@ html.compact-practice{overflow:hidden;scrollbar-gutter:auto}
 .compact-practice .attempt-status{min-height:40px;font-size:12px}
 .compact-practice .study-mnemonic{min-height:40px}
 .compact-practice .study-mnemonic-line{font-size:13px}
-.compact-practice .practice-bottom,.compact-practice .practice[data-self-test] .practice-bottom{min-height:40px;gap:0 8px;padding:0}
-.compact-practice .practice-context .free-return{min-height:28px;padding-block:0}
+.compact-practice .practice-bottom,.compact-practice .practice[data-self-test] .practice-bottom{min-height:44px;gap:0 8px;padding:0}
+.compact-practice .practice-context .free-return{min-height:44px;padding-block:0}
 .compact-practice .practice-actions{gap:0}
-.compact-practice .practice-actions .quiet-button{padding:6px;min-height:40px;font-size:12px}
+.compact-practice .practice-actions .quiet-button{padding:6px;min-height:44px;font-size:12px}
 .compact-practice .practice-actions kbd{padding-left:4px}
 .compact-practice .dialog-backdrop{top:var(--visible-top);bottom:auto;height:var(--visible-height);padding:8px}
 .compact-practice .dialog{max-height:calc(var(--visible-height) - 16px);padding:16px}
@@ -574,9 +574,9 @@ html.compact-practice{overflow:hidden;scrollbar-gutter:auto}
 @media(max-width:360px){.compact-practice .practice{width:calc(100% - 24px)}}
 
 /* On the shortest screens, keep Pause beside the lesson context instead of a full header. */
-.short-practice .app-header{position:absolute;right:8px;top:0;width:44px;height:40px;margin:0;z-index:1}
+.short-practice .app-header{position:absolute;right:8px;top:0;width:44px;height:44px;margin:0;z-index:1}
 .short-practice .app-header .brand,.short-practice .header-tools> :not(.pause-button){display:none}
-.short-practice .practice,.short-practice .practice[data-self-test]{min-height:var(--visible-height);grid-template-rows:40px 1fr auto;gap:0}
+.short-practice .practice,.short-practice .practice[data-self-test]{min-height:var(--visible-height);grid-template-rows:44px 1fr auto;gap:0}
 .short-practice .practice-context{padding-right:40px}
 
 .short-practice .practice .focus-stage{grid-template-rows:auto minmax(var(--support-height),max-content) 76px auto;gap:2px}
@@ -593,3 +593,6 @@ html.compact-practice{overflow:hidden;scrollbar-gutter:auto}
 
 .compact-practice .practice[data-item-type='word'] .target-wrap{--glyph-row:44px}
 .compact-practice .practice[data-item-type='word'] .target:not(.long){font-size:38px}
+
+.short-practice .practice[data-item-type='word'] .target-wrap{--glyph-row:36px}
+.short-practice .practice[data-item-type='word'] .target:not(.long){font-size:32px}

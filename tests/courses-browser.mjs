@@ -67,11 +67,12 @@ try{
   await page.waitForTimeout(160);await page.screenshot({path:'artifacts/v14-traditional-study-desktop.png'});
   for(const [width,height]of [[375,812],[320,640],[844,390]]){
     await page.setViewportSize({width,height});
+    await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
     const fit=await page.evaluate(()=>{const input=document.querySelector('.entry-wrap').getBoundingClientRect(),caption=document.querySelector('.pinyin').getBoundingClientRect(),answer=document.querySelector('#prompt-code').getBoundingClientRect();return {scroll:document.documentElement.scrollWidth,width:innerWidth,inputBottom:input.bottom,height:innerHeight,captionBottom:caption.bottom,answerTop:answer.top};});
     assert.ok(fit.scroll<=fit.width,JSON.stringify(fit));assert.ok(fit.inputBottom<=fit.height,JSON.stringify(fit));assert.ok(fit.captionBottom<=fit.answerTop,JSON.stringify(fit));
-    const tools=await page.locator('.header-tools button').evaluateAll(nodes=>nodes.map(node=>{const r=node.getBoundingClientRect(),s=getComputedStyle(node);return {width:r.width,height:r.height,right:r.right,top:r.top,color:s.color,radius:s.borderRadius,background:s.backgroundColor};}));
-    assert.ok(tools.every(tool=>tool.width===44&&tool.height===44&&tool.right<=width&&tool.top===tools[0].top),JSON.stringify(tools));
-    assert.equal(tools[0].color,tools[1].color);assert.equal(tools[0].radius,tools[1].radius);assert.equal(tools[0].background,tools[1].background);
+    const tools=await page.locator('.header-tools button:visible').evaluateAll(nodes=>nodes.map(node=>{const r=node.getBoundingClientRect(),s=getComputedStyle(node);return {width:r.width,height:r.height,right:r.right,top:r.top,color:s.color,radius:s.borderRadius,background:s.backgroundColor};}));
+    assert.ok(tools.every(tool=>tool.width===44&&tool.height===44&&tool.right<=width&&tool.top>=0&&tool.top===tools[0].top),JSON.stringify(tools));
+    assert.ok(tools.length>0);for(const tool of tools){assert.equal(tool.color,tools[0].color);assert.equal(tool.radius,tools[0].radius);assert.equal(tool.background,tools[0].background);}
     await page.screenshot({path:`artifacts/v14-traditional-study-${width}.png`});
   }
   await page.keyboard.type(study.code);await page.locator('#search').waitFor();assert.equal((await progress('traditional')).logs.length,1);
