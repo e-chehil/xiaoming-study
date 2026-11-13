@@ -2,7 +2,7 @@
 
 ## 当前实现
 
-应用版本 1.1.2。完整简中、繁中与 CC-CEDICT 三个 JSON 不拆分。public/resource-catalog.mjs 固化每个文件的字节数、SHA-256 与数据提交 52fdfea8754904c0054e417472cf34ba70cc7a76。课程、词典与学习算法均未改动。
+应用版本 1.1.3。完整简中、繁中与 CC-CEDICT 三个 JSON 不拆分。public/resource-catalog.mjs 固化每个文件的字节数、SHA-256 与数据提交 52fdfea8754904c0054e417472cf34ba70cc7a76。课程、词典与学习算法均未改动。
 
 读取顺序为：当前版本的有效本地缓存；缺少时顺序尝试 JSDMirror .com、本站、jsDelivr 官方、GitHub Pages、Netlify，去除重复地址。不会同时竞争下载完整文件；同一资源的并发请求合并，浏览器支持 Web Locks 时跨标签页合并。开发用 localhost 不向外部 CDN 发请求。
 

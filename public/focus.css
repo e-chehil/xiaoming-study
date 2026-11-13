@@ -519,3 +519,71 @@ tbody tr:focus-within{background:var(--surface)}
 .study-mnemonic-line .root-font{text-wrap:balance}
 .verse-clause{display:inline-block}
 .mnemonic-context code{font-family:var(--mono);color:var(--ink)}
+
+
+/* Follow the visible viewport when a phone keyboard leaves a short practice desk. */
+html.compact-practice{overflow:hidden;scrollbar-gutter:auto}
+.compact-practice body{overflow:hidden}
+.compact-practice #app{position:fixed;inset:var(--visible-top) 0 auto;height:var(--visible-height);overflow:auto;overscroll-behavior:contain}
+.compact-practice .workspace{min-height:100%;display:flex;flex-direction:column;--header-height:44px}
+.compact-practice .app-header{height:44px;flex-shrink:0}
+.compact-practice .brand strong{font-size:17px}
+.compact-practice .header-nav{display:none}
+.compact-practice .header-tools{margin-left:auto}
+.compact-practice .practice,.compact-practice .practice[data-self-test]{width:calc(100% - 32px);flex:1;margin:0 auto;min-height:calc(var(--visible-height) - 44px);padding:0 0 4px;grid-template-rows:28px 1fr auto;gap:2px}
+.compact-practice .practice .focus-stage{--glyph-row:clamp(44px,calc(var(--visible-height) - 360px),88px);--target-height:0px;--caption-row:22px;--support-height:0px;--feedback-row:auto;grid-template-rows:auto auto 84px auto;align-content:center;gap:4px;padding:0}
+.compact-practice .practice .target-wrap{--glyph-row:inherit;min-height:0;grid-template-rows:var(--glyph-row) minmax(22px,auto) 24px}
+.compact-practice .practice:is([data-item-type='initial'],[data-item-type='stroke']) .target-wrap{grid-template-rows:calc(var(--glyph-row) + 22px) 24px;row-gap:4px}
+.compact-practice .practice .target{font-size:clamp(38px,calc(var(--visible-height) - 370px),64px);line-height:1.1}
+.compact-practice .practice .target.long{font-size:clamp(20px,calc((100vw - 64px) / var(--target-length)),30px)}
+.compact-practice .practice .mapping-target{font-size:36px}
+.compact-practice .practice .target.stroke-target{font:12px/1.3 var(--sans);gap:0}
+.compact-practice .stroke-glyph{font-size:40px}
+.compact-practice .initial-symbols{gap:10px}.compact-practice .initial-unit{gap:2px}
+.compact-practice .initial-alias{font-size:12px}.compact-practice .initial-separator{font-size:18px;margin-top:16px}
+.compact-practice .lesson-examples{font-size:20px;line-height:1.2;grid-template-columns:repeat(var(--example-count),40px);gap:12px}
+.compact-practice .pinyin{min-height:22px;font-size:12px;line-height:1.4}
+.compact-practice .pinyin .root-font,.compact-practice .reading-zhuyin{font-size:16px}
+.compact-practice .reading-pinyin,.compact-practice .stroke-reference,.compact-practice .silent-root-note{font-size:12px}
+.compact-practice .gloss-wrap{height:24px;padding:0}
+.compact-practice .practice-gloss{min-height:24px;max-height:24px;padding-block:0}
+.compact-practice .gloss-copy{flex-direction:row;gap:8px;max-height:24px}
+.compact-practice .gloss-text{-webkit-line-clamp:1;font-size:12px;text-wrap:nowrap}
+.compact-practice .gloss-reading{max-width:42%;flex-shrink:0;font-size:11px}
+.compact-practice .answer-support{height:auto}
+.compact-practice .decomposition{gap:2px 12px}.compact-practice .part{gap:4px}
+.compact-practice .root-unit{font-size:20px}.compact-practice .part-character{font-size:14px}
+.compact-practice .typing-block{height:84px;gap:2px}
+.compact-practice .prompt-code{height:40px;min-height:40px}
+.compact-practice .prompt-code b{font-size:22px;line-height:1.1}
+.compact-practice .prompt-code small{font-size:11px;line-height:1.2}
+.compact-practice .entry-wrap{height:42px}
+.compact-practice .code-input{height:38px;font-size:26px;line-height:1.2;padding-block:0 2px}
+.compact-practice .entry-wrap[data-retained-error='true']:focus-within{background-position:center top;background-size:100% 34px}
+.compact-practice .attempt-status{min-height:24px;font-size:12px}
+.compact-practice .study-mnemonic{min-height:40px}
+.compact-practice .study-mnemonic-line{font-size:13px}
+.compact-practice .practice-bottom,.compact-practice .practice[data-self-test] .practice-bottom{min-height:40px;gap:0 8px;padding:0}
+.compact-practice .practice-context .free-return{min-height:28px;padding-block:0}
+.compact-practice .practice-actions{gap:0}
+.compact-practice .practice-actions .quiet-button{padding:6px;min-height:40px;font-size:12px}
+.compact-practice .practice-actions kbd{padding-left:4px}
+.compact-practice .dialog-backdrop{top:var(--visible-top);bottom:auto;height:var(--visible-height);padding:8px}
+.compact-practice .dialog{max-height:calc(var(--visible-height) - 16px);padding:16px}
+.compact-practice .dialog-header{margin-bottom:8px}.compact-practice .dialog-actions{margin-top:8px}
+@media(max-width:360px){.compact-practice .practice{width:calc(100% - 24px)}}
+
+/* On the shortest screens, keep Pause beside the lesson context instead of a full header. */
+.short-practice .app-header{position:absolute;right:8px;top:0;width:44px;height:40px;margin:0;z-index:1}
+.short-practice .app-header .brand,.short-practice .header-tools> :not(.pause-button){display:none}
+.short-practice .practice,.short-practice .practice[data-self-test]{min-height:var(--visible-height);grid-template-rows:40px 1fr auto}
+.short-practice .practice-context{padding-right:40px}
+
+.short-practice .practice .focus-stage{grid-template-rows:auto auto 76px auto;gap:2px}
+.short-practice .typing-block{height:76px}
+.short-practice .prompt-code{height:34px;min-height:34px}
+.short-practice .prompt-code>span{gap:1px}
+.short-practice .entry-wrap{height:40px}.short-practice .code-input{height:36px}
+.compact-practice .pinyin,.compact-practice .pronunciation{gap:0 6px}
+.compact-practice .reading-pinyin,.compact-practice .reading-zhuyin{line-height:1.3}
+.short-practice .practice,.short-practice .practice[data-self-test]{padding-bottom:0}

@@ -1,4 +1,4 @@
-export const SHELL_VERSION="37eae8248e426bf16c86a3026e589f81c2dd2f8b0eea3a2ffbb1d77bd71fc66d";
+export const SHELL_VERSION="3c819359215474a473eec80d11f24419f88e649b72d0151fad05e1f9b1158dce";
 export const SHELL_FILES=[
   {
     "path": "answer-exposure.mjs",
@@ -62,8 +62,8 @@ export const SHELL_FILES=[
   },
   {
     "path": "focus.css",
-    "bytes": 44583,
-    "sha256": "04e1ed0d2c3992c1bc0ab3b92a72514e6710731006e21db2132c4487d4fd52a6"
+    "bytes": 50143,
+    "sha256": "c5fa589bece0360045bd0c460c7bf720699e027cd70c4bb16bb74d1ee69050e6"
   },
   {
     "path": "fonts/NotoSerifTC-compat.ttf",
@@ -83,7 +83,7 @@ export const SHELL_FILES=[
   {
     "path": "index.html",
     "bytes": 1495,
-    "sha256": "4f28302c106da9ecff752f0b4fa6f20a8f492056417f1e9a8d35ccfb71600a98"
+    "sha256": "171a1bf71a80295d030259028ea2e51b59dc600d0bb42687e62c7733e8f66ff1"
   },
   {
     "path": "learning-schema.mjs",
@@ -112,8 +112,8 @@ export const SHELL_FILES=[
   },
   {
     "path": "practice.mjs",
-    "bytes": 88531,
-    "sha256": "1cf10269e91f8335a6ed46d77acd848055337c7d16485cbf2bad52df02f9d88f"
+    "bytes": 90162,
+    "sha256": "4def26da2ba170d80cf437e205a29754ddbd58b95cde74c931e23fbf5d322345"
   },
   {
     "path": "request.mjs",

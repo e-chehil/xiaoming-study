@@ -285,6 +285,27 @@ function updatePracticeAroundInput(input, nextInput){
     live=parent;next=nextParent;
   }
 }
+// The keyboard can shrink only the visual viewport, leaving CSS vh and media queries unchanged.
+// Pin the practice desk to that visible area without moving or blurring the live input.
+let viewportFrame=0;
+function updatePracticeViewport(){
+  viewportFrame=0;
+  const viewport=window.visualViewport,root=document.documentElement;
+  const height=viewport?.height??innerHeight;
+  const unzoomed=!viewport||Math.abs(viewport.scale-1)<.05;
+  const compact=route==='practice'&&!!current&&innerWidth<=900&&height<=600&&unzoomed;
+  root.classList.toggle('compact-practice',compact);
+  root.classList.toggle('short-practice',compact&&height<420);
+  root.style.setProperty('--visible-height',`${height}px`);
+  root.style.setProperty('--visible-top',`${viewport?.offsetTop??0}px`);
+}
+function schedulePracticeViewport(){
+  if(!viewportFrame)viewportFrame=requestAnimationFrame(updatePracticeViewport);
+}
+window.visualViewport?.addEventListener('resize',updatePracticeViewport);
+window.visualViewport?.addEventListener('scroll',schedulePracticeViewport);
+window.addEventListener('resize',updatePracticeViewport);
+
 function render({transition=false}={}){
   const oldInput=document.querySelector('#code-input');
   const selection=oldInput?{start:oldInput.selectionStart,end:oldInput.selectionEnd}:null;
@@ -298,6 +319,7 @@ function render({transition=false}={}){
   if(!changedRoute&&oldInput&&nextInput)updatePracticeAroundInput(oldInput,nextInput);
   else app.replaceChildren(template.content);
   localize(app);
+  updatePracticeViewport();
   const main=app.querySelector('main');if(main){main.id='main-content';main.tabIndex=-1;}
   if(route==='practice'){
     if(transition)document.querySelector('.target-wrap')?.classList.add('question-arrive');
@@ -701,9 +723,9 @@ function helpView(){
       <dl class="shortcut-list">
         <div><dt><kbd>空格</kbd></dt><dd>未输入编码时看答案；末位标有“空格”时，输入字母后按空格提交。</dd></div>
         <div><dt><kbd>Tab</kbd></dt><dd>编码隐藏时，短暂提示下一码。</dd></div>
-        <div><dt><kbd>/</kbd></dt><dd>回顾当前码位的口诀，订正时定位到首个错位。</dd></div>
-        <div><dt><kbd>?</kbd></dt><dd>查看取码说明，左右方向键切换码位，Esc 返回输入。</dd></div>
-        <div><dt><kbd>;</kbd></dt><dd>查看当前字词的英文释义。</dd></div>
+        <div><dt><kbd>/</kbd></dt><dd>回顾当前码位的口诀，订正时定位到首个错位；再按 / 返回输入。</dd></div>
+        <div><dt><kbd>?</kbd></dt><dd>查看取码说明，左右方向键切换码位；按 / 或 ? 返回输入。</dd></div>
+        <div><dt><kbd>;</kbd></dt><dd>查看当前字词的英文释义；再按 ; 返回输入。</dd></div>
         <div><dt><kbd>Ctrl+Z</kbd></dt><dd>${undoHint}Mac 使用 ⌘Z。</dd></div>
         <div><dt><kbd>Esc</kbd></dt><dd>暂停或返回练习；有弹窗时先关闭弹窗。</dd></div>
       </dl>
@@ -718,7 +740,7 @@ function helpView(){
     </section>
   </main>`;
 }
-function closeDialog(){overlay.innerHTML='';app.inert=false;document.body.style.overflow='';pendingImport=null;if(route==='practice'){clockResume();document.querySelector('#code-input')?.focus();}else if(dialogOpener?.isConnected)dialogOpener.focus({preventScroll:true});dialogOpener=null;}
+function closeDialog(){overlay.innerHTML='';app.inert=false;document.body.style.overflow='';pendingImport=null;if(route==='practice'){clockResume();document.querySelector('#code-input')?.focus({preventScroll:true});}else if(dialogOpener?.isConnected)dialogOpener.focus({preventScroll:true});dialogOpener=null;}
 function dialog(title,body,actions='',kind=''){clockPause();typeAhead='';if(!overlay.firstChild)dialogOpener=document.activeElement;overlay.innerHTML=`<div class="dialog-backdrop"><section class="dialog ${kind}" role="dialog" aria-modal="true" aria-labelledby="dialog-title" tabindex="-1"><div class="dialog-header"><h2 id="dialog-title">${title}</h2><button class="icon-button" data-action="close-dialog" aria-label="关闭"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button></div>${body}<div class="dialog-actions">${actions}</div></section></div>`;localize(overlay);app.inert=true;document.body.style.overflow='hidden';overlay.querySelector('.dialog').focus();}
 function dependencyName(item){return item?.type==='initial'?'声母 '+item.text:item?.type==='stroke'?strokeLabels[item.strokeKey]:item?.text||'';}
 function detail(id){
@@ -899,7 +921,13 @@ document.addEventListener('submit',async event=>{
 document.addEventListener('keydown',event=>{
   if(event.isComposing||event.keyCode===229)return;
   if(overlay.firstChild){
-    if(event.key==='Escape'){event.preventDefault();closeDialog();}
+    const panel=overlay.querySelector('.dialog');
+    const plain=!event.altKey&&!event.ctrlKey&&!event.metaKey;
+    const editing=event.target.closest('input,textarea,select,[contenteditable="true"]');
+    const toggle=plain&&!editing&&((['/','?'].includes(event.key)&&panel?.matches('.mnemonic-dialog,.teaching-dialog'))||(event.key===';'&&panel?.matches('.meaning-dialog')));
+    if(event.key==='Escape'||toggle){
+      event.preventDefault();if(!event.repeat)closeDialog();return;
+    }
     if(!event.altKey&&!event.ctrlKey&&!event.metaKey&&!event.shiftKey&&['ArrowLeft','ArrowRight','Home','End'].includes(event.key)){
       const steps=[...overlay.querySelectorAll('.derivation-step')];
       if(steps.length){

@@ -1,5 +1,5 @@
 {
-  "version": "1.1.2",
+  "version": "1.1.3",
   "files": [
     {
       "path": ".gitattributes",
@@ -18,13 +18,13 @@
     },
     {
       "path": "CHANGELOG.md",
-      "bytes": 2552,
-      "sha256": "3316b3a5a67ba8e2a5236f03ef78084ef09c7d5b0d3e55e2b59d807abfbfe37e"
+      "bytes": 2955,
+      "sha256": "6a6f7509e9969e1c9807716c928af18263b118051403299894c65bdb0bf9a780"
     },
     {
       "path": "README.md",
       "bytes": 3614,
-      "sha256": "a9d27cf6ea7029c4e7f79d26ae6bf67cb1796a41176b620f0ec9fd75ffa45945"
+      "sha256": "62dc3e8ea4acf01d474b692af749f57581b4660e137b89d327c8465169ec6f3a"
     },
     {
       "path": "data/curriculum-ranks.json",
@@ -44,7 +44,7 @@
     {
       "path": "docs/offline.md",
       "bytes": 4786,
-      "sha256": "d6b5234b1e78739c545afec97f69d620380e1b0adec8eefcde886e8eb2a7ec48"
+      "sha256": "c78515cca366b96b1f096557d7d48c41383c513b8d663cb452164de883dd3d3c"
     },
     {
       "path": "netlify.toml",
@@ -54,12 +54,12 @@
     {
       "path": "package-lock.json",
       "bytes": 3394,
-      "sha256": "e693032fd2e7401fdb1b7b824da702ef4fc2ea0964619243a429f457499a8729"
+      "sha256": "7b24e2ec603dc272e0f91edda98e4733463008691ff935a2f6c158b10b9d4d74"
     },
     {
       "path": "package.json",
       "bytes": 983,
-      "sha256": "eb7e82e8b908b71f3b9fb8c210c3026069b413851a96a5a98a288f1528f9b415"
+      "sha256": "6434d272c5be317b48df9acc3098b8c2d7772b2f5de273e70383a3c8c65ba40d"
     },
     {
       "path": "public/.nojekyll",
@@ -143,8 +143,8 @@
     },
     {
       "path": "public/focus.css",
-      "bytes": 44583,
-      "sha256": "04e1ed0d2c3992c1bc0ab3b92a72514e6710731006e21db2132c4487d4fd52a6"
+      "bytes": 50143,
+      "sha256": "c5fa589bece0360045bd0c460c7bf720699e027cd70c4bb16bb74d1ee69050e6"
     },
     {
       "path": "public/fonts/NotoSerifTC-compat.ttf",
@@ -164,7 +164,7 @@
     {
       "path": "public/index.html",
       "bytes": 1495,
-      "sha256": "4f28302c106da9ecff752f0b4fa6f20a8f492056417f1e9a8d35ccfb71600a98"
+      "sha256": "171a1bf71a80295d030259028ea2e51b59dc600d0bb42687e62c7733e8f66ff1"
     },
     {
       "path": "public/learning-schema.mjs",
@@ -194,12 +194,12 @@
     {
       "path": "public/offline-shell.mjs",
       "bytes": 6126,
-      "sha256": "5e9d83f803b605a48bc81b9f227843e97ca2da9ba05c43584950b4a2505e57e0"
+      "sha256": "db7868b1871dd8e04d9b7bd0ffd8d9b5ac289ac54f704f0565802a84de0d728a"
     },
     {
       "path": "public/practice.mjs",
-      "bytes": 88531,
-      "sha256": "1cf10269e91f8335a6ed46d77acd848055337c7d16485cbf2bad52df02f9d88f"
+      "bytes": 90162,
+      "sha256": "4def26da2ba170d80cf437e205a29754ddbd58b95cde74c931e23fbf5d322345"
     },
     {
       "path": "public/request.mjs",
@@ -328,8 +328,8 @@
     },
     {
       "path": "scripts/test-browser.mjs",
-      "bytes": 1683,
-      "sha256": "8e2d505f5159d22accdf314b1c70bbafcf2077fdee2fb99ca3c465c5e8c1597f"
+      "bytes": 1713,
+      "sha256": "7af06e43f06d154bcb6533684e0c34d185d9f03b1ad255ed644af4705b33a2d2"
     },
     {
       "path": "scripts/update-manifest.mjs",
@@ -358,8 +358,8 @@
     },
     {
       "path": "tests/cedict-browser.mjs",
-      "bytes": 11358,
-      "sha256": "e841dec7813d371bd08ffb4f811ce384ee18165f18bf963fba2b64d768763827"
+      "bytes": 11550,
+      "sha256": "60464dee832768fc8aca39ce9feeadbfc8e8c4279ed1971eae301fd63be587c9"
     },
     {
       "path": "tests/cedict.test.mjs",
@@ -420,6 +420,11 @@
       "path": "tests/mnemonics.test.mjs",
       "bytes": 3178,
       "sha256": "afe390c6699e3a886b7f5dd1079cbe7b97551ea1bb41334bd13a93d65a6ff762"
+    },
+    {
+      "path": "tests/mobile-practice-browser.mjs",
+      "bytes": 8556,
+      "sha256": "c36b210bc14319cb1ad7cb596070d4390d42a503f9ab350c4946199fa2ebd500"
     },
     {
       "path": "tests/offline-browser.mjs",

@@ -39,7 +39,10 @@ try{
   await page.screenshot({path:'artifacts/v15-meaning-desktop.png'});
   await page.keyboard.press('Escape');assert.equal(await page.locator('#code-input').inputValue(),partial);assert.equal(await page.locator('#code-input').evaluate(n=>n===document.activeElement),true);assert.deepEqual(await progress(),before);
   for(const [width,height]of [[1440,900],[375,812],[320,568],[844,390],[375,440]]){
-    await page.setViewportSize({width,height});const f=await frame();assert.ok(f.scroll<=width,JSON.stringify(f));assert.ok(f.input.bottom<=height,JSON.stringify(f));
+    await page.setViewportSize({width,height});
+    // VisualViewport resize is delivered at the next rendering opportunity.
+    await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
+    const f=await frame();assert.ok(f.scroll<=width,JSON.stringify(f));assert.ok(f.input.bottom<=height,JSON.stringify(f));
     assert.ok(f.gloss.bottom<=f.input.y,JSON.stringify(f));
     await page.screenshot({path:`artifacts/v15-english-${width}-${height}.png`});
   }
