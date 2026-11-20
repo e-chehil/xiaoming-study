@@ -9,6 +9,9 @@ const base=process.env.TEST_URL||'http://127.0.0.1:47831/';
 await mkdir('artifacts/mobile-practice',{recursive:true});
 // Model iOS/Android's visual-only resize: layout viewport and CSS media queries stay tall.
 await context.addInitScript(()=>{
+  // Exercise the optional, longest numeric reference label on the traditional track.
+  if (new URL(location.href).searchParams.get('course')==='traditional') localStorage.setItem('xiaoming-wangma','numeric9_head_rest');
+  else localStorage.removeItem('xiaoming-wangma');
   window.keyboardViewport={height:null,top:0,scale:1};
   const viewport=window.visualViewport;
   for(const key of ['height','offsetTop','scale']){
@@ -32,7 +35,7 @@ async function fits(label){
     const box=s=>{const n=document.querySelector(s);if(!n)return null;const r=n.getBoundingClientRect();return {top:r.top,bottom:r.bottom,left:r.left,right:r.right,height:r.height};};
     const app=document.querySelector('#app');
     return {height:visualViewport.height,top:visualViewport.offsetTop,width:innerWidth,layoutHeight:innerHeight,scroll:app.scrollHeight,client:app.clientHeight,
-      boxes:['#target','.pinyin','.lesson-examples','.gloss-wrap','.decomposition','#prompt-code','.entry-wrap','#attempt-status','.practice-bottom'].map(box).filter(b=>b?.height>0)};
+      boxes:['#target','.pinyin','.lesson-examples','.gloss-wrap','.wangma-reference','.decomposition','#prompt-code','.entry-wrap','#attempt-status','.practice-bottom'].map(box).filter(b=>b?.height>0)};
   });
   const detail=label+' '+JSON.stringify(g);
   assert.ok(g.scroll<=g.client+1,detail);
@@ -45,6 +48,7 @@ try{
     const picked=[data.items.find(i=>i.type==='initial'&&i.initial==='r'),data.items.find(i=>i.type==='stroke'),data.items.find(i=>i.type==='root'&&i.code.startsWith('g')),data.items.find(i=>i.type==='root'&&i.mapping.smallSource==='stroke'),data.items.find(i=>i.type==='char'&&i.text==='好'),data.items.find(i=>i.type==='word'&&i.text===(course==='traditional'?'中國人民解放軍':'中国人民解放军')),data.transferItems.find(i=>i.type==='short'&&i.shortRule==='one'),data.transferItems.find(i=>i.type==='variant')].filter(Boolean);
     for(const item of picked){
       await open(item,course);
+      if(course==='traditional') await page.locator('main .wangma-entry').first().waitFor();
       for(const width of [320,390]){
         await page.setViewportSize({width,height:844});
         for(const height of [360,440,540]){await viewport(height,35);await fits(course+' '+item.type+' '+item.text+' '+width);}

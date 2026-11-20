@@ -11,6 +11,7 @@ import { captureViewState,restoreViewState,trapDialogTab } from './view-state.mj
 import {hydrateCourse,allLessons,practicePool,TRACKS} from './lesson-data.mjs';
 import {ruleSummary,stepBasis,briefStepBasis,explanationMarkup,glyphMarkup,sourceTextMarkup,mnemonicMarkup,verseMarkup} from './teaching.mjs';
 import {mnemonicFor} from './mnemonics.mjs';
+import {WANGMA,lookupWangma,referenceGlyphs} from './wangma.mjs';
 
 const app=document.querySelector('#app'),overlay=document.querySelector('#modal-root');
 const esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -102,14 +103,14 @@ function openDerivation(id=current?.item.id){
   const item=itemOf(id);if(!item?.code)return;
   const position=practicePosition(item);
   publishExposure(item,encodingSteps(item)[position]);
-  dialog('取码说明',explanationMarkup(item,rootFacts,{position}),(['char','variant'].includes(item.type)&&dataset.glyphVariants?.[item.text]?'<button class="plain-button" data-action="glyph" data-id="'+id+'">字形对照</button>':'')+'<button class="solid-button" data-action="close-dialog">'+(route==='practice'?'继续练习':'关闭')+'</button>','teaching-dialog');
+  dialog('取码说明',explanationMarkup(item,rootFacts,{position})+wangmaReference(item),(['char','variant'].includes(item.type)&&dataset.glyphVariants?.[item.text]?'<button class="plain-button" data-action="glyph" data-id="'+id+'">字形对照</button>':'')+'<button class="solid-button" data-action="close-dialog">'+(route==='practice'?'继续练习':'关闭')+'</button>','teaching-dialog');
 }
 function openGlyph(id){
   const item=itemOf(id);if(!item)return;
   publishExposure(item);
   const variant=dataset.transferItems?.find(lesson=>lesson.type==='variant'&&lesson.baseId===(item.baseId||item.id));
   if(variant)publishExposure(variant);
-  dialog('字形与拆分对照',glyphMarkup(item,dataset),'<button class="solid-button" data-action="close-dialog">'+(route==='practice'?'继续练习':'关闭')+'</button>','teaching-dialog');
+  dialog('字形与拆分对照',glyphMarkup(item,dataset)+wangmaReference(item),'<button class="solid-button" data-action="close-dialog">'+(route==='practice'?'继续练习':'关闭')+'</button>','teaching-dialog');
 }
 function highlightDerivation(button){
   if(button.getAttribute('aria-pressed')==='true')return;
@@ -332,6 +333,7 @@ function render({transition=false}={}){
   }else if(changedRoute){(route==='menu'?document.querySelector('.resume-button'):document.querySelector('main h1'))?.focus({preventScroll:true});}
   else restoreViewState(app,viewState);
   syncLocation(!!renderedRoute&&changedRoute);renderedRoute=route;
+  if(settings.wangma) void prepareWangma();
   if(!dictionary&&!dictionaryError&&!dictionaryPreparing&&(route==='library'||route==='dictionary'||route==='practice'&&['char','word'].includes(current?.item.type)))void prepareDictionary();
 }
 function coloredCode(code){return [...code].map((letter,i)=>`<span class="code-letter role-${'asb'[i]}" title="${ROLE_NAMES['asb'[i]]}">${displayLetter(letter,'asb'[i])}</span>`).join('');}
@@ -371,6 +373,42 @@ function lessonExamples(item){
   if(!['initial','stroke','root'].includes(item.type)||!item.examples?.length)return '';
   return `<div class="lesson-examples" aria-label="${item.type==='root'?'构字示例':'字根示例'}" style="--example-count:${item.examples.length}">${item.examples.map(example=>`<span class="root-font">${esc(example.text)}</span>`).join('')}</div>`;
 }
+let wangmaData=null, wangmaPending=false, wangmaFailed=false;
+let preferredWangma=null;
+try { preferredWangma=localStorage.getItem('xiaoming-wangma'); } catch {}
+function rememberWangma(scheme) {
+  preferredWangma=scheme;
+  try { localStorage.setItem('xiaoming-wangma',scheme); } catch {}
+}
+function wangmaEntries(item) {
+  if (!wangmaData) return wangmaFailed
+    ? '<button type="button" class="quiet-button" data-action="retry-wangma">重试王码对照</button>'
+    : '正在读取王码…';
+  const entries=referenceGlyphs(item);
+  const isExample=['initial','stroke'].includes(item.type);
+  const label=WANGMA[settings.wangma];
+  return `<span class="wangma-name">${esc(label)}${isExample?' · 示例':entries.length>1?' · 逐字':''}</span>`+
+    entries.map(glyph=>{
+      const code=lookupWangma(wangmaData,glyph,settings.wangma);
+      return `<span class="wangma-entry"><span class="root-font">${esc(glyph)}</span> ${code?`<code>${esc(code)}</code>`:'<small>未收录</small>'}</span>`;
+    }).join('');
+}
+function wangmaReference(item) {
+  if (!settings.wangma || !referenceGlyphs(item).length) return '';
+  return `<div class="wangma-reference" data-wangma-id="${item.id}" role="group" aria-label="王码对照">${wangmaEntries(item)}</div>`;
+}
+async function prepareWangma() {
+  if (wangmaPending || wangmaData || wangmaFailed || !document.querySelector('[data-wangma-id]')) return;
+  wangmaPending=true;
+  try { wangmaData=await resourceStore.load('wangma'); }
+  catch { wangmaFailed=true; }
+  finally { wangmaPending=false; }
+  // The learner may already be typing the next card or looking at another course.
+  for (const slot of document.querySelectorAll('[data-wangma-id]')) {
+    const item=itemOf(Number(slot.dataset.wangmaId));
+    if (item && settings.wangma) { slot.innerHTML=wangmaEntries(item);localize(slot); }
+  }
+}
 function practiceView(){
   if(!current)return freeSession?freeCompletionView():completionView();
   const item=current.item,result=current.phase==='result',correction=current.phase==='correction';
@@ -382,7 +420,7 @@ function practiceView(){
   return `<main class="practice" data-phase="${state}" data-self-test="${!!(free&&current.selfTest)}" data-item-id="${item.id}" data-item-type="${item.type}" data-kind="${current.guided?'guided':current.supplemental?'drill':current.firstExposure?'new':'review'}" aria-label="打字练习">
     <div class="practice-context"><span>${item.type==='variant'?'台湾字形':labels[item.type]}<i>/</i>${status}${!free&&practiceTrack!=='core'&&item.type!==practiceTrack?'<i>/</i>'+(practiceTrack==='short'?'简码前置':'字形前置'):''}</span>${!free?`<span class="path-position" title="${TRACKS[practiceTrack]} · ${num(activePool().length)} 项（含前置）">第 ${num(positionInTrack(item))} 项</span>`:'<button class="quiet-button free-return" data-action="free-exit">返回课程</button>'}</div>
     <section class="focus-stage">
-      <div class="target-wrap"><h1 class="target ${item.type==='initial'?'mapping-target':item.type==='stroke'?'stroke-target':'root-font'} ${length>4?'long':''}" data-length="${length===1?'single':length===2?'pair':'short'}" style="--target-length:${length}" id="target">${targetMarkup(item)}</h1><div class="pinyin">${lessonCaption(item,visible)}</div>${lessonExamples(item)}${['char','word','short','variant'].includes(item.type)?`<div class="gloss-wrap" id="practice-meaning">${practiceMeaning(item)}</div>`:''}</div>
+      <div class="target-wrap"><h1 class="target ${item.type==='initial'?'mapping-target':item.type==='stroke'?'stroke-target':'root-font'} ${length>4?'long':''}" data-length="${length===1?'single':length===2?'pair':'short'}" style="--target-length:${length}" id="target">${targetMarkup(item)}</h1><div class="pinyin">${lessonCaption(item,visible)}</div>${lessonExamples(item)}${['char','word','short','variant'].includes(item.type)?`<div class="gloss-wrap" id="practice-meaning">${practiceMeaning(item)}</div>`:''}${wangmaReference(item)}</div>
       <div class="answer-support" id="answer-support">${visible?parts(item):''}</div>
       <div class="typing-block" style="--code-length:${item.code.length}">
         ${codeRow(item,visible)}
@@ -706,6 +744,9 @@ function settingsView(){
       <label class="setting" for="new-per-day"><span><strong id="new-per-day-label">每日新学目标</strong><small id="new-per-day-note">达到目标后仍会继续练习</small></span><span><input id="new-per-day" aria-labelledby="new-per-day-label" aria-describedby="new-per-day-note" name="newPerDay" type="number" min="1" max="200" step="1" value="${settings.newPerDay}" required> 项</span></label>
       <label class="setting" for="retention"><span><strong id="retention-label">目标记忆保持率</strong><small id="retention-note">目标越高，通常需要更频繁地复习</small></span><span><input id="retention" aria-labelledby="retention-label" aria-describedby="retention-note" name="retention" type="number" min="80" max="97" step="1" value="${Math.round(settings.retention*100)}" required> %</span></label>
       </fieldset>
+      <fieldset class="settings-group"><legend>编码对照</legend>
+      <label class="setting wangma-setting" for="wangma"><span><strong>王码对照</strong><small>练习时显示单字王码，词语逐字列出</small></span><select id="wangma" name="wangma"><option value="">关闭</option>${Object.entries(WANGMA).map(([key,label])=>`<option value="${key}" ${settings.wangma===key?'selected':''}>${esc(label)}</option>`).join('')}</select></label>
+      </fieldset>
       <button class="solid-button" type="submit">保存</button>
     </form>
     <section class="backup-section"><h2>学习进度</h2><p id="offline-summary" role="status">${offlineSummary()}</p><p>进度保存在当前浏览器。换设备或清理网站数据前，请先导出备份。</p><div><button class="plain-button" data-action="export">导出备份</button><button class="plain-button" data-action="import">导入备份</button></div><input id="backup-input" aria-label="选择进度备份" type="file" accept=".json,application/json" hidden></section>
@@ -741,12 +782,12 @@ function helpView(){
   </main>`;
 }
 function closeDialog(){overlay.innerHTML='';app.inert=false;document.body.style.overflow='';pendingImport=null;if(route==='practice'){clockResume();document.querySelector('#code-input')?.focus({preventScroll:true});}else if(dialogOpener?.isConnected)dialogOpener.focus({preventScroll:true});dialogOpener=null;}
-function dialog(title,body,actions='',kind=''){clockPause();typeAhead='';if(!overlay.firstChild)dialogOpener=document.activeElement;overlay.innerHTML=`<div class="dialog-backdrop"><section class="dialog ${kind}" role="dialog" aria-modal="true" aria-labelledby="dialog-title" tabindex="-1"><div class="dialog-header"><h2 id="dialog-title">${title}</h2><button class="icon-button" data-action="close-dialog" aria-label="关闭"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button></div>${body}<div class="dialog-actions">${actions}</div></section></div>`;localize(overlay);app.inert=true;document.body.style.overflow='hidden';overlay.querySelector('.dialog').focus();}
+function dialog(title,body,actions='',kind=''){clockPause();typeAhead='';if(!overlay.firstChild)dialogOpener=document.activeElement;overlay.innerHTML=`<div class="dialog-backdrop"><section class="dialog ${kind}" role="dialog" aria-modal="true" aria-labelledby="dialog-title" tabindex="-1"><div class="dialog-header"><h2 id="dialog-title">${title}</h2><button class="icon-button" data-action="close-dialog" aria-label="关闭"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button></div>${body}<div class="dialog-actions">${actions}</div></section></div>`;localize(overlay);app.inert=true;document.body.style.overflow='hidden';overlay.querySelector('.dialog').focus();if(settings.wangma)void prepareWangma();}
 function dependencyName(item){return item?.type==='initial'?'声母 '+item.text:item?.type==='stroke'?strokeLabels[item.strokeKey]:item?.text||'';}
 function detail(id){
   const item=itemOf(id);if(!item)return;publishExposure(item);
   const prerequisites=item.dependencies.map(dep=>'<span class="root-font">'+esc(dependencyName(itemOf(dep)))+'</span>').join('、');
-  dialog(item.type==='variant'?'台湾字形':labels[item.type],`<div class="detail-target root-font">${item.type==='variant'?targetMarkup(item):esc(item.text)}</div><p class="detail-pinyin">${readingMarkup(item,esc,{all:true})}<span>${stateOf(item)}</span></p>${item.code?`${parts(item)}${codeRow(item,true)}`:'<p>含字母或符号，暂不支持这类词语的编码练习。</p>'}${item.code?'<p class="detail-teaching-actions"><button class="plain-button" data-action="derivation" data-id="'+id+'">取码说明</button>'+((item.type==='char'||item.type==='variant')&&dataset.glyphVariants?.[item.text]?'<button class="plain-button" data-action="glyph" data-id="'+id+'">字形对照</button>':'')+'</p>':''}${meaningSection(item)}${prerequisites?'<p class="detail-note">先学：'+prerequisites+'</p>':''}`,item.code?`<button class="solid-button" data-action="free-one" data-id="${id}">练习此项</button>`:'');
+  dialog(item.type==='variant'?'台湾字形':labels[item.type],`<div class="detail-target root-font">${item.type==='variant'?targetMarkup(item):esc(item.text)}</div><p class="detail-pinyin">${readingMarkup(item,esc,{all:true})}<span>${stateOf(item)}</span></p>${item.code?`${parts(item)}${codeRow(item,true)}`:'<p>含字母或符号，暂不支持这类词语的编码练习。</p>'}${item.code?'<p class="detail-teaching-actions"><button class="plain-button" data-action="derivation" data-id="'+id+'">取码说明</button>'+((item.type==='char'||item.type==='variant')&&dataset.glyphVariants?.[item.text]?'<button class="plain-button" data-action="glyph" data-id="'+id+'">字形对照</button>':'')+'</p>':''}${wangmaReference(item)}${meaningSection(item)}${prerequisites?'<p class="detail-note">先学：'+prerequisites+'</p>':''}`,item.code?`<button class="solid-button" data-action="free-one" data-id="${id}">练习此项</button>`:'');
 }
 function restorePractice(){
   typeAhead='';free=false;
@@ -781,7 +822,7 @@ async function exportBackup(){
   try{
     // Read a committed snapshot, including work saved by another tab.
     const progress=db?await readProgress(db):{cards:Object.values(cards),logs,daily:Object.values(days),settings};
-    const backup={app:'xiaoming-study',version:3,lessonVersion:dataset.lessonVersion,course:courseId,datasetSha:dataset.source.sha256,curriculumVersion:dataset.curriculumVersion,exportedAt:new Date().toISOString(),cards:progress.cards,logs:progress.logs,daily:progress.daily,settings:progress.settings||settings};
+    const backup={app:'xiaoming-study',version:3,lessonVersion:dataset.lessonVersion,course:courseId,datasetSha:dataset.source.sha256,curriculumVersion:dataset.curriculumVersion,exportedAt:new Date().toISOString(),cards:progress.cards,logs:progress.logs,daily:progress.daily,settings:{...(progress.settings||settings),wangma:preferredWangma??settings.wangma}};
     const url=URL.createObjectURL(new Blob([JSON.stringify(backup,null,2)],{type:'application/json'}));const link=document.createElement('a');link.href=url;link.download=`潇明习字_${COURSES[courseId].name}_学习备份_${dayKey()}.json`;link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);notify('备份已导出。');
   }catch(error){notify('备份未能导出，请重试。');}
 }
@@ -803,6 +844,7 @@ async function confirmImport(){
   busy=true;const backup=pendingImport;
   try{
     const revision=await replaceProgress(db,backup,progressRevision);
+    rememberWangma(backup.settings.wangma);
     adoptProgress({...backup,revision});freeSession=null;free=false;reviewOnly=false;current=null;practiceReturn=null;undoStack=[];
     closeDialog();enterPractice();notify('已恢复进度');
   }catch(error){
@@ -825,6 +867,7 @@ document.addEventListener('click',event=>{
   if(!button||button.disabled||busy)return;
   const {action,id,view}=button.dataset;
   if(action==='reload'){app.innerHTML='<main class="loading" id="main-content"><div class="brand-symbol">潇</div><h1 id="loading-status" role="status">正在打开课程…</h1><progress id="download-progress" max="100" value="0" aria-label="课程下载进度" hidden></progress></main>';void initialize();return;}
+  else if(action==='retry-wangma'){wangmaFailed=false;void prepareWangma();}
   else if(action==='theme')void toggleTheme();
   else if(action==='course')void switchCourse(courseId==='simplified'?'traditional':'simplified');
   else if(action==='skip')void submit(true);
@@ -911,10 +954,10 @@ document.addEventListener('submit',async event=>{
   event.preventDefault();
   if(!db)return notify('进度无法保存，请检查浏览器的网站数据设置。');
   const form=new FormData(event.target);
-  const updated=cleanSettings({newPerDay:Number(form.get('newPerDay')),retention:Number(form.get('retention'))/100,pinyin:true,keyboard:false,theme:settings.theme});
+  const updated=cleanSettings({newPerDay:Number(form.get('newPerDay')),retention:Number(form.get('retention'))/100,pinyin:true,keyboard:false,theme:settings.theme,wangma:form.get('wangma')});
   if(savingTheme)await themeSave.catch(()=>{});
   if(busy)return;busy=true;
-  try{await persistSettings(updated);render();notify('已保存');}
+  try{await persistSettings(updated);rememberWangma(updated.wangma);render();notify('已保存');}
   catch(error){notify('设置未能保存，请重试。');}
   finally{busy=false;render();}
 });
@@ -1038,7 +1081,7 @@ function adoptProgress(progress,{keepTheme=false}={}){
   progressRevision=progress.revision??0;
   cards=Object.fromEntries(progress.cards.map(card=>[card.id,card]));logs=progress.logs;
   days=Object.fromEntries(progress.daily.map(day=>[day.date,day]));
-  settings=cleanSettings({...progress.settings,theme:keepTheme?document.documentElement.dataset.theme:progress.settings?.theme||document.documentElement.dataset.theme});
+  settings=cleanSettings({...progress.settings,wangma:preferredWangma??progress.settings?.wangma,theme:keepTheme?document.documentElement.dataset.theme:progress.settings?.theme||document.documentElement.dataset.theme});
   pendingCorrection=null;
   const pending=progress.pendingCorrection;
   if(pending?.undo?.current&&['incorrect','blank'].includes(pending.outcome)&&logs.some(log=>log.key===pending.undo.logKey&&log.itemId===pending.undo.id))pendingCorrection=pending;

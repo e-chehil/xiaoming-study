@@ -1,7 +1,9 @@
 import { fsrs, createEmptyCard, Rating, State } from './vendor/fsrs.mjs';
 
+import {WANGMA} from './wangma.mjs';
+
 export { Rating, State };
-export const DEFAULT_SETTINGS = Object.freeze({ newPerDay: 20, retention: 0.9, keyboard: true, pinyin: true, theme: 'dark' });
+export const DEFAULT_SETTINGS = Object.freeze({ newPerDay: 20, retention: 0.9, keyboard: true, pinyin: true, theme: 'dark', wangma: '' });
 export function dayKey(date = new Date()) {
   return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
 }
@@ -9,6 +11,7 @@ export function cleanSettings(value = {}) {
   return {
     newPerDay: Math.max(1, Math.min(200, Math.round(Number(value.newPerDay) || 20))),
     retention: Math.max(0.8, Math.min(0.97, Number(value.retention) || 0.9)),
+    wangma: typeof value.wangma === 'string' && Object.hasOwn(WANGMA, value.wangma) ? value.wangma : '',
     keyboard: value.keyboard !== false,
     pinyin: value.pinyin !== false,
     theme: value.theme === 'light' ? 'light' : 'dark',

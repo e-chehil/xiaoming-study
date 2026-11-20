@@ -1,4 +1,4 @@
-export const SHELL_VERSION="e8d7a7cca1d024f56e81cc1438116b2ce24b4a28dd1e0f5995cda136f3a1b6a7";
+export const SHELL_VERSION="823d583dc51cb3a09f1be949dace760e27c95938f352d4745a9d5913f21c5402";
 export const SHELL_FILES=[
   {
     "path": "answer-exposure.mjs",
@@ -52,8 +52,8 @@ export const SHELL_FILES=[
   },
   {
     "path": "engine.mjs",
-    "bytes": 18353,
-    "sha256": "8c1d50da47385ec50d1dd7a1a80f197887bd09ac063164b209b0e965a4022ef1"
+    "bytes": 18508,
+    "sha256": "859f980b41fc8330fde03932e3c071f0bdb4c2dee4809466a0f9083a1a05ea46"
   },
   {
     "path": "favicon.svg",
@@ -62,8 +62,8 @@ export const SHELL_FILES=[
   },
   {
     "path": "focus.css",
-    "bytes": 50869,
-    "sha256": "d289457f9de1e6da63deca21965323f121d3f8d4f85669e449a821b8f348b24c"
+    "bytes": 51931,
+    "sha256": "b1e311784b787061a6c490ccabe10ba60e4554d8b12e08b7abac1738684c8f3c"
   },
   {
     "path": "fonts/NotoSerifTC-compat.ttf",
@@ -83,7 +83,7 @@ export const SHELL_FILES=[
   {
     "path": "index.html",
     "bytes": 1495,
-    "sha256": "171a1bf71a80295d030259028ea2e51b59dc600d0bb42687e62c7733e8f66ff1"
+    "sha256": "30a06a3135c6fb64db4f80a17d588cc3b2711d263c9ed3bef3e59948183571d4"
   },
   {
     "path": "learning-schema.mjs",
@@ -112,8 +112,8 @@ export const SHELL_FILES=[
   },
   {
     "path": "practice.mjs",
-    "bytes": 90162,
-    "sha256": "4def26da2ba170d80cf437e205a29754ddbd58b95cde74c931e23fbf5d322345"
+    "bytes": 92999,
+    "sha256": "da7577fc14802e24169cf8a67435336bdaa5b537387b33a73863528d61517ccc"
   },
   {
     "path": "request.mjs",
@@ -122,13 +122,13 @@ export const SHELL_FILES=[
   },
   {
     "path": "resource-catalog.mjs",
-    "bytes": 1418,
-    "sha256": "a864d6530f7f7b3aab131dbe536a7edaa413a200c5e35d328dc7967accd2213a"
+    "bytes": 1591,
+    "sha256": "f55d692e77b515e0dca7e7e15a83f07b90766fbbfc58d76a566dc32b4583f824"
   },
   {
     "path": "resource-store.mjs",
-    "bytes": 5381,
-    "sha256": "62b040d9fb427f542f7b673e91875239966f9cc4314c5b95efbd89a1c7573ae9"
+    "bytes": 5480,
+    "sha256": "a563ceea36c50b077ff9388cd285cff98ce5fa573ee754755846ea92bb7f0d57"
   },
   {
     "path": "storage.mjs",
@@ -198,7 +198,7 @@ export const SHELL_FILES=[
   {
     "path": "version.json",
     "bytes": 53,
-    "sha256": "3ffc0cae09457cd6c38f615b8259099124bc7288d7a61cbf12bcae3c221ac58b"
+    "sha256": "0811acf3987c36118a36ca56e978b460144aa2cce4ea643aee7b0f265d23fe82"
   },
   {
     "path": "view-location.mjs",
@@ -209,5 +209,10 @@ export const SHELL_FILES=[
     "path": "view-state.mjs",
     "bytes": 2249,
     "sha256": "56c29f1e968273193a1336de65d1b88f3322ef5d8c35d1ff3c61672c62fe27e7"
+  },
+  {
+    "path": "wangma.mjs",
+    "bytes": 1714,
+    "sha256": "be932b207807a973aeb9e01ec8d9fbaecaf03b2e68f9dd813cb279c345e3b767"
   }
 ];

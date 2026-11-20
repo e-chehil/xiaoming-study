@@ -1,5 +1,5 @@
 {
-  "version": "1.1.3",
+  "version": "1.2.0",
   "files": [
     {
       "path": ".gitattributes",
@@ -18,13 +18,13 @@
     },
     {
       "path": "CHANGELOG.md",
-      "bytes": 2955,
-      "sha256": "6a6f7509e9969e1c9807716c928af18263b118051403299894c65bdb0bf9a780"
+      "bytes": 3134,
+      "sha256": "50edefc13fca550d83c55996a68443bd7cb49c9bd7675b8644976a09e506f285"
     },
     {
       "path": "README.md",
-      "bytes": 3614,
-      "sha256": "62dc3e8ea4acf01d474b692af749f57581b4660e137b89d327c8465169ec6f3a"
+      "bytes": 4143,
+      "sha256": "c3eb5c2c755e0f78dd56aa578cde11a37b6495d098e00646f3afba5982804a86"
     },
     {
       "path": "data/curriculum-ranks.json",
@@ -33,8 +33,8 @@
     },
     {
       "path": "docs/data.md",
-      "bytes": 3179,
-      "sha256": "a34a266ae78cbb3313752e1e28c7c27465879fa4df3322a481e60fb04887fdb4"
+      "bytes": 3903,
+      "sha256": "3119d6067749f9d32c231c782e8195ea1c6c5cfba137470a5c38a0a3aa3a2359"
     },
     {
       "path": "docs/deployment.md",
@@ -43,8 +43,8 @@
     },
     {
       "path": "docs/offline.md",
-      "bytes": 4786,
-      "sha256": "c78515cca366b96b1f096557d7d48c41383c513b8d663cb452164de883dd3d3c"
+      "bytes": 4812,
+      "sha256": "0998460309c6b3cd0c3836bb3fd145d1b8b14011d62c2b1a4e76d4195bc04020"
     },
     {
       "path": "netlify.toml",
@@ -54,12 +54,12 @@
     {
       "path": "package-lock.json",
       "bytes": 3394,
-      "sha256": "7b24e2ec603dc272e0f91edda98e4733463008691ff935a2f6c158b10b9d4d74"
+      "sha256": "7722018c942ac8c0dc0f1bce90788520428a00f2aeac81cf59eb2f62857359bf"
     },
     {
       "path": "package.json",
       "bytes": 983,
-      "sha256": "6434d272c5be317b48df9acc3098b8c2d7772b2f5de273e70383a3c8c65ba40d"
+      "sha256": "5bdbbdcd9014d7ff8850948ed2128c85d419bfd0661f1fd8f45dc2ad2c95dd71"
     },
     {
       "path": "public/.nojekyll",
@@ -127,14 +127,19 @@
       "sha256": "3698ac5ca22e63756e48aeb6ce7f1c6ad268f2067079df3b00f2a76345aeea59"
     },
     {
+      "path": "public/data/wangma.json",
+      "bytes": 952082,
+      "sha256": "0d751af05fb28d6f0140ace5234ed58f97898136c1c39836015da2b0f2f16916"
+    },
+    {
       "path": "public/encoding.mjs",
       "bytes": 2674,
       "sha256": "36d5b64892138ed30e85381e4cf3579ab974070de09287a3c89062de76123c29"
     },
     {
       "path": "public/engine.mjs",
-      "bytes": 18353,
-      "sha256": "8c1d50da47385ec50d1dd7a1a80f197887bd09ac063164b209b0e965a4022ef1"
+      "bytes": 18508,
+      "sha256": "859f980b41fc8330fde03932e3c071f0bdb4c2dee4809466a0f9083a1a05ea46"
     },
     {
       "path": "public/favicon.svg",
@@ -143,8 +148,8 @@
     },
     {
       "path": "public/focus.css",
-      "bytes": 50869,
-      "sha256": "d289457f9de1e6da63deca21965323f121d3f8d4f85669e449a821b8f348b24c"
+      "bytes": 51931,
+      "sha256": "b1e311784b787061a6c490ccabe10ba60e4554d8b12e08b7abac1738684c8f3c"
     },
     {
       "path": "public/fonts/NotoSerifTC-compat.ttf",
@@ -164,7 +169,7 @@
     {
       "path": "public/index.html",
       "bytes": 1495,
-      "sha256": "171a1bf71a80295d030259028ea2e51b59dc600d0bb42687e62c7733e8f66ff1"
+      "sha256": "30a06a3135c6fb64db4f80a17d588cc3b2711d263c9ed3bef3e59948183571d4"
     },
     {
       "path": "public/learning-schema.mjs",
@@ -193,13 +198,13 @@
     },
     {
       "path": "public/offline-shell.mjs",
-      "bytes": 6126,
-      "sha256": "4dd1855516f75ec1a4c9b71169134bbd1a113060dd3666ac2be3ebf576f7d64f"
+      "bytes": 6261,
+      "sha256": "36d7246327009d945b5539bd7c0b89d216fc81d48114c126caaee28daa864652"
     },
     {
       "path": "public/practice.mjs",
-      "bytes": 90162,
-      "sha256": "4def26da2ba170d80cf437e205a29754ddbd58b95cde74c931e23fbf5d322345"
+      "bytes": 92999,
+      "sha256": "da7577fc14802e24169cf8a67435336bdaa5b537387b33a73863528d61517ccc"
     },
     {
       "path": "public/request.mjs",
@@ -208,13 +213,13 @@
     },
     {
       "path": "public/resource-catalog.mjs",
-      "bytes": 1418,
-      "sha256": "a864d6530f7f7b3aab131dbe536a7edaa413a200c5e35d328dc7967accd2213a"
+      "bytes": 1591,
+      "sha256": "f55d692e77b515e0dca7e7e15a83f07b90766fbbfc58d76a566dc32b4583f824"
     },
     {
       "path": "public/resource-store.mjs",
-      "bytes": 5381,
-      "sha256": "62b040d9fb427f542f7b673e91875239966f9cc4314c5b95efbd89a1c7573ae9"
+      "bytes": 5480,
+      "sha256": "a563ceea36c50b077ff9388cd285cff98ce5fa573ee754755846ea92bb7f0d57"
     },
     {
       "path": "public/storage.mjs",
@@ -284,7 +289,7 @@
     {
       "path": "public/version.json",
       "bytes": 53,
-      "sha256": "3ffc0cae09457cd6c38f615b8259099124bc7288d7a61cbf12bcae3c221ac58b"
+      "sha256": "0811acf3987c36118a36ca56e978b460144aa2cce4ea643aee7b0f265d23fe82"
     },
     {
       "path": "public/view-location.mjs",
@@ -295,6 +300,11 @@
       "path": "public/view-state.mjs",
       "bytes": 2249,
       "sha256": "56c29f1e968273193a1336de65d1b88f3322ef5d8c35d1ff3c61672c62fe27e7"
+    },
+    {
+      "path": "public/wangma.mjs",
+      "bytes": 1714,
+      "sha256": "be932b207807a973aeb9e01ec8d9fbaecaf03b2e68f9dd813cb279c345e3b767"
     },
     {
       "path": "scripts/build.mjs",
@@ -328,8 +338,8 @@
     },
     {
       "path": "scripts/test-browser.mjs",
-      "bytes": 1713,
-      "sha256": "7af06e43f06d154bcb6533684e0c34d185d9f03b1ad255ed644af4705b33a2d2"
+      "bytes": 1734,
+      "sha256": "1eca254184f33beb24f20e5f97ac121604ebff7c6b2c6a826951c13e7df10f30"
     },
     {
       "path": "scripts/update-manifest.mjs",
@@ -338,8 +348,8 @@
     },
     {
       "path": "scripts/update-offline.mjs",
-      "bytes": 1207,
-      "sha256": "39ea04f6de58d6a59d2c62e3cdec3f965010a2b749fcf672669f860f033e3ee7"
+      "bytes": 1226,
+      "sha256": "c0345d77728f789d67b8ee52ef019e4bbfe6938113bb2d6f6711e786d5edd2f6"
     },
     {
       "path": "start.cmd",
@@ -423,8 +433,8 @@
     },
     {
       "path": "tests/mobile-practice-browser.mjs",
-      "bytes": 8556,
-      "sha256": "c36b210bc14319cb1ad7cb596070d4390d42a503f9ab350c4946199fa2ebd500"
+      "bytes": 8941,
+      "sha256": "6be1cd02d242a5b195803e44ba6ee955a9f4a6a16fb19948cd77492fab7cf166"
     },
     {
       "path": "tests/offline-browser.mjs",
@@ -480,6 +490,16 @@
       "path": "tests/view-location.test.mjs",
       "bytes": 1094,
       "sha256": "3066866a59758279fb7c89738b466affe1c472cecb247504de2e2b00119c9d52"
+    },
+    {
+      "path": "tests/wangma-browser.mjs",
+      "bytes": 3513,
+      "sha256": "918ea36ddc9db9942b2a162487622c6bdfa8f165e66b71327973fc188ee0cc0d"
+    },
+    {
+      "path": "tests/wangma.test.mjs",
+      "bytes": 1463,
+      "sha256": "30f8c77b2e8a53e89d30fbfe493be1ea17cab685865fd537a03a97aba7385a47"
     }
   ]
 }

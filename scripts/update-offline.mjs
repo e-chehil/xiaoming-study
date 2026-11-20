@@ -1,7 +1,7 @@
 import {readFile,writeFile} from 'node:fs/promises';
 import {createHash} from 'node:crypto';
 const manifest=JSON.parse(await readFile(new URL('../release-files.json',import.meta.url),'utf8'));
-const ignored=new Set(['offline-shell.mjs','.nojekyll','data/learning-runtime.json','data/traditional/learning-runtime.json','data/cedict/dictionary.json']);
+const ignored=new Set(['offline-shell.mjs','.nojekyll','data/learning-runtime.json','data/traditional/learning-runtime.json','data/cedict/dictionary.json','data/wangma.json']);
 const files=[];
 for(const item of manifest.files.filter(f=>f.path.startsWith('public/')).sort((a,b)=>a.path.localeCompare(b.path))){
   const path=item.path.slice(7);if(ignored.has(path))continue;

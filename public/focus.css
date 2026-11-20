@@ -596,3 +596,17 @@ html.compact-practice{overflow:hidden;scrollbar-gutter:auto}
 
 .short-practice .practice[data-item-type='word'] .target-wrap{--glyph-row:36px}
 .short-practice .practice[data-item-type='word'] .target:not(.long){font-size:32px}
+
+.wangma-reference{display:flex;flex-wrap:wrap;justify-content:center;align-items:baseline;gap:3px 12px;min-width:0;padding:3px 0;color:var(--muted);font-size:13px;line-height:1.45}
+.wangma-name,.wangma-entry{white-space:nowrap}
+.wangma-entry{display:inline-flex;align-items:baseline;gap:4px}
+.wangma-entry code{font-family:var(--mono,monospace);font-size:.95em;letter-spacing:.035em;color:var(--ink)}
+.wangma-reference small{font-size:inherit}
+.dialog .wangma-reference{justify-content:flex-start;margin-block:12px}
+.wangma-setting{flex-wrap:wrap}.wangma-setting select{max-width:100%}
+.compact-practice .wangma-reference{gap:2px 8px;font-size:12px;padding:0}
+
+/* Reserve the reference line inside the visible keyboard-height budget. */
+.compact-practice .practice:has(.wangma-reference) .target-wrap{--glyph-row:clamp(32px,calc(var(--visible-height) - 384px),68px)}
+.compact-practice .target-wrap .wangma-reference{flex-wrap:nowrap;overflow-x:auto;justify-content:safe center;scrollbar-width:none}
+.compact-practice .target-wrap .wangma-reference>*{flex:none}

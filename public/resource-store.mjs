@@ -1,8 +1,10 @@
 import {RESOURCES,resourceSources} from './resource-catalog.mjs';
 import {hydrateCourse} from './lesson-data.mjs';
+import {validateWangma} from './wangma.mjs';
 export const scopePrefix=base=>'xiaoming-study:'+new URL('./',base).href+':';
 export async function validateResource(data,record){
-  if(record.id==='dictionary'){
+  if(record.id==='wangma') validateWangma(data);
+  else if(record.id==='dictionary'){
     if(data?.version!==1||!Array.isArray(data.entries)||data.entries.length!==data.source?.entries||!data.entries.length)throw new Error('词典结构无效');
     for(const row of data.entries)if(!Array.isArray(row)||row.length!==5||row.slice(0,3).some(v=>typeof v!=='string')||!Array.isArray(row[3])||row[3].some(v=>typeof v!=='string')||!Number.isSafeInteger(row[4]))throw new Error('词典条目无效');
   }else{if(data?.course!==record.id)throw new Error('课程不匹配');hydrateCourse(data);}

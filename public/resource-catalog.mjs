@@ -1,4 +1,4 @@
-export const DATA_COMMIT='52fdfea8754904c0054e417472cf34ba70cc7a76';
+export const DATA_COMMIT='318f95d15388562f5dc0fe2b1361d569fc6032d4';
 export const RESOURCES=Object.freeze({
   "simplified": {
     "id": "simplified",
@@ -11,6 +11,12 @@ export const RESOURCES=Object.freeze({
     "path": "data/traditional/learning-runtime.json",
     "bytes": 12442409,
     "sha256": "3698ac5ca22e63756e48aeb6ce7f1c6ad268f2067079df3b00f2a76345aeea59"
+  },
+  "wangma": {
+    "id": "wangma",
+    "path": "data/wangma.json",
+    "bytes": 952082,
+    "sha256": "0d751af05fb28d6f0140ace5234ed58f97898136c1c39836015da2b0f2f16916"
   },
   "dictionary": {
     "id": "dictionary",
