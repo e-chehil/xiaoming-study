@@ -13,7 +13,7 @@ self.addEventListener('install',event=>event.waitUntil((async()=>{
   try{
     let cursor=0;
     await Promise.all(Array.from({length:4},async()=>{while(cursor<SHELL_FILES.length){const file=SHELL_FILES[cursor++];await cache.put(new URL(file.path,base),await fetchFile(file));}}));
-    for(const id of ['simplified','traditional'])if(await resourceStore.hasInstalled(id)){let persisted=false;await resourceStore.load(id,{onStatus:state=>{if(state.phase==='ready')persisted=state.persisted;}});if(!persisted)throw new Error('新版课程尚未保存');}
+    for(const id of ['simplified','traditional','wangma'])if(await resourceStore.hasInstalled(id)){let persisted=false;await resourceStore.load(id,{onStatus:state=>{if(state.phase==='ready')persisted=state.persisted;}});if(!persisted)throw new Error('新版离线资源尚未保存');}
     await cache.put(new URL('__offline_complete__',base),new Response(SHELL_VERSION));
   }catch(error){await caches.delete(shellName);throw error;}
 })()));

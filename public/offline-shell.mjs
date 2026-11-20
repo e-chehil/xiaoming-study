@@ -1,4 +1,4 @@
-export const SHELL_VERSION="823d583dc51cb3a09f1be949dace760e27c95938f352d4745a9d5913f21c5402";
+export const SHELL_VERSION="6fc88b890167263f1306671e7db3b32bcb177624a028fe6b6b8b947867e4df23";
 export const SHELL_FILES=[
   {
     "path": "answer-exposure.mjs",
@@ -62,8 +62,8 @@ export const SHELL_FILES=[
   },
   {
     "path": "focus.css",
-    "bytes": 51931,
-    "sha256": "b1e311784b787061a6c490ccabe10ba60e4554d8b12e08b7abac1738684c8f3c"
+    "bytes": 54027,
+    "sha256": "93ae86ce9283b1c6bf10d90a7e3d0dc58e95f2172d7859afce5cc9a4a3bee937"
   },
   {
     "path": "fonts/NotoSerifTC-compat.ttf",
@@ -83,7 +83,7 @@ export const SHELL_FILES=[
   {
     "path": "index.html",
     "bytes": 1495,
-    "sha256": "30a06a3135c6fb64db4f80a17d588cc3b2711d263c9ed3bef3e59948183571d4"
+    "sha256": "b341ed857520c31397d587c9971de2349f39a0b74230edf87872f09cee69632e"
   },
   {
     "path": "learning-schema.mjs",
@@ -112,8 +112,8 @@ export const SHELL_FILES=[
   },
   {
     "path": "practice.mjs",
-    "bytes": 92999,
-    "sha256": "da7577fc14802e24169cf8a67435336bdaa5b537387b33a73863528d61517ccc"
+    "bytes": 95440,
+    "sha256": "8452f59a15252027da478a84606a1988a0f97d7bcd4dbd43f7856270d259864e"
   },
   {
     "path": "request.mjs",
@@ -122,8 +122,8 @@ export const SHELL_FILES=[
   },
   {
     "path": "resource-catalog.mjs",
-    "bytes": 1591,
-    "sha256": "f55d692e77b515e0dca7e7e15a83f07b90766fbbfc58d76a566dc32b4583f824"
+    "bytes": 1592,
+    "sha256": "968842ace44cc336e13d7c6e76a5d92f90adc7e2555290a25c53c212746eae29"
   },
   {
     "path": "resource-store.mjs",
@@ -137,8 +137,8 @@ export const SHELL_FILES=[
   },
   {
     "path": "sw.mjs",
-    "bytes": 2444,
-    "sha256": "ab2161e62742d686e1aeea9441749f5c7d4942ef3dc6841ab783cc6027c1a96e"
+    "bytes": 2459,
+    "sha256": "f9ecc9fa5c278be04837148338f21fc411b9326507ff9e16adead1ab07fdc5a8"
   },
   {
     "path": "teaching.mjs",
@@ -177,8 +177,8 @@ export const SHELL_FILES=[
   },
   {
     "path": "vendor/THIRD_PARTY_NOTICES.md",
-    "bytes": 2781,
-    "sha256": "d2afcb510783c18c62ca07013f40af1e1cb864f7e77ff1f7c41ac8ded4ea3bdf"
+    "bytes": 3022,
+    "sha256": "588d5a2e5b098d2d5f3ce338ffdb75e61b264ce9e4480166199df6da9d4a05f8"
   },
   {
     "path": "vendor/ui-traditional-map.json",
@@ -198,7 +198,7 @@ export const SHELL_FILES=[
   {
     "path": "version.json",
     "bytes": 53,
-    "sha256": "0811acf3987c36118a36ca56e978b460144aa2cce4ea643aee7b0f265d23fe82"
+    "sha256": "8b546c2bf2f9098aef8a5144ac9741dbfc2fe71d5dee2a1d050f41a1250a9248"
   },
   {
     "path": "view-location.mjs",
@@ -212,7 +212,7 @@ export const SHELL_FILES=[
   },
   {
     "path": "wangma.mjs",
-    "bytes": 1714,
-    "sha256": "be932b207807a973aeb9e01ec8d9fbaecaf03b2e68f9dd813cb279c345e3b767"
+    "bytes": 2869,
+    "sha256": "c1988f4d00f946858709718c1b213ea067b830c6cd276d9c21c4b3786a3d1c2d"
   }
 ];

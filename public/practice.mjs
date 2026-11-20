@@ -11,7 +11,7 @@ import { captureViewState,restoreViewState,trapDialogTab } from './view-state.mj
 import {hydrateCourse,allLessons,practicePool,TRACKS} from './lesson-data.mjs';
 import {ruleSummary,stepBasis,briefStepBasis,explanationMarkup,glyphMarkup,sourceTextMarkup,mnemonicMarkup,verseMarkup} from './teaching.mjs';
 import {mnemonicFor} from './mnemonics.mjs';
-import {WANGMA,lookupWangma,referenceGlyphs} from './wangma.mjs';
+import {WANGMA,lookupWangma,lookupWangmaSplit,referenceGlyphs} from './wangma.mjs';
 
 const app=document.querySelector('#app'),overlay=document.querySelector('#modal-root');
 const esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -380,6 +380,41 @@ function rememberWangma(scheme) {
   preferredWangma=scheme;
   try { localStorage.setItem('xiaoming-wangma',scheme); } catch {}
 }
+function wangmaParts(parts, enlarged=false) {
+  if (typeof parts==='string') return `<span class="wangma-strokes" data-source-text>${esc(parts)}</span>`;
+  return `<span class="wangma-parts">${parts.map((image,index)=>
+    `<span class="wangma-part"><img src="${image.src}" width="${image.width}" height="${image.height}" alt="${enlarged?t('第')+(index+1)+t('个字根'):''}">${enlarged?`<small aria-hidden="true">${index+1}</small>`:''}</span>`
+  ).join('')}</span>`;
+}
+function wangmaGlyph(glyph) {
+  const scheme=settings.wangma,code=lookupWangma(wangmaData,glyph,scheme);
+  const heading=`<span class="root-font">${esc(glyph)}</span> ${code?`<code>${esc(code)}</code>`:'<small>未收录</small>'}`;
+  const parts=lookupWangmaSplit(wangmaData,glyph,scheme);
+  if (!parts) return `<span class="wangma-entry">${heading}</span>`;
+  const label=`${t('放大')}「${glyph}」${t('的拆分')} · ${code}`;
+  return `<button type="button" class="wangma-entry wangma-glyph" data-action="wangma-zoom" data-glyph="${esc(glyph)}" data-source-text aria-label="${esc(label)}" title="${esc(label)}" aria-haspopup="dialog">${heading} ${wangmaParts(parts)}</button>`;
+}
+function openWangmaZoom(opener) {
+  const glyph=opener.dataset.glyph,scheme=settings.wangma;
+  const parts=lookupWangmaSplit(wangmaData,glyph,scheme);
+  if (!parts) return;
+  const panel=document.createElement('dialog');
+  panel.className='dialog wangma-zoom';
+  panel.setAttribute('aria-labelledby','wangma-zoom-title');
+  panel.innerHTML=`<div class="dialog-header"><h2 id="wangma-zoom-title">${esc(WANGMA[scheme])} · ${typeof parts==='string'?'笔画顺序':'字根拆分'}</h2><button type="button" class="icon-button" autofocus aria-label="关闭"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button></div><div class="wangma-zoom-glyph"><span class="root-font">${esc(glyph)}</span> <code>${esc(lookupWangma(wangmaData,glyph,scheme))}</code></div>${wangmaParts(parts,true)}`;
+  localize(panel);
+  clockPause();typeAhead='';
+  overlay.append(panel);
+  panel.querySelector('button').addEventListener('click',()=>panel.close());
+  panel.addEventListener('close',()=>{
+    panel.remove();
+    if (!overlay.firstChild&&route==='practice') {
+      clockResume();
+      document.querySelector('#code-input')?.focus({preventScroll:true});
+    } else if (opener.isConnected) opener.focus({preventScroll:true});
+  },{once:true});
+  panel.showModal();
+}
 function wangmaEntries(item) {
   if (!wangmaData) return wangmaFailed
     ? '<button type="button" class="quiet-button" data-action="retry-wangma">重试王码对照</button>'
@@ -388,10 +423,7 @@ function wangmaEntries(item) {
   const isExample=['initial','stroke'].includes(item.type);
   const label=WANGMA[settings.wangma];
   return `<span class="wangma-name">${esc(label)}${isExample?' · 示例':entries.length>1?' · 逐字':''}</span>`+
-    entries.map(glyph=>{
-      const code=lookupWangma(wangmaData,glyph,settings.wangma);
-      return `<span class="wangma-entry"><span class="root-font">${esc(glyph)}</span> ${code?`<code>${esc(code)}</code>`:'<small>未收录</small>'}</span>`;
-    }).join('');
+    entries.map(wangmaGlyph).join('');
 }
 function wangmaReference(item) {
   if (!settings.wangma || !referenceGlyphs(item).length) return '';
@@ -745,7 +777,7 @@ function settingsView(){
       <label class="setting" for="retention"><span><strong id="retention-label">目标记忆保持率</strong><small id="retention-note">目标越高，通常需要更频繁地复习</small></span><span><input id="retention" aria-labelledby="retention-label" aria-describedby="retention-note" name="retention" type="number" min="80" max="97" step="1" value="${Math.round(settings.retention*100)}" required> %</span></label>
       </fieldset>
       <fieldset class="settings-group"><legend>编码对照</legend>
-      <label class="setting wangma-setting" for="wangma"><span><strong>王码对照</strong><small>练习时显示单字王码，词语逐字列出</small></span><select id="wangma" name="wangma"><option value="">关闭</option>${Object.entries(WANGMA).map(([key,label])=>`<option value="${key}" ${settings.wangma===key?'selected':''}>${esc(label)}</option>`).join('')}</select></label>
+      <label class="setting wangma-setting" for="wangma"><span><strong>王码对照</strong><small>逐字显示编码与拆分，点按可放大</small></span><select id="wangma" name="wangma"><option value="">关闭</option>${Object.entries(WANGMA).map(([key,label])=>`<option value="${key}" ${settings.wangma===key?'selected':''}>${esc(label)}</option>`).join('')}</select></label>
       </fieldset>
       <button class="solid-button" type="submit">保存</button>
     </form>
@@ -868,6 +900,7 @@ document.addEventListener('click',event=>{
   const {action,id,view}=button.dataset;
   if(action==='reload'){app.innerHTML='<main class="loading" id="main-content"><div class="brand-symbol">潇</div><h1 id="loading-status" role="status">正在打开课程…</h1><progress id="download-progress" max="100" value="0" aria-label="课程下载进度" hidden></progress></main>';void initialize();return;}
   else if(action==='retry-wangma'){wangmaFailed=false;void prepareWangma();}
+  else if(action==='wangma-zoom')openWangmaZoom(button);
   else if(action==='theme')void toggleTheme();
   else if(action==='course')void switchCourse(courseId==='simplified'?'traditional':'simplified');
   else if(action==='skip')void submit(true);
@@ -963,6 +996,8 @@ document.addEventListener('submit',async event=>{
 });
 document.addEventListener('keydown',event=>{
   if(event.isComposing||event.keyCode===229)return;
+  // Native modal handles Escape and focus trapping, including above a lesson detail dialog.
+  if(event.target.closest('dialog.wangma-zoom'))return;
   if(overlay.firstChild){
     const panel=overlay.querySelector('.dialog');
     const plain=!event.altKey&&!event.ctrlKey&&!event.metaKey;

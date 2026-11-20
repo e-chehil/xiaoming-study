@@ -21,7 +21,7 @@ const server=http.createServer(async(req,res)=>{
       for(const file of files){if(file.path==='sw.mjs'||mode==='bad-update'&&file.path==='resource-catalog.mjs'){let body=await readFile(resolve(root,file.path));body=Buffer.concat([body,Buffer.from(file.path==='sw.mjs'?'\n// local '+mode+' fixture\n':"\nRESOURCES.simplified.sha256='"+'a'.repeat(64)+"';\n")]);file.bytes=body.length;file.sha256=digest(body);}}
       bytes=Buffer.from('export const SHELL_VERSION="'+mode+'";\nexport const SHELL_FILES='+JSON.stringify(files)+';\n');
     }
-    if(['data/learning-runtime.json','data/traditional/learning-runtime.json','data/cedict/dictionary.json'].includes(path))counts.set(prefix+path,(counts.get(prefix+path)||0)+1);
+    if(['data/learning-runtime.json','data/traditional/learning-runtime.json','data/cedict/dictionary.json','data/wangma.json'].includes(path))counts.set(prefix+path,(counts.get(prefix+path)||0)+1);
     res.writeHead(200,{'Content-Type':types[extname(path)]||'application/octet-stream','Cache-Control':'no-store'});res.end(bytes);
   }catch{res.writeHead(404);res.end('not found');}
 });
@@ -52,7 +52,21 @@ try{
       mode='bad-update';
       const update=await offline.evaluate(async()=>{const registration=await navigator.serviceWorker.ready;return new Promise(async(resolve,reject)=>{const timer=setTimeout(()=>reject(Error('Update was not observed')),30000);registration.addEventListener('updatefound',()=>{const worker=registration.installing;worker.addEventListener('statechange',()=>{if(worker.state==='redundant'){clearTimeout(timer);resolve('rejected');}});},{once:true});await registration.update();});});
       assert.equal(update,'rejected');mode='normal';await context.setOffline(true);await offline.reload();await ready(offline);assert.deepEqual(await progress(offline,base),before);checks.push('Bad new resource version prevents worker activation; previous complete page and course still work offline');
-      await context.setOffline(false);mode='good-update';const downloads=counts.get(prefix+'data/learning-runtime.json');await offline.evaluate(async()=>{const registration=await navigator.serviceWorker.ready;await new Promise(async(resolve,reject)=>{const timer=setTimeout(()=>reject(Error('Good update not observed')),30000);registration.addEventListener('updatefound',()=>{const worker=registration.installing;worker.addEventListener('statechange',()=>{if(worker.state==='installed'){clearTimeout(timer);resolve();}else if(worker.state==='redundant'){clearTimeout(timer);reject(Error('Good update rejected'));}});},{once:true});await registration.update();});if(!registration.waiting)throw Error('Update should wait for the current practice');});await context.setOffline(true);await offline.close();const upgraded=await context.newPage();await upgraded.goto(base,{waitUntil:'domcontentloaded',timeout:45000});await ready(upgraded);assert.deepEqual(await progress(upgraded,base),before);assert.equal(counts.get(prefix+'data/learning-runtime.json'),downloads);await upgraded.close();mode='normal';checks.push('Valid program update waits for old tabs, reuses installed course and opens offline with FSRS intact');
+      assert.equal(counts.get(prefix+'data/wangma.json') || 0, 0);
+      // Presence of the old resource key marks an installation that used Wangma before 1.3.
+      await offline.evaluate(async base => {
+        const {resourceStore} = await import(base+'resource-store.mjs');
+        const cache = await caches.open(resourceStore.cacheName);
+        const oldKey = new URL('__resources__/wangma/0d751af05fb28d6f0140ace5234ed58f97898136c1c39836015da2b0f2f16916.json',base);
+        await cache.put(oldKey,Response.json({version:1}));
+      },base);
+      await context.setOffline(false);mode='good-update';const downloads=counts.get(prefix+'data/learning-runtime.json');await offline.evaluate(async()=>{const registration=await navigator.serviceWorker.ready;await new Promise(async(resolve,reject)=>{const timer=setTimeout(()=>reject(Error('Good update not observed')),30000);registration.addEventListener('updatefound',()=>{const worker=registration.installing;worker.addEventListener('statechange',()=>{if(worker.state==='installed'){clearTimeout(timer);resolve();}else if(worker.state==='redundant'){clearTimeout(timer);reject(Error('Good update rejected'));}});},{once:true});await registration.update();});if(!registration.waiting)throw Error('Update should wait for the current practice');});await context.setOffline(true);await offline.close();const upgraded=await context.newPage();await upgraded.goto(base,{waitUntil:'domcontentloaded',timeout:45000});await ready(upgraded);assert.deepEqual(await progress(upgraded,base),before);assert.equal(counts.get(prefix+'data/learning-runtime.json'),downloads);assert.equal(counts.get(prefix+'data/wangma.json'),1);
+      const imageCount=await upgraded.evaluate(async base => {
+        const {resourceStore}=await import(base+'resource-store.mjs');
+        return (await resourceStore.load('wangma')).images.length;
+      },base);
+      assert.equal(imageCount,866,'Previously installed code table upgrades with images before going offline');
+      await upgraded.close();mode='normal';checks.push('Valid program update waits for old tabs, reuses installed course and opens offline with FSRS intact');
     }
     await context.close();console.log(checks.at(-1));
   }

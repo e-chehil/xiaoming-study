@@ -597,16 +597,42 @@ html.compact-practice{overflow:hidden;scrollbar-gutter:auto}
 .short-practice .practice[data-item-type='word'] .target-wrap{--glyph-row:36px}
 .short-practice .practice[data-item-type='word'] .target:not(.long){font-size:32px}
 
-.wangma-reference{display:flex;flex-wrap:wrap;justify-content:center;align-items:baseline;gap:3px 12px;min-width:0;padding:3px 0;color:var(--muted);font-size:13px;line-height:1.45}
+.wangma-reference{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:4px 10px;min-width:0;padding:3px 0;color:var(--muted);font-size:13px;line-height:1.45}
 .wangma-name,.wangma-entry{white-space:nowrap}
-.wangma-entry{display:inline-flex;align-items:baseline;gap:4px}
+.wangma-entry{display:inline-flex;align-items:center;gap:5px}
 .wangma-entry code{font-family:var(--mono,monospace);font-size:.95em;letter-spacing:.035em;color:var(--ink)}
+.wangma-glyph{min-height:32px;padding:2px 5px;color:var(--ink);cursor:zoom-in}
+.wangma-glyph:hover,.wangma-glyph:focus-visible{background:var(--hover)}
+.wangma-parts{display:inline-flex;align-items:center;gap:2px;vertical-align:middle}
+.wangma-part{display:inline-grid;justify-items:center}
+.wangma-part img{display:block;width:auto;height:24px;image-rendering:pixelated}
+.wangma-strokes{font:20px/1.2 var(--glyph);letter-spacing:.06em;color:var(--ink)}
 .wangma-reference small{font-size:inherit}
 .dialog .wangma-reference{justify-content:flex-start;margin-block:12px}
+.teaching-dialog>.wangma-reference{max-height:24svh;overflow-y:auto;flex:0 1 auto}
+.wangma-zoom{width:fit-content;min-width:min(320px,calc(100% - 32px));max-width:min(520px,calc(100% - 32px));max-height:calc(100svh - 32px);margin:auto;color:var(--ink)}
+.wangma-zoom::backdrop{background:var(--scrim)}
+.wangma-zoom-glyph{display:flex;align-items:baseline;gap:12px;margin-bottom:16px}
+.wangma-zoom-glyph .root-font{font-size:36px;line-height:1.2}
+.wangma-zoom-glyph code{font:18px var(--mono);color:var(--muted)}
+.wangma-zoom .wangma-parts{display:flex;flex-wrap:wrap;gap:8px}
+.wangma-zoom .wangma-part{gap:4px}
+.wangma-zoom .wangma-part img{height:48px}
+.wangma-zoom .wangma-part small{color:var(--muted);font:12px/1.4 var(--mono)}
+.wangma-zoom .wangma-strokes{font-size:36px}
 .wangma-setting{flex-wrap:wrap}.wangma-setting select{max-width:100%}
-.compact-practice .wangma-reference{gap:2px 8px;font-size:12px;padding:0}
+.compact-practice .wangma-reference{gap:2px 6px;font-size:12px;padding:0}
+.compact-practice .wangma-glyph{min-height:26px;padding:2px 4px}
+.compact-practice .wangma-reference img{height:20px}
+.compact-practice .wangma-reference .wangma-strokes{font-size:18px}
 
 /* Reserve the reference line inside the visible keyboard-height budget. */
 .compact-practice .practice:has(.wangma-reference) .target-wrap{--glyph-row:clamp(32px,calc(var(--visible-height) - 384px),68px)}
 .compact-practice .target-wrap .wangma-reference{flex-wrap:nowrap;overflow-x:auto;justify-content:safe center;scrollbar-width:none}
 .compact-practice .target-wrap .wangma-reference>*{flex:none}
+
+/* Keep each reading on one line when the phone keyboard leaves very little height. */
+.short-practice .practice[data-item-type='word']:has(.wangma-reference) .pinyin{overflow-x:auto;flex-wrap:nowrap;justify-content:safe center;scrollbar-width:none}
+.short-practice .practice[data-item-type='word']:has(.wangma-reference) .pronunciation{display:grid;grid-template-columns:auto auto;justify-content:center;max-width:none;flex:none;white-space:nowrap;gap:0 4px}
+.short-practice .practice[data-item-type='word']:has(.wangma-reference) .reading-zhuyin{grid-column:1/-1}
+.short-practice .practice[data-item-type='word']:has(.wangma-reference) .reading-pinyin:last-child{grid-column:1/-1}

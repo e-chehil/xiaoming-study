@@ -14,12 +14,28 @@ const codePatterns = [/^[A-Y]{1,4}$/, /^[A-Y]{1,4}$/, /^[A-Y]{1,4}$/,
   /^[1-6]{1,5}$/, /^[1-9]{1,5}$/, /^[1-6]{1,6}$/, /^[1-9]{1,6}$/];
 
 export function validateWangma(data) {
-  if (data?.version !== 1 || !Array.isArray(data.columns) ||
+  if (data?.version !== 2 || !Array.isArray(data.columns) ||
       data.columns.length !== fields.length || fields.some((field, i) => data.columns[i] !== field) ||
-      !data.characters || Object.keys(data.characters).length !== 15432) throw new Error('王码表结构无效');
+      !data.characters || Object.keys(data.characters).length !== 15432 ||
+      !data.roots || Object.keys(data.roots).length !== 15432 ||
+      !Array.isArray(data.images) || !data.images.length) throw new Error('王码表结构无效');
+  for (const image of data.images) {
+    if (!image || !Number.isInteger(image.width) || image.width < 1 ||
+        !Number.isInteger(image.height) || image.height < 1 ||
+        typeof image.src !== 'string' || !/^data:image\/png;base64,[A-Za-z0-9+/]+={0,2}$/.test(image.src)) {
+      throw new Error('王码字根图无效');
+    }
+  }
   for (const [glyph, codes] of Object.entries(data.characters)) {
     if ([...glyph].length !== 1 || !Array.isArray(codes) || codes.length !== fields.length ||
         codes.some((code, i) => typeof code !== 'string' || !codePatterns[i].test(code))) throw new Error('王码条目无效');
+    const roots = data.roots[glyph];
+    if (!Array.isArray(roots) || roots.length !== fields.length ||
+        roots.some((parts, i) => fields[i] === 'numeric6_first4_last1'
+          ? typeof parts !== 'string' || !/^[一丨丶丿乙口日]{1,5}$/u.test(parts)
+          : !Array.isArray(parts) || !parts.length || parts.some(id => !Number.isInteger(id) || id < 0 || id >= data.images.length))) {
+      throw new Error('王码拆分条目无效');
+    }
   }
 }
 
@@ -32,4 +48,10 @@ export function referenceGlyphs(item) {
 
 export function lookupWangma(data, glyph, scheme) {
   return data?.characters[glyph]?.[fields.indexOf(scheme)] ?? null;
+}
+
+export function lookupWangmaSplit(data, glyph, scheme) {
+  const parts = data?.roots[glyph]?.[fields.indexOf(scheme)];
+  if (!parts?.length) return null;
+  return typeof parts === 'string' ? parts : parts.map(id => data.images[id]);
 }

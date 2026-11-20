@@ -4,6 +4,7 @@
 
 | 内容 | 来源 | 条件与随附声明 |
 | --- | --- | --- |
+| 王码七方案的编码、字根拆分及图像 | 王码公司「王码字根查典」 | 保留原查询顺序及字根图像，BMP 无损转为 PNG。图像归原权利人所有。[原查询](http://www.wangma.net.cn/search.aspx?sm=7) |
 | FSRS 实现 | ts-fsrs 5.4.2 | MIT，`./FSRS-LICENSE.txt` |
 | 固定版本的潇明上游算法与码表 | [Dieken/code_genie](https://github.com/Dieken/code_genie/tree/55e783c3973b125d3f56baac534b796c76df87a5) | 上游仓库 MIT，`./CodeGenie-MIT.txt`；不据此为其他来源数据重新授权 |
 | 字根字体 Yuniversus | [宇浩网站](https://shurufa.app/ime/xiaoming)及[网站仓库](https://github.com/forfudan/yu) | 原字体未修改；网站标示 CC BY-NC-ND 4.0，保留来源及 `./Yuhao-CC-BY-NC-ND-4.0.txt` |
