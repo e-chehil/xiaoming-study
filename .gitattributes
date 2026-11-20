@@ -7,3 +7,10 @@ public/data/cedict/dictionary.json -text
 *.cmd -text whitespace=cr-at-eol
 public/data/cedict/NOTICE.txt whitespace=-blank-at-eol
 public/vendor/fsrs.mjs whitespace=-blank-at-eol
+
+# Keep the archived source and reference bytes identical to their recorded digests.
+android-fcitx5/** -text
+ocr/** -text
+release-audits/** -text
+research/** -text
+windows-weasel/** -text

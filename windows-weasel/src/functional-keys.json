@@ -1,0 +1,1106 @@
+{
+  "actions": {
+    "pass": "本鍵",
+    "ignore": "無動作",
+    "ascii": "中英切換",
+    "temporary": "臨時英文模式",
+    "clear": "清除編碼",
+    "section": "清除編碼分節",
+    "raw": "上屏輸入編碼",
+    "first": "上屏首選",
+    "selected": "上屏高亮候選",
+    "selected_ascii": "上屏高亮候選並切換英文模式",
+    "raw_ascii": "上屏輸入編碼並切換英文模式",
+    "second": "選第二候選",
+    "third": "選第三候選",
+    "previous": "上一頁",
+    "next": "下一頁",
+    "command": "命令模式",
+    "note": "切換注解模式",
+    "charset": "切換字集過濾",
+    "quick": "快捷字符",
+    "split": "分割編碼",
+    "reverse": "反查／歷史輸入",
+    "number": "臨時數字模式",
+    "punctuation": "中文標點",
+    "inspect": "查閱面板",
+    "grid": "臨時展開候選面板"
+  },
+  "keys": {
+    "Shift_L": {
+      "name": "左 Shift",
+      "contexts": [
+        {
+          "default": "ascii",
+          "actions": [
+            "pass",
+            "ignore",
+            "ascii",
+            "temporary"
+          ]
+        },
+        {
+          "default": "raw_ascii",
+          "actions": [
+            "pass",
+            "ignore",
+            "ascii",
+            "temporary",
+            "clear",
+            "section",
+            "raw",
+            "first",
+            "selected",
+            "previous",
+            "next",
+            "note",
+            "charset",
+            "selected_ascii",
+            "raw_ascii",
+            "inspect"
+          ]
+        },
+        {
+          "default": "raw_ascii",
+          "actions": [
+            "pass",
+            "ignore",
+            "ascii",
+            "temporary",
+            "clear",
+            "section",
+            "raw",
+            "first",
+            "selected",
+            "previous",
+            "next",
+            "note",
+            "charset",
+            "selected_ascii",
+            "raw_ascii",
+            "inspect"
+          ]
+        }
+      ]
+    },
+    "Shift_R": {
+      "name": "右 Shift",
+      "contexts": [
+        {
+          "default": "ascii",
+          "actions": [
+            "pass",
+            "ignore",
+            "ascii",
+            "temporary"
+          ]
+        },
+        {
+          "default": "raw_ascii",
+          "actions": [
+            "pass",
+            "ignore",
+            "ascii",
+            "temporary",
+            "clear",
+            "section",
+            "raw",
+            "first",
+            "selected",
+            "previous",
+            "next",
+            "note",
+            "charset",
+            "selected_ascii",
+            "raw_ascii",
+            "inspect"
+          ]
+        },
+        {
+          "default": "raw_ascii",
+          "actions": [
+            "pass",
+            "ignore",
+            "ascii",
+            "temporary",
+            "clear",
+            "section",
+            "raw",
+            "first",
+            "selected",
+            "previous",
+            "next",
+            "note",
+            "charset",
+            "selected_ascii",
+            "raw_ascii",
+            "inspect"
+          ]
+        }
+      ]
+    },
+    "Control_L": {
+      "name": "左 Control",
+      "contexts": [
+        {
+          "default": "pass",
+          "actions": [
+            "pass",
+            "ignore",
+            "ascii",
+            "temporary"
+          ]
+        },
+        {
+          "default": "pass",
+          "actions": [
+            "pass",
+            "ignore",
+            "ascii",
+            "temporary",
+            "clear",
+            "section",
+            "raw",
+            "first",
+            "selected",
+            "previous",
+            "next",
+            "note",
+            "charset",
+            "selected_ascii",
+            "raw_ascii",
+            "inspect"
+          ]
+        },
+        {
+          "default": "pass",
+          "actions": [
+            "pass",
+            "ignore",
+            "ascii",
+            "temporary",
+            "clear",
+            "section",
+            "raw",
+            "first",
+            "selected",
+            "previous",
+            "next",
+            "note",
+            "charset",
+            "selected_ascii",
+            "raw_ascii",
+            "inspect"
+          ]
+        }
+      ]
+    },
+    "Control_R": {
+      "name": "右 Control",
+      "contexts": [
+        {
+          "default": "pass",
+          "actions": [
+            "pass",
+            "ignore",
+            "ascii",
+            "temporary"
+          ]
+        },
+        {
+          "default": "pass",
+          "actions": [
+            "pass",
+            "ignore",
+            "ascii",
+            "temporary",
+            "clear",
+            "section",
+            "raw",
+            "first",
+            "selected",
+            "previous",
+            "next",
+            "note",
+            "charset",
+            "selected_ascii",
+            "raw_ascii",
+            "inspect"
+          ]
+        },
+        {
+          "default": "pass",
+          "actions": [
+            "pass",
+            "ignore",
+            "ascii",
+            "temporary",
+            "clear",
+            "section",
+            "raw",
+            "first",
+            "selected",
+            "previous",
+            "next",
+            "note",
+            "charset",
+            "selected_ascii",
+            "raw_ascii",
+            "inspect"
+          ]
+        }
+      ]
+    },
+    "Caps_Lock": {
+      "name": "Caps Lock",
+      "contexts": [
+        {
+          "default": "pass",
+          "actions": [
+            "pass",
+            "ignore",
+            "ascii",
+            "temporary"
+          ]
+        },
+        {
+          "default": "pass",
+          "actions": [
+            "pass",
+            "ignore",
+            "ascii",
+            "temporary",
+            "clear",
+            "section",
+            "raw",
+            "first",
+            "selected",
+            "previous",
+            "next",
+            "note",
+            "charset",
+            "selected_ascii",
+            "raw_ascii",
+            "inspect"
+          ]
+        },
+        {
+          "default": "pass",
+          "actions": [
+            "pass",
+            "ignore",
+            "ascii",
+            "temporary",
+            "clear",
+            "section",
+            "raw",
+            "first",
+            "selected",
+            "previous",
+            "next",
+            "note",
+            "charset",
+            "selected_ascii",
+            "raw_ascii",
+            "inspect"
+          ]
+        }
+      ]
+    },
+    "Escape": {
+      "name": "Escape",
+      "contexts": [
+        {
+          "default": "pass",
+          "actions": [
+            "pass",
+            "ignore",
+            "ascii",
+            "temporary",
+            "command",
+            "reverse"
+          ]
+        },
+        {
+          "default": "section",
+          "actions": [
+            "pass",
+            "ignore",
+            "ascii",
+            "temporary",
+            "clear",
+            "section",
+            "raw",
+            "first",
+            "selected",
+            "previous",
+            "next",
+            "note",
+            "charset",
+            "selected_ascii",
+            "raw_ascii",
+            "inspect",
+            "split"
+          ]
+        },
+        {
+          "default": "section",
+          "actions": [
+            "pass",
+            "ignore",
+            "ascii",
+            "temporary",
+            "clear",
+            "section",
+            "raw",
+            "first",
+            "selected",
+            "previous",
+            "next",
+            "note",
+            "charset",
+            "selected_ascii",
+            "raw_ascii",
+            "inspect",
+            "split"
+          ]
+        }
+      ]
+    },
+    "Return": {
+      "name": "Enter",
+      "contexts": [
+        {
+          "default": "pass",
+          "actions": [
+            "pass",
+            "ignore",
+            "ascii",
+            "temporary",
+            "command",
+            "reverse"
+          ]
+        },
+        {
+          "default": "raw",
+          "actions": [
+            "pass",
+            "ignore",
+            "ascii",
+            "temporary",
+            "clear",
+            "section",
+            "raw",
+            "first",
+            "selected",
+            "previous",
+            "next",
+            "note",
+            "charset",
+            "selected_ascii",
+            "raw_ascii",
+            "inspect",
+            "split"
+          ]
+        },
+        {
+          "default": "raw",
+          "actions": [
+            "pass",
+            "ignore",
+            "ascii",
+            "temporary",
+            "clear",
+            "section",
+            "raw",
+            "first",
+            "selected",
+            "previous",
+            "next",
+            "note",
+            "charset",
+            "selected_ascii",
+            "raw_ascii",
+            "inspect",
+            "split"
+          ]
+        }
+      ]
+    },
+    "space": {
+      "name": "空格",
+      "contexts": [
+        {
+          "default": "pass",
+          "actions": [
+            "pass",
+            "ignore",
+            "ascii",
+            "temporary",
+            "punctuation",
+            "quick",
+            "number",
+            "command",
+            "reverse"
+          ]
+        },
+        {
+          "default": "raw",
+          "actions": [
+            "pass",
+            "ignore",
+            "ascii",
+            "temporary",
+            "clear",
+            "section",
+            "raw",
+            "first",
+            "selected",
+            "previous",
+            "next",
+            "note",
+            "charset",
+            "selected_ascii",
+            "raw_ascii",
+            "inspect",
+            "punctuation",
+            "quick",
+            "split"
+          ]
+        },
+        {
+          "default": "selected",
+          "actions": [
+            "pass",
+            "ignore",
+            "ascii",
+            "temporary",
+            "clear",
+            "section",
+            "raw",
+            "first",
+            "selected",
+            "previous",
+            "next",
+            "note",
+            "charset",
+            "selected_ascii",
+            "raw_ascii",
+            "second",
+            "third",
+            "inspect",
+            "grid",
+            "punctuation",
+            "quick",
+            "split"
+          ]
+        }
+      ]
+    },
+    "Tab": {
+      "name": "Tab",
+      "contexts": [
+        {
+          "default": "pass",
+          "actions": [
+            "pass",
+            "ignore",
+            "ascii",
+            "temporary",
+            "command",
+            "reverse"
+          ]
+        },
+        {
+          "default": "inspect",
+          "actions": [
+            "pass",
+            "ignore",
+            "ascii",
+            "temporary",
+            "clear",
+            "section",
+            "raw",
+            "first",
+            "selected",
+            "previous",
+            "next",
+            "note",
+            "charset",
+            "selected_ascii",
+            "raw_ascii",
+            "inspect",
+            "split"
+          ]
+        },
+        {
+          "default": "grid",
+          "actions": [
+            "pass",
+            "ignore",
+            "ascii",
+            "temporary",
+            "clear",
+            "section",
+            "raw",
+            "first",
+            "selected",
+            "previous",
+            "next",
+            "note",
+            "charset",
+            "selected_ascii",
+            "raw_ascii",
+            "second",
+            "third",
+            "inspect",
+            "grid",
+            "split"
+          ]
+        }
+      ]
+    },
+    "slash": {
+      "name": "／（斜線）",
+      "contexts": [
+        {
+          "default": "command",
+          "actions": [
+            "pass",
+            "ignore",
+            "ascii",
+            "temporary",
+            "punctuation",
+            "quick",
+            "number",
+            "command",
+            "reverse"
+          ]
+        },
+        {
+          "default": "note",
+          "actions": [
+            "pass",
+            "ignore",
+            "ascii",
+            "temporary",
+            "clear",
+            "section",
+            "raw",
+            "first",
+            "selected",
+            "previous",
+            "next",
+            "note",
+            "charset",
+            "selected_ascii",
+            "raw_ascii",
+            "inspect",
+            "punctuation",
+            "quick",
+            "split"
+          ]
+        },
+        {
+          "default": "note",
+          "actions": [
+            "pass",
+            "ignore",
+            "ascii",
+            "temporary",
+            "clear",
+            "section",
+            "raw",
+            "first",
+            "selected",
+            "previous",
+            "next",
+            "note",
+            "charset",
+            "selected_ascii",
+            "raw_ascii",
+            "inspect",
+            "punctuation",
+            "quick",
+            "split"
+          ]
+        }
+      ]
+    },
+    "semicolon": {
+      "name": "；（分號）",
+      "contexts": [
+        {
+          "default": "quick",
+          "actions": [
+            "pass",
+            "ignore",
+            "ascii",
+            "temporary",
+            "punctuation",
+            "quick",
+            "number",
+            "command",
+            "reverse"
+          ]
+        },
+        {
+          "default": "quick",
+          "actions": [
+            "pass",
+            "ignore",
+            "ascii",
+            "temporary",
+            "clear",
+            "section",
+            "raw",
+            "first",
+            "selected",
+            "previous",
+            "next",
+            "note",
+            "charset",
+            "selected_ascii",
+            "raw_ascii",
+            "inspect",
+            "punctuation",
+            "quick",
+            "split"
+          ]
+        },
+        {
+          "default": "second",
+          "actions": [
+            "pass",
+            "ignore",
+            "ascii",
+            "temporary",
+            "clear",
+            "section",
+            "raw",
+            "first",
+            "selected",
+            "previous",
+            "next",
+            "note",
+            "charset",
+            "selected_ascii",
+            "raw_ascii",
+            "second",
+            "third",
+            "inspect",
+            "grid",
+            "punctuation",
+            "quick",
+            "split"
+          ]
+        }
+      ]
+    },
+    "apostrophe": {
+      "name": "＇（單引號）",
+      "contexts": [
+        {
+          "default": "punctuation",
+          "actions": [
+            "pass",
+            "ignore",
+            "ascii",
+            "temporary",
+            "punctuation",
+            "quick",
+            "number",
+            "command",
+            "reverse"
+          ]
+        },
+        {
+          "default": "punctuation",
+          "actions": [
+            "pass",
+            "ignore",
+            "ascii",
+            "temporary",
+            "clear",
+            "section",
+            "raw",
+            "first",
+            "selected",
+            "previous",
+            "next",
+            "note",
+            "charset",
+            "selected_ascii",
+            "raw_ascii",
+            "inspect",
+            "punctuation",
+            "quick",
+            "split"
+          ]
+        },
+        {
+          "default": "third",
+          "actions": [
+            "pass",
+            "ignore",
+            "ascii",
+            "temporary",
+            "clear",
+            "section",
+            "raw",
+            "first",
+            "selected",
+            "previous",
+            "next",
+            "note",
+            "charset",
+            "selected_ascii",
+            "raw_ascii",
+            "second",
+            "third",
+            "inspect",
+            "grid",
+            "punctuation",
+            "quick",
+            "split"
+          ]
+        }
+      ]
+    },
+    "grave": {
+      "name": "｀（反引號）",
+      "contexts": [
+        {
+          "default": "pass",
+          "actions": [
+            "pass",
+            "ignore",
+            "ascii",
+            "temporary",
+            "punctuation",
+            "quick",
+            "number",
+            "command",
+            "reverse"
+          ]
+        },
+        {
+          "default": "split",
+          "actions": [
+            "pass",
+            "ignore",
+            "ascii",
+            "temporary",
+            "clear",
+            "section",
+            "raw",
+            "first",
+            "selected",
+            "previous",
+            "next",
+            "note",
+            "charset",
+            "selected_ascii",
+            "raw_ascii",
+            "inspect",
+            "punctuation",
+            "quick",
+            "split"
+          ]
+        },
+        {
+          "default": "split",
+          "actions": [
+            "pass",
+            "ignore",
+            "ascii",
+            "temporary",
+            "clear",
+            "section",
+            "raw",
+            "first",
+            "selected",
+            "previous",
+            "next",
+            "note",
+            "charset",
+            "selected_ascii",
+            "raw_ascii",
+            "inspect",
+            "punctuation",
+            "quick",
+            "split"
+          ]
+        }
+      ]
+    },
+    "comma": {
+      "name": "，（逗號）",
+      "contexts": [
+        {
+          "default": "punctuation",
+          "actions": [
+            "pass",
+            "ignore",
+            "ascii",
+            "temporary",
+            "punctuation",
+            "quick",
+            "number",
+            "command",
+            "reverse"
+          ]
+        },
+        {
+          "default": "punctuation",
+          "actions": [
+            "pass",
+            "ignore",
+            "ascii",
+            "temporary",
+            "clear",
+            "section",
+            "raw",
+            "first",
+            "selected",
+            "previous",
+            "next",
+            "note",
+            "charset",
+            "selected_ascii",
+            "raw_ascii",
+            "inspect",
+            "punctuation",
+            "quick",
+            "split"
+          ]
+        },
+        {
+          "default": "punctuation",
+          "actions": [
+            "pass",
+            "ignore",
+            "ascii",
+            "temporary",
+            "clear",
+            "section",
+            "raw",
+            "first",
+            "selected",
+            "previous",
+            "next",
+            "note",
+            "charset",
+            "selected_ascii",
+            "raw_ascii",
+            "inspect",
+            "punctuation",
+            "quick",
+            "split"
+          ]
+        }
+      ]
+    },
+    "period": {
+      "name": "．（句號）",
+      "contexts": [
+        {
+          "default": "punctuation",
+          "actions": [
+            "pass",
+            "ignore",
+            "ascii",
+            "temporary",
+            "punctuation",
+            "quick",
+            "number",
+            "command",
+            "reverse"
+          ]
+        },
+        {
+          "default": "punctuation",
+          "actions": [
+            "pass",
+            "ignore",
+            "ascii",
+            "temporary",
+            "clear",
+            "section",
+            "raw",
+            "first",
+            "selected",
+            "previous",
+            "next",
+            "note",
+            "charset",
+            "selected_ascii",
+            "raw_ascii",
+            "inspect",
+            "punctuation",
+            "quick",
+            "split"
+          ]
+        },
+        {
+          "default": "punctuation",
+          "actions": [
+            "pass",
+            "ignore",
+            "ascii",
+            "temporary",
+            "clear",
+            "section",
+            "raw",
+            "first",
+            "selected",
+            "previous",
+            "next",
+            "note",
+            "charset",
+            "selected_ascii",
+            "raw_ascii",
+            "inspect",
+            "punctuation",
+            "quick",
+            "split"
+          ]
+        }
+      ]
+    },
+    "minus": {
+      "name": "－（減號）",
+      "contexts": [
+        {
+          "default": "number",
+          "actions": [
+            "pass",
+            "ignore",
+            "ascii",
+            "temporary",
+            "punctuation",
+            "quick",
+            "number",
+            "command",
+            "reverse"
+          ]
+        },
+        {
+          "default": "previous",
+          "actions": [
+            "pass",
+            "ignore",
+            "ascii",
+            "temporary",
+            "clear",
+            "section",
+            "raw",
+            "first",
+            "selected",
+            "previous",
+            "next",
+            "note",
+            "charset",
+            "selected_ascii",
+            "raw_ascii",
+            "inspect",
+            "punctuation",
+            "quick",
+            "split"
+          ]
+        },
+        {
+          "default": "previous",
+          "actions": [
+            "pass",
+            "ignore",
+            "ascii",
+            "temporary",
+            "clear",
+            "section",
+            "raw",
+            "first",
+            "selected",
+            "previous",
+            "next",
+            "note",
+            "charset",
+            "selected_ascii",
+            "raw_ascii",
+            "inspect",
+            "punctuation",
+            "quick",
+            "split"
+          ]
+        }
+      ]
+    },
+    "equal": {
+      "name": "＝（等號）",
+      "contexts": [
+        {
+          "default": "pass",
+          "actions": [
+            "pass",
+            "ignore",
+            "ascii",
+            "temporary",
+            "punctuation",
+            "quick",
+            "number",
+            "command",
+            "reverse"
+          ]
+        },
+        {
+          "default": "next",
+          "actions": [
+            "pass",
+            "ignore",
+            "ascii",
+            "temporary",
+            "clear",
+            "section",
+            "raw",
+            "first",
+            "selected",
+            "previous",
+            "next",
+            "note",
+            "charset",
+            "selected_ascii",
+            "raw_ascii",
+            "inspect",
+            "punctuation",
+            "quick",
+            "split"
+          ]
+        },
+        {
+          "default": "next",
+          "actions": [
+            "pass",
+            "ignore",
+            "ascii",
+            "temporary",
+            "clear",
+            "section",
+            "raw",
+            "first",
+            "selected",
+            "previous",
+            "next",
+            "note",
+            "charset",
+            "selected_ascii",
+            "raw_ascii",
+            "inspect",
+            "punctuation",
+            "quick",
+            "split"
+          ]
+        }
+      ]
+    }
+  }
+}

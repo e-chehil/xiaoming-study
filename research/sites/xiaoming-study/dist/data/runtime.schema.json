@@ -1,0 +1,507 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "urn:xiaoming:runtime:shared-parts-v1",
+  "title": "潇明共享拆分运行数据",
+  "type": "object",
+  "required": [
+    "version",
+    "course",
+    "language",
+    "curriculumVersion",
+    "lessonVersion",
+    "source",
+    "stats",
+    "curriculum",
+    "roots",
+    "items",
+    "transferItems",
+    "transferStats",
+    "teaching",
+    "runtimeFormat",
+    "partsByCharacter"
+  ],
+  "properties": {
+    "version": {
+      "const": 3
+    },
+    "course": {
+      "enum": [
+        "simplified",
+        "traditional"
+      ]
+    },
+    "language": {
+      "enum": [
+        "zh-Hans",
+        "zh-Hant"
+      ]
+    },
+    "curriculumVersion": {
+      "type": "string",
+      "minLength": 1
+    },
+    "lessonVersion": {
+      "type": "string",
+      "minLength": 1
+    },
+    "source": {
+      "type": "object",
+      "required": [
+        "name",
+        "sha256"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      }
+    },
+    "stats": {
+      "type": "object",
+      "required": [
+        "total",
+        "roots",
+        "characters",
+        "words",
+        "unsupported",
+        "initials",
+        "strokes"
+      ],
+      "additionalProperties": {
+        "type": "integer",
+        "minimum": 0
+      }
+    },
+    "items": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/lesson"
+      }
+    },
+    "transferItems": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/lesson"
+      }
+    },
+    "transferStats": {
+      "type": "object",
+      "required": [
+        "short",
+        "variant"
+      ],
+      "properties": {
+        "short": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "variant": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "roots": {
+      "type": "array"
+    },
+    "curriculum": {
+      "type": "object"
+    },
+    "teaching": {
+      "type": "object"
+    },
+    "glyphVariants": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/definitions/part"
+      }
+    },
+    "runtimeFormat": {
+      "const": "shared-parts-v1"
+    },
+    "partsByCharacter": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/definitions/part"
+      }
+    }
+  },
+  "definitions": {
+    "part": {
+      "type": "object",
+      "required": [
+        "char",
+        "division",
+        "rootCodes",
+        "code"
+      ],
+      "properties": {
+        "char": {
+          "type": "string",
+          "minLength": 1
+        },
+        "division": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "rootCodes": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^([a-z]{3})?$"
+          }
+        },
+        "code": {
+          "type": "string",
+          "pattern": "^([a-z]{3,5})?$"
+        }
+      }
+    },
+    "lesson": {
+      "type": "object",
+      "required": [
+        "id",
+        "order",
+        "type",
+        "text",
+        "code",
+        "pinyin",
+        "sourceId",
+        "dependencies"
+      ],
+      "properties": {
+        "id": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "order": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "type": {
+          "enum": [
+            "initial",
+            "stroke",
+            "root",
+            "char",
+            "word",
+            "short",
+            "variant"
+          ]
+        },
+        "text": {
+          "type": "string",
+          "minLength": 1
+        },
+        "code": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[a-z]{1,5}_?$"
+        },
+        "pinyin": {
+          "type": "string"
+        },
+        "zhuyin": {
+          "type": "string"
+        },
+        "sourceId": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 1
+        },
+        "frequency": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 1
+        },
+        "sourceType": {
+          "type": "string"
+        },
+        "dependencies": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "integer",
+            "minimum": 1
+          }
+        },
+        "parts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/part"
+          }
+        },
+        "practiceAlias": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "baseId": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "baseCode": {
+          "type": "string",
+          "pattern": "^[a-z]{3,5}$"
+        },
+        "fullCode": {
+          "type": "string",
+          "pattern": "^[a-z]{3}$"
+        },
+        "shortRule": {
+          "enum": [
+            "fixed",
+            "one",
+            "two",
+            "three",
+            "assigned"
+          ]
+        },
+        "commit": {
+          "enum": [
+            "auto",
+            "space"
+          ]
+        },
+        "glyphStandard": {
+          "const": "taiwan"
+        },
+        "unsupportedReason": {
+          "type": "string",
+          "minLength": 1
+        },
+        "mapping": {
+          "type": "object",
+          "required": [
+            "initial",
+            "strokeKey",
+            "stroke",
+            "smallSource"
+          ],
+          "properties": {
+            "initial": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "strokeKey": {
+              "enum": [
+                "d",
+                "f",
+                "j",
+                "k",
+                "e",
+                "i"
+              ]
+            },
+            "stroke": {
+              "type": "string"
+            },
+            "smallSource": {
+              "enum": [
+                "initial",
+                "stroke"
+              ]
+            }
+          }
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "root"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "mapping",
+              "fullCode"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "enum": [
+                  "short",
+                  "variant"
+                ]
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "baseId",
+              "baseCode"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "short"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "shortRule",
+              "commit"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "variant"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "glyphStandard",
+              "parts"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "code": {
+                "const": null
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "unsupportedReason"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "short"
+              },
+              "shortRule": {
+                "const": "fixed"
+              }
+            },
+            "required": [
+              "shortRule"
+            ]
+          },
+          "then": {
+            "properties": {
+              "code": {
+                "type": "string",
+                "pattern": "^[a-z]$"
+              },
+              "commit": {
+                "const": "auto"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "short"
+              },
+              "shortRule": {
+                "const": "one"
+              }
+            },
+            "required": [
+              "shortRule"
+            ]
+          },
+          "then": {
+            "properties": {
+              "code": {
+                "type": "string",
+                "pattern": "^[a-z]_$"
+              },
+              "commit": {
+                "const": "space"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "short"
+              },
+              "shortRule": {
+                "const": "two"
+              }
+            },
+            "required": [
+              "shortRule"
+            ]
+          },
+          "then": {
+            "properties": {
+              "code": {
+                "type": "string",
+                "pattern": "^[a-z]{2}$"
+              },
+              "commit": {
+                "const": "auto"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "short"
+              },
+              "shortRule": {
+                "const": "three"
+              }
+            },
+            "required": [
+              "shortRule"
+            ]
+          },
+          "then": {
+            "properties": {
+              "code": {
+                "type": "string",
+                "pattern": "^[a-z]{3}$"
+              },
+              "commit": {
+                "const": "auto"
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

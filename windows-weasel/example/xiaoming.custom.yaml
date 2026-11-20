@@ -1,0 +1,13 @@
+patch:
+  "switches": [{"name": "ascii_mode", "reset": 0, "states": ["中文", "西文"]}, {"name": "ascii_punct", "states": ["中文标点", "西文标点"]}, {"name": "full_shape", "states": ["半角", "全角"]}, {"name": "xm_sentence", "reset": 0, "states": ["逐字", "整句"]}, {"name": "xm_noivs", "reset": 0, "states": ["显示变体", "隐藏变体"]}, {"options": ["xm_note0", "xm_note1", "xm_note2"], "reset": 1, "states": ["关闭注解", "拆分编码", "详细注解"]}, {"options": ["xm_charset0", "xm_charset1", "xm_charset2", "xm_charset3", "xm_charset4"], "reset": 0, "states": ["全部字集", "常用字集", "简体规范", "传统通用", "自定义字集"]}, {"name": "xm_nohints", "reset": 0, "states": ["顶字候选预测", "关闭候选预测"]}, {"name": "xm_words", "reset": 0, "states": ["单字", "字词"]}, {"name": "xm_nopredict", "reset": 0, "states": ["预测", "顺序"]}, {"name": "xm_delay", "reset": 1, "states": ["自动", "顶字"]}, {"name": "xm_fullprefix", "reset": 0, "states": ["单键补全", "任意前缀补全"]}, {"options": ["xm_sort0", "xm_sort1", "xm_sort2", "xm_sort3", "xm_sort4"], "reset": 1, "states": ["原始", "常用优先", "简体优先", "传统优先", "自定优先"]}, {"name": "xm_noquickhint", "reset": 0, "states": ["提示空格简码", "隐藏空格简码"]}]
+  "speller/auto_select_pattern": "^([defijk]|.{2,})$"
+  "menu/page_size": 6
+  "menu/alternative_select_labels": ["1", "2", "3", "4", "5", "6", "7", "8", "9"]
+  "engine/processors/@before 0": "lua_processor@*xm_process"
+  "engine/translators/@before 0": "lua_translator@*xm_translate"
+  "engine/filters/@before 0": "lua_filter@*xm_filter"
+  "recognizer/patterns/xm_tools": "^(/.*|;|:|~.*|>.*)$"
+  "key_binder/bindings": [{"when": "has_menu", "accept": "semicolon", "send": 2}, {"when": "has_menu", "accept": "apostrophe", "send": 3}, {"when": "has_menu", "accept": "space", "send": 1}, {"when": "composing", "accept": "space", "send": "underscore"}, {"when": "paging", "accept": "minus", "send": "Page_Up"}, {"when": "has_menu", "accept": "equal", "send": "Page_Down"}]
+  "xm_options/second": "semicolon"
+  "xm_options/third": "apostrophe"
+  "xm_options/word_lengths": "234+"

@@ -1,0 +1,18 @@
+{
+  "build\\weasel-0.17.4.zip": {
+    "sha256": "becda44927a96e9662fc1aca4d5df344c300efc0aded9b48e0f6c685072e067b",
+    "bytes": 5591918
+  },
+  "build\\weasel-0.17.4\\output\\WeaselServer.exe": {
+    "sha256": "cc2391b70cd1773ba8a4417ecbbe32f2efd29d40068b22aa4691b537be69da0e",
+    "bytes": 2388480
+  },
+  "build\\weasel-0.17.4\\output\\weasel.dll": {
+    "sha256": "c0fb0564c01d774fe6d6b0953467a5edd982cbdeed5f90fb4b415c1d621e56bb",
+    "bytes": 931840
+  },
+  "build\\weasel-0.17.4\\output\\weaselx64.dll": {
+    "sha256": "d51b7815c5ebc7e143d68112108d1823dc0da041f4a8ca7ed071f7d958709ca0",
+    "bytes": 1097216
+  }
+}

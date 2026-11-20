@@ -1,0 +1,64 @@
+{
+  "date": "2026-11-14",
+  "definition": "Exact lowercase code equality; distinct word forms; no prefix conflicts; no candidate ordering assumed.",
+  "source": {
+    "course_url": "https://e-chehil.github.io/xiaoming-study/data/learning-runtime.json",
+    "course_sha256": "2a7f65acbe815b29528941b988414904ccc84694f32044b3b5ae06c2e0e1c8ee",
+    "curriculum_version": "full-dag-transfer-v6",
+    "upstream_revision": "55e783c3973b125d3f56baac534b796c76df87a5",
+    "upstream_full_sha256": "f381cd78c94b27bb06240236e8405629ef2678b4f69dac60fa7e4209c5aff3b2",
+    "upstream_combined_sha256": "76d8e11c468875144e9247f5e605cd30953b46cfeb954807cacca77efb4e6605"
+  },
+  "scope": {
+    "word_rows": 53699,
+    "coded_rows": 53677,
+    "unsupported_rows": 22,
+    "duplicate_word_code_rows": 131,
+    "distinct_coded_words": 53546,
+    "original_single_characters": 11177,
+    "length_distribution": {
+      "4": 620,
+      "5": 52926
+    }
+  },
+  "word_character": {
+    "code_groups": 1050,
+    "words": 1270,
+    "word_percent": 2.3717924774959847,
+    "characters": 1064,
+    "word_character_pairs": 1287,
+    "additional_conflicts_from_short_codes": 0,
+    "course_char_only_groups": 530,
+    "course_char_only_words": 658
+  },
+  "word_word": {
+    "distinct_codes": 47485,
+    "collision_groups": 5028,
+    "involved_words": 11089,
+    "involved_percent": 20.70929667949053,
+    "excess_words": 6061,
+    "excess_percent": 11.319239532364696,
+    "max_words_per_code": 7,
+    "multiplicity_distribution": {
+      "1": 42457,
+      "2": 4217,
+      "3": 641,
+      "4": 135,
+      "5": 22,
+      "6": 9,
+      "7": 4
+    },
+    "unordered_pairs": 7389
+  },
+  "either_collision_words": 11961,
+  "raw_row_word_word": {
+    "collision_groups": 5131,
+    "involved_rows": 11323,
+    "excess_rows": 6192
+  },
+  "validation": {
+    "course_manifest_hash": true,
+    "all_word_codes_recomputed": true,
+    "original_files_verified_against_pinned_public_github": true
+  }
+}

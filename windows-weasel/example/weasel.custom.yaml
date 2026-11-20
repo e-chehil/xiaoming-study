@@ -1,0 +1,26 @@
+patch:
+  "style/color_scheme": "xm_light"
+  "style/color_scheme_dark": "xm_dark"
+  "style/horizontal": false
+  "style/inline_preedit": false
+  "style/preedit_type": "composition"
+  "style/font_face": "Segoe UI:0020:007e, LXGW WenKai, SimSun-ExtB, SimSun-ExtG, Segoe UI Emoji"
+  "style/font_point": 18
+  "style/label_font_face": "Segoe UI"
+  "style/label_font_point": 12
+  "style/comment_font_face": "Segoe UI:0020:007e, Yuniversus:e000:f8ff, SimSun, SimSun-ExtB, Segoe UI Symbol"
+  "style/comment_font_point": 13
+  "style/label_format": "%s"
+  "style/layout/margin_x": 12
+  "style/layout/margin_y": 9
+  "style/layout/spacing": 7
+  "style/layout/candidate_spacing": 8
+  "style/layout/hilite_padding": 4
+  "style/layout/border_width": 1
+  "style/layout/round_corner": 7
+  "style/layout/corner_radius": 9
+  "style/layout/shadow_radius": 3
+  "style/layout/shadow_offset_y": 1
+  "style/layout/max_width": 880
+  "preset_color_schemes/xm_light": {"name": "霁蓝 · light", "color_format": "argb", "back_color": "0xfff2f1ec", "text_color": "0xff2e5fa0", "candidate_text_color": "0xff1d3a63", "label_color": "0xff7286a3", "comment_text_color": "0xff4a5f80", "border_color": "0xffc6c9c3", "hilited_back_color": "0xfff2f1ec", "hilited_text_color": "0xff2e5fa0", "hilited_candidate_back_color": "0xff1f4e79", "hilited_candidate_text_color": "0xfff4f6f8", "hilited_label_color": "0xffc3d4e4", "hilited_comment_text_color": "0xffc3d4e4", "hilited_mark_color": "0x00000000", "shadow_color": "0x22000000"}
+  "preset_color_schemes/xm_dark": {"name": "霁蓝 · dark", "color_format": "argb", "back_color": "0xff16365c", "text_color": "0xffd9de9b", "candidate_text_color": "0xffeaf0f7", "label_color": "0xff8aa4c0", "comment_text_color": "0xffa9c0d8", "border_color": "0xff2e5480", "hilited_back_color": "0xff16365c", "hilited_text_color": "0xffd9de9b", "hilited_candidate_back_color": "0xffabc8e4", "hilited_candidate_text_color": "0xff10294a", "hilited_label_color": "0xff2f4e70", "hilited_comment_text_color": "0xff2f4e70", "hilited_mark_color": "0x00000000", "shadow_color": "0x22000000"}

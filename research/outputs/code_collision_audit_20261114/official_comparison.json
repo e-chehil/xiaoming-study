@@ -1,0 +1,27 @@
+{
+  "source_url": "https://github.com/hertz-hwang/CHS/blob/main/data/kc6000.txt",
+  "source_sha256": "f8ee13bbc39363a4c17ac9b6f6c865bf1ae743c95d7e4f894edc9d0d93bd9dd9",
+  "original_lines": 66000,
+  "single_char_rows": 6000,
+  "excluded_words": [
+    "阿Q",
+    "卡拉OK"
+  ],
+  "coded_distinct_words": 59998,
+  "distinct_codes": 52304,
+  "collision_groups": 6327,
+  "static_excess_words": 7694,
+  "static_excess_percent": 12.8237607920264,
+  "involved_words": 14021,
+  "involved_percent": 23.369112303743456,
+  "frequency_sum": 953617224,
+  "nonfirst_frequency": 39175956,
+  "dynamic_excess_percent": 4.1081426608125104,
+  "dynamic_definition": "For each code, retain the maximum-frequency word; sum all remaining frequencies and divide by all word frequencies.",
+  "course_distinct_words": 53546,
+  "course_codes_match_original_divisions_and_roots": true,
+  "course_static_excess_percent": 11.319239532364696,
+  "course_involved_percent": 20.70929667949053,
+  "overlap_words": 30686,
+  "course_dynamic_excess_percent": null
+}

@@ -1,0 +1,151 @@
+{
+  "downloaded_at": "2026-10-22T13:03:51.617931+08:00",
+  "source_page": "https://shurufa.app/ime/xiaoming",
+  "upstream_revision": "55e783c3973b125d3f56baac534b796c76df87a5",
+  "stats": {
+    "website_total_entries": 154017,
+    "han_single_char_entries": 102998,
+    "han_variant_sequences": 30637,
+    "root_entries": 397,
+    "upstream_full_code_entries": 11177,
+    "upstream_codes_matching_current_website": 11176,
+    "version_difference_entries": 1,
+    "missing_roots": 0,
+    "git_blob_checks_passed": 4
+  },
+  "files": [
+    {
+      "path": "chaifen.json",
+      "bytes": 6183261,
+      "sha256": "c9e72dd6d6753802a784be93bcfb1c7425d1730470ced6d2c27471c21c00011e",
+      "source_url": "https://shurufa.app/chaifen.json",
+      "kind": "derived"
+    },
+    {
+      "path": "README.md",
+      "bytes": 3758,
+      "sha256": "ba7a0f6380afae68bd1f9ddb4171c999670e67e30bd06f07fdeee4698e054f41",
+      "source_url": null,
+      "kind": "derived"
+    },
+    {
+      "path": "upstream/chaifen-all.txt",
+      "bytes": 2662680,
+      "sha256": "363766bd693d456d0b065c6a5167251022fbd2809adbc7048600d28d7afe8698",
+      "source_url": "https://raw.githubusercontent.com/Dieken/code_genie/55e783c3973b125d3f56baac534b796c76df87a5/moling/xiaoming-output/output-20261011-061440/source/chaifen-all.txt",
+      "kind": "downloaded"
+    },
+    {
+      "path": "upstream/chaifen.json.gz",
+      "bytes": 1098489,
+      "sha256": "267105231c29588e3ff83be9fb5f5670feab532e8fc50cb318e2f6b3cbcf3561",
+      "source_url": "https://shurufa.app/chaifen.json",
+      "kind": "downloaded"
+    },
+    {
+      "path": "upstream/chaifen_tw-all.txt",
+      "bytes": 2666664,
+      "sha256": "030409505901c6691423555dd443dad77b03a5e154e6f60e9f818230f336bc0a",
+      "source_url": "https://raw.githubusercontent.com/Dieken/code_genie/55e783c3973b125d3f56baac534b796c76df87a5/moling/xiaoming-output/output-20261011-061440/source/chaifen_tw-all.txt",
+      "kind": "downloaded"
+    },
+    {
+      "path": "upstream/COMMENT.txt",
+      "bytes": 170,
+      "sha256": "9dc5df169b36f9b6fb2b7265420a1cd42058ee0efde3be7e4a0e78eb062e41ee",
+      "source_url": "https://raw.githubusercontent.com/Dieken/code_genie/55e783c3973b125d3f56baac534b796c76df87a5/moling/xiaoming-output/output-20261011-061440/COMMENT.txt",
+      "kind": "downloaded"
+    },
+    {
+      "path": "upstream/config-xiaoming.toml",
+      "bytes": 12632,
+      "sha256": "58aa4228c9039662ba739ea4034903f25066c9ac07d3fb3d768b4563e43dda22",
+      "source_url": "https://raw.githubusercontent.com/Dieken/code_genie/55e783c3973b125d3f56baac534b796c76df87a5/moling/xiaoming-output/output-20261011-061440/source/config-xiaoming.toml",
+      "kind": "downloaded"
+    },
+    {
+      "path": "upstream/generate-xiaoming-words-dict.pl",
+      "bytes": 4339,
+      "sha256": "2fa35839b94fb49ce8389c5133b665120d92ad8f07f78e1a95d7b3cbe28ee740",
+      "source_url": "https://raw.githubusercontent.com/Dieken/code_genie/55e783c3973b125d3f56baac534b796c76df87a5/moling/generate-xiaoming-words-dict.pl",
+      "kind": "downloaded"
+    },
+    {
+      "path": "upstream/LICENSE",
+      "bytes": 1083,
+      "sha256": "9204bac2d9db6b334af53d40ded57b45e14a92f5dabdd0cce67fbbcdc2cfbc0e",
+      "source_url": "https://raw.githubusercontent.com/Dieken/code_genie/55e783c3973b125d3f56baac534b796c76df87a5/LICENSE",
+      "kind": "downloaded"
+    },
+    {
+      "path": "upstream/output-combined.txt",
+      "bytes": 115658,
+      "sha256": "76d8e11c468875144e9247f5e605cd30953b46cfeb954807cacca77efb4e6605",
+      "source_url": "https://raw.githubusercontent.com/Dieken/code_genie/55e783c3973b125d3f56baac534b796c76df87a5/moling/xiaoming-output/output-20261011-061440/thread-06/output-combined.txt",
+      "kind": "downloaded"
+    },
+    {
+      "path": "upstream/output-encode.txt",
+      "bytes": 160116,
+      "sha256": "f381cd78c94b27bb06240236e8405629ef2678b4f69dac60fa7e4209c5aff3b2",
+      "source_url": "https://raw.githubusercontent.com/Dieken/code_genie/55e783c3973b125d3f56baac534b796c76df87a5/moling/xiaoming-output/output-20261011-061440/thread-06/output-encode.txt",
+      "kind": "downloaded"
+    },
+    {
+      "path": "upstream/output-keymap.txt",
+      "bytes": 6435,
+      "sha256": "c8ffc81992c4f41d09fdf5d1febc3cf41507cd68c86390bb04b82c8e1412e058",
+      "source_url": "https://raw.githubusercontent.com/Dieken/code_genie/55e783c3973b125d3f56baac534b796c76df87a5/moling/xiaoming-output/output-20261011-061440/thread-06/output-keymap.txt",
+      "kind": "downloaded"
+    },
+    {
+      "path": "upstream/output-simple-codes.txt",
+      "bytes": 12502,
+      "sha256": "622b40346076451ce6cbf119a66cd4dd9d09e4ca7787f84895d9936d018776e2",
+      "source_url": "https://raw.githubusercontent.com/Dieken/code_genie/55e783c3973b125d3f56baac534b796c76df87a5/moling/xiaoming-output/output-20261011-061440/thread-06/output-simple-codes.txt",
+      "kind": "downloaded"
+    },
+    {
+      "path": "upstream/website-share.js",
+      "bytes": 9005,
+      "sha256": "f464569df07738e3f6bc09ec767acfd32684b806326f70bd9725831076062684",
+      "source_url": "https://shurufa.app/assets/chunks/share.C05s20Z4.js",
+      "kind": "downloaded"
+    },
+    {
+      "path": "Yuniversus.woff",
+      "bytes": 51928,
+      "sha256": "977bcb7365973089dcf5e74546a3daa313135ef894b1b73f449a29e13ed74e6d",
+      "source_url": "https://shurufa.app/fonts/Yuniversus.woff",
+      "kind": "downloaded"
+    },
+    {
+      "path": "zigen-xiaoming.csv",
+      "bytes": 4438,
+      "sha256": "755a57d4383eb0e3991f57ea1dcb709432a06719dc96b38aa7c8c42d4a183e21",
+      "source_url": "https://shurufa.app/zigen-xiaoming.csv",
+      "kind": "downloaded"
+    },
+    {
+      "path": "字根编码.tsv",
+      "bytes": 9643,
+      "sha256": "d0223a1e9a7d86f86a66f4f58feb4a1ccd19a1a518af05a43f037ae6d3f55311",
+      "source_url": null,
+      "kind": "derived"
+    },
+    {
+      "path": "汉字拆分编码.tsv",
+      "bytes": 5854403,
+      "sha256": "9bf06ce909473ea977f3f13bbe1a612b942ece681a7e9415d43a522bca065740",
+      "source_url": null,
+      "kind": "derived"
+    },
+    {
+      "path": "版本差异.tsv",
+      "bytes": 108,
+      "sha256": "cbe754d0afea01baed11d66132becb9a141c38157bede5a3e239309f6154055d",
+      "source_url": null,
+      "kind": "derived"
+    }
+  ]
+}

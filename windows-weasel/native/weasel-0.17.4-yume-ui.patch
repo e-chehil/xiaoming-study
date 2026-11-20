@@ -1,0 +1,443 @@
+--- a/include/WeaselUI.h
++++ b/include/WeaselUI.h
+@@ -93,7 +93,19 @@
+ 
+ class DirectWriteResources {
+  public:
+-  DirectWriteResources(weasel::UIStyle& style, UINT dpi);
++  DirectWriteResources(weasel::UIStyle& style, UINT dpi,
++                       bool xiaoming_header = false);
++  const bool xiaoming_header;
++  bool footer_enabled = false;
++  int footer_color = 0;
++  int subscript_color = 0;
++  int special_highlight_color = 0;
++  int reverse_highlight_color = 0;
++  std::wstring native_appearance_file;
++  ULONGLONG native_appearance_stamp = 0;
++  bool NativeAppearanceChanged() const;
++  ComPtr<IDWriteTextFormat1> pSubscriptTextFormat;
++  ComPtr<IDWriteTextFormat1> pFooterTextFormat;
+   ~DirectWriteResources();
+ 
+   HRESULT InitResources(const std::wstring& label_font_face,
+--- a/WeaselUI/DirectWriteResources.cpp
++++ b/WeaselUI/DirectWriteResources.cpp
+@@ -15,8 +15,10 @@
+ }
+ 
+ DirectWriteResources::DirectWriteResources(weasel::UIStyle& style,
+-                                           UINT dpi = 96)
++                                           UINT dpi,
++                                           bool use_xiaoming_header)
+     : _style(style),
++      xiaoming_header(use_xiaoming_header),
+       dpiScaleFontPoint(0),
+       dpiScaleLayout(0),
+       pD2d1Factory(NULL),
+@@ -133,7 +135,65 @@
+     decltype(fontFaceStrVector)().swap(fontFaceStrVector);
+   };
+   init_font(font_face, font_point, pTextFormat, wrapping);
+-  init_font(font_face, font_point, pPreeditTextFormat, wrapping_preedit);
++  int subscript_point = 10;
++  subscript_color = _style.comment_text_color;
++  special_highlight_color = reverse_highlight_color = _style.hilited_candidate_back_color;
++  int footer_point = 10;
++  std::wstring footer_face = label_font_face;
++  footer_enabled = xiaoming_header;
++  footer_color = _style.label_text_color;
++  int header_point = font_point;
++  std::wstring header_face = font_face;
++  if (xiaoming_header) {
++    header_point = 10;
++    if (!label_font_face.empty())
++      header_face = label_font_face;
++    wchar_t directory[32768] = {};
++    DWORD bytes = sizeof(directory);
++    if (RegGetValueW(HKEY_CURRENT_USER, L"Software\\Rime\\Weasel",
++                     L"RimeUserDir", RRF_RT_REG_SZ, nullptr, directory,
++                     &bytes) == ERROR_SUCCESS && directory[0]) {
++      const auto ini = std::filesystem::path(directory) / L"xm_yume" /
++                       L"native-appearance.ini";
++      native_appearance_file = ini.wstring();
++      WIN32_FILE_ATTRIBUTE_DATA attributes = {};
++      if (GetFileAttributesExW(ini.c_str(), GetFileExInfoStandard, &attributes))
++        native_appearance_stamp = (static_cast<ULONGLONG>(attributes.ftLastWriteTime.dwHighDateTime) << 32) | attributes.ftLastWriteTime.dwLowDateTime;
++      const UINT point = GetPrivateProfileIntW(L"header", L"point", 10,
++                                               ini.c_str());
++      if (point >= 6 && point <= 96)
++        header_point = static_cast<int>(point);
++      wchar_t face[2048] = {};
++      GetPrivateProfileStringW(L"header", L"face", L"", face,
++                               _countof(face), ini.c_str());
++      if (face[0])
++        header_face = face;
++      footer_enabled = GetPrivateProfileIntW(L"footer", L"enabled", 1, ini.c_str()) != 0;
++      const UINT subscript_size = GetPrivateProfileIntW(L"footer", L"subscript_point", 10, ini.c_str());
++      if (subscript_size >= 6 && subscript_size <= 96) subscript_point = static_cast<int>(subscript_size);
++      const UINT footer_size = GetPrivateProfileIntW(L"footer", L"point", 10, ini.c_str());
++      if (footer_size >= 6 && footer_size <= 96)
++        footer_point = static_cast<int>(footer_size);
++      GetPrivateProfileStringW(L"footer", L"face", L"", face, _countof(face), ini.c_str());
++      if (face[0]) footer_face = face;
++      const auto read_color = [&ini](const wchar_t* key, int fallback) {
++        wchar_t value[32] = {};
++        GetPrivateProfileStringW(L"footer", key, L"", value, _countof(value), ini.c_str());
++        if (!value[0]) return fallback;
++        wchar_t* end = nullptr;
++        const auto parsed = wcstoul(value, &end, 16);
++        return end && !*end ? static_cast<int>(parsed) : fallback;
++      };
++      const bool dark = _style.back_color == read_color(L"background_dark", 0);
++      footer_color = read_color(dark ? L"color_dark" : L"color_light", footer_color);
++      subscript_color = read_color(dark ? L"subscript_dark" : L"subscript_light", subscript_color);
++      special_highlight_color = read_color(dark ? L"special_dark" : L"special_light", special_highlight_color);
++      reverse_highlight_color = read_color(dark ? L"reverse_dark" : L"reverse_light", reverse_highlight_color);
++    }
++  }
++  init_font(header_face, header_point, pPreeditTextFormat, wrapping_preedit);
++  init_font(footer_face, footer_point, pFooterTextFormat, wrapping_preedit);
++  init_font(font_face, subscript_point, pSubscriptTextFormat, wrapping);
+   init_font(label_font_face, label_font_point, pLabelTextFormat, wrapping);
+   init_font(comment_font_face, comment_font_point, pCommentTextFormat,
+             wrapping);
+@@ -158,6 +218,15 @@
+   dpiScaleLayout = dpi / 96.0f;
+ 
+   InitResources(_style);
++}
++
++bool weasel::DirectWriteResources::NativeAppearanceChanged() const {
++  if (!xiaoming_header || native_appearance_file.empty()) return false;
++  WIN32_FILE_ATTRIBUTE_DATA data = {};
++  ULONGLONG stamp = 0;
++  if (GetFileAttributesExW(native_appearance_file.c_str(), GetFileExInfoStandard, &data))
++    stamp = (static_cast<ULONGLONG>(data.ftLastWriteTime.dwHighDateTime) << 32) | data.ftLastWriteTime.dwLowDateTime;
++  return stamp != native_appearance_stamp;
+ }
+ 
+ static wstring _MatchWordsOutLowerCaseTrim1st(const wstring& wstr,
+@@ -237,6 +306,11 @@
+   ComPtr<IDWriteFontFallbackBuilder> pFontFallbackBuilder = NULL;
+   HR(pDWFactory->CreateFontFallbackBuilder(
+       pFontFallbackBuilder.ReleaseAndGetAddressOf()));
++  struct RangeFamilies {
++    DWRITE_UNICODE_RANGE range;
++    vector<wstring> names;
++  };
++  vector<RangeFamilies> grouped;
+   vector<wstring> fallbackFontsVector;
+   for (UINT32 i = 0; i < fontVector.size(); i++) {
+     fallbackFontsVector = ws_split(fontVector[i], L":");
+@@ -263,11 +337,33 @@
+       firstWstr = L"0";
+       lastWstr = L"10ffff";
+     }
++    if (xiaoming_header) {
++      const auto begin = _fontFaceWstr.find_first_not_of(L" \t\r\n");
++      const auto end = _fontFaceWstr.find_last_not_of(L" \t\r\n");
++      _fontFaceWstr = begin == wstring::npos ? L"" : _fontFaceWstr.substr(begin, end - begin + 1);
++      if (_fontFaceWstr.empty()) continue;
++    }
+     UINT first = GetValue(firstWstr, 0), last = GetValue(lastWstr, 0x10ffff);
+     DWRITE_UNICODE_RANGE range = {first, last};
+-    const WCHAR* familys = {_fontFaceWstr.c_str()};
+-    HR(pFontFallbackBuilder->AddMapping(&range, 1, &familys, 1));
++    if (xiaoming_header) {
++      // DirectWrite resolves overlapping mappings using the first mapping.
++      // Put fallback families in one mapping so a missing glyph reaches the
++      // next configured family before the system fallback is considered.
++      auto group = std::find_if(grouped.begin(), grouped.end(), [&](const RangeFamilies& value) {
++        return value.range.first == first && value.range.last == last;
++      });
++      if (group == grouped.end()) grouped.push_back({range, {_fontFaceWstr}});
++      else group->names.push_back(_fontFaceWstr);
++    } else {
++      const WCHAR* familys = {_fontFaceWstr.c_str()};
++      HR(pFontFallbackBuilder->AddMapping(&range, 1, &familys, 1));
++    }
+     decltype(fallbackFontsVector)().swap(fallbackFontsVector);
++  }
++  for (const auto& group : grouped) {
++    vector<const wchar_t*> names;
++    for (const auto& name : group.names) names.push_back(name.c_str());
++    HR(pFontFallbackBuilder->AddMapping(&group.range, 1, names.data(), static_cast<UINT32>(names.size())));
+   }
+   // add system defalt font fallback
+   HR(pFontFallbackBuilder->AddMappings(pSysFallback.Get()));
+--- a/WeaselUI/Layout.h
++++ b/WeaselUI/Layout.h
+@@ -102,6 +102,11 @@
+                              PDWR pDWR,
+                              LPSIZE lpSize) const = 0;
+ 
++  CRect footer_rect = CRect(0, 0, 0, 0);
++  std::vector<CRect> subscript_rects;
++  std::pair<std::wstring, std::wstring> CommentParts(int index) const;
++  int PlaceSubscript(int index, PDWR pDWR, int x, int y);
++  void AddFooter(CDCHandle dc, PDWR pDWR, int width, int& height);
+   int offsetX = 0;
+   int offsetY = 0;
+   int mark_width = 4;
+--- a/WeaselUI/Layout.cpp
++++ b/WeaselUI/Layout.cpp
+@@ -17,6 +17,7 @@
+       labelFontValid(!!(_style.label_font_point > 0)),
+       textFontValid(!!(_style.font_point > 0)),
+       cmtFontValid(!!(_style.comment_font_point > 0)) {
++  subscript_rects.resize(candidates_count);
+   if (pDWR) {
+     float scale = pDWR->dpiScaleLayout;
+     _style.min_width = (int)(_style.min_width * scale);
+@@ -54,6 +55,43 @@
+   }
+   offsetX += _style.border * 2;
+   offsetY += _style.border * 2;
++}
++
++std::pair<std::wstring, std::wstring> Layout::CommentParts(int index) const {
++  const auto& value = comments.at(index).str;
++  if (_status.schema_id != L"xiaoming" ||
++      (_style.layout_type != UIStyle::LAYOUT_VERTICAL && _style.layout_type != UIStyle::LAYOUT_HORIZONTAL))
++    return {L"", value};
++  if (value.empty()) return {L"", value};
++  const auto separator = value.find(L"  ");
++  const auto first = value.substr(0, separator);
++  const auto tail = separator == std::wstring::npos ? L"" : value.substr(separator + 2);
++  if (first == L"␣") return {L"_", tail};
++  if (first.size() > 1 && first[0] == L'＋' && first.find_first_not_of(L"abcdefghijklmnopqrstuvwxyz_", 1) == std::wstring::npos)
++    return {first.substr(1), tail};
++  return {L"", value};
++}
++
++int Layout::PlaceSubscript(int index, PDWR pDWR, int x, int y) {
++  const auto hint = CommentParts(index).first;
++  subscript_rects[index].SetRectEmpty();
++  if (hint.empty()) return 0;
++  CSize size;
++  GetTextSizeDW(hint, hint.size(), pDWR->pSubscriptTextFormat, pDWR, &size);
++  const int gap = max(1, static_cast<int>(3 * pDWR->dpiScaleLayout));
++  subscript_rects[index].SetRect(x + gap, y, x + gap + size.cx, y + size.cy);
++  return gap + size.cx;
++}
++
++void Layout::AddFooter(CDCHandle dc, PDWR pDWR, int width, int& height) {
++  footer_rect.SetRectEmpty();
++  if (_status.schema_id != L"xiaoming" || !candidates_count || !pDWR->footer_enabled ||
++      _status.schema_name.empty()) return;
++  CSize size;
++  GetTextSizeDW(_status.schema_name, _status.schema_name.size(), pDWR->pFooterTextFormat, pDWR, &size);
++  const int left = offsetX + max(0, (width - size.cx) / 2);
++  footer_rect.SetRect(left, height + offsetY, left + size.cx, height + offsetY + size.cy);
++  height += size.cy + real_margin_y;
+ }
+ 
+ GraphicsRoundRectPath::GraphicsRoundRectPath(const CRect rc,
+--- a/WeaselUI/VerticalLayout.cpp
++++ b/WeaselUI/VerticalLayout.cpp
+@@ -108,17 +108,22 @@
+     w += size.cx * textFontValid;
+     max_height_curren_candidate = max(max_height_curren_candidate, size.cy);
+     candidate_width += size.cx * textFontValid;
++    const int hint_width = PlaceSubscript(i, pDWR, w + offsetX, height + offsetY);
++    w += hint_width;
++    candidate_width += hint_width;
++    max_height_curren_candidate = max(max_height_curren_candidate, subscript_rects[i].Height());
+     max_candidate_width = max(max_candidate_width, candidate_width);
+ 
+     /* Comment */
+     bool cmtFontNotTrans =
+         (i == id && (_style.hilited_comment_text_color & 0xff000000)) ||
+         (i != id && (_style.comment_text_color & 0xff000000));
+-    if (!comments.at(i).str.empty() && cmtFontValid && cmtFontNotTrans) {
++    const auto displayed_comment = CommentParts(i).second;
++    if (!displayed_comment.empty() && cmtFontValid && cmtFontNotTrans) {
+       w += space;
+       comment_shift_width = max(comment_shift_width, w);
+ 
+-      const std::wstring& comment = comments.at(i).str;
++      const std::wstring& comment = displayed_comment;
+       GetTextSizeDW(comment, comment.length(), pDWR->pCommentTextFormat, pDWR,
+                     &size);
+       _candidateCommentRects[i].SetRect(0, height, size.cx * cmtFontValid,
+@@ -143,6 +148,8 @@
+     _candidateLabelRects[i].OffsetRect(0, ol);
+     _candidateTextRects[i].OffsetRect(0, ot);
+     _candidateCommentRects[i].OffsetRect(0, oc);
++    if (!subscript_rects[i].IsRectEmpty())
++      subscript_rects[i].OffsetRect(0, max_height_curren_candidate - subscript_rects[i].Height());
+ 
+     int hlTop = _candidateTextRects[i].top;
+     int hlBot = _candidateTextRects[i].bottom;
+@@ -155,6 +162,10 @@
+       hlTop = min(hlTop, _candidateCommentRects[i].top);
+       hlBot = max(hlBot, _candidateCommentRects[i].bottom);
+     }
++    if (!subscript_rects[i].IsRectEmpty()) {
++      hlTop = min(hlTop, subscript_rects[i].top);
++      hlBot = max(hlBot, subscript_rects[i].bottom);
++    }
+     _candidateRects[i].SetRect(real_margin_x + offsetX, hlTop,
+                                width - real_margin_x + offsetX, hlBot);
+ 
+@@ -184,6 +195,10 @@
+       hlBot = max(hlBot, _candidateCommentRects[i].bottom);
+     }
+ 
++    if (!subscript_rects[i].IsRectEmpty()) {
++      hlTop = min(hlTop, subscript_rects[i].top);
++      hlBot = max(hlBot, subscript_rects[i].bottom);
++    }
+     _candidateRects[i].SetRect(real_margin_x + offsetX, hlTop,
+                                width - real_margin_x + offsetX, hlBot);
+   }
+@@ -208,6 +223,7 @@
+     _candidateRects[i].right = right;
+   }
+ 
++  AddFooter(dc, pDWR, width, height);
+   _contentSize.SetSize(width + offsetX * 2, height + offsetY * 2);
+ 
+   /* Highlighted Candidate */
+@@ -237,3 +253,4 @@
+   // truely draw content size calculation
+   _contentRect.DeflateRect(offsetX, offsetY);
+ }
++
+--- a/WeaselUI/HorizontalLayout.cpp
++++ b/WeaselUI/HorizontalLayout.cpp
+@@ -107,12 +107,16 @@
+       w += size.cx * textFontValid;
+       current_cand_width += (size.cx + _style.hilite_spacing) * textFontValid;
+ 
++      const int hint_width = PlaceSubscript(i, pDWR, w, height);
++      w += hint_width;
++      current_cand_width += hint_width;
+       /* Comment */
+       bool cmtFontNotTrans =
+           (i == id && (_style.hilited_comment_text_color & 0xff000000)) ||
+           (i != id && (_style.comment_text_color & 0xff000000));
+-      if (!comments.at(i).str.empty() && cmtFontValid && cmtFontNotTrans) {
+-        const std::wstring& comment = comments.at(i).str;
++      const auto displayed_comment = CommentParts(i).second;
++      if (!displayed_comment.empty() && cmtFontValid && cmtFontNotTrans) {
++        const std::wstring& comment = displayed_comment;
+         GetTextSizeDW(comment, comment.length(), pDWR->pCommentTextFormat, pDWR,
+                       &size);
+         w += _style.hilite_spacing;
+@@ -139,6 +143,7 @@
+         // offset rects to next row
+         _candidateLabelRects[i].OffsetRect(ofx, ofy);
+         _candidateTextRects[i].OffsetRect(ofx, ofy);
++        if (!subscript_rects[i].IsRectEmpty()) subscript_rects[i].OffsetRect(ofx, ofy);
+         _candidateCommentRects[i].OffsetRect(ofx, ofy);
+         // max width of next row, if it's the last candidate, make sure
+         // max_width_of_rows calc right
+@@ -159,6 +164,7 @@
+           max(height_of_rows[row_cnt], _candidateTextRects[i].Height());
+       height_of_rows[row_cnt] =
+           max(height_of_rows[row_cnt], _candidateCommentRects[i].Height());
++      height_of_rows[row_cnt] = max(height_of_rows[row_cnt], subscript_rects[i].Height());
+       // set row info of current candidate
+       row_of_candidate[i] = row_cnt;
+     }
+@@ -194,6 +200,8 @@
+       _candidateLabelRects[i].OffsetRect(0, ol);
+       _candidateTextRects[i].OffsetRect(0, ot);
+       _candidateCommentRects[i].OffsetRect(0, oc);
++      if (!subscript_rects[i].IsRectEmpty())
++        subscript_rects[i].OffsetRect(0, height_of_rows[row_of_candidate[i]] - subscript_rects[i].Height());
+     }
+     height = mintop_of_rows[row_cnt] + height_of_rows[row_cnt] - offsetY;
+     width = max(width, max_width_of_rows);
+@@ -220,6 +228,7 @@
+   }
+   _highlightRect = _candidateRects[id];
+   UpdateStatusIconLayout(&width, &height);
++  AddFooter(dc, pDWR, width - offsetX, height);
+   _contentSize.SetSize(width + offsetX, height + 2 * offsetY);
+   _contentRect.SetRect(0, 0, _contentSize.cx, _contentSize.cy);
+ 
+--- a/WeaselUI/WeaselPanel.cpp
++++ b/WeaselUI/WeaselPanel.cpp
+@@ -178,9 +178,12 @@
+   // prepare d2d1 resources
+   // if style changed, or dpi changed, or pDWR NULL, re-initialize directwrite
+   // resources
+-  if (forced || (pDWR == NULL) || (m_ostyle != m_style) || (dpiX != dpi)) {
++  const bool xiaoming_header = m_status.schema_id == L"xiaoming";
++  if (forced || !pDWR || (m_ostyle != m_style) || (dpiX != dpi) ||
++      pDWR->xiaoming_header != xiaoming_header || pDWR->NativeAppearanceChanged()) {
+     pDWR.reset();
+-    pDWR = std::make_shared<DirectWriteResources>(m_style, dpiX);
++    pDWR = std::make_shared<DirectWriteResources>(m_style, dpiX,
++                                                  xiaoming_header);
+     pDWR->pRenderTarget->SetTextAntialiasMode(
+         (D2D1_TEXT_ANTIALIAS_MODE)m_style.antialias_mode);
+   }
+@@ -733,6 +736,11 @@
+ 
+ bool WeaselPanel::_DrawCandidates(CDCHandle& dc, bool back) {
+   bool drawn = false;
++  int candidate_highlight = m_style.hilited_candidate_back_color;
++  if (m_status.schema_id == L"xiaoming" && !m_ctx.preedit.str.empty()) {
++    if (m_ctx.preedit.str[0] == L'/') candidate_highlight = pDWR->special_highlight_color;
++    else if (m_ctx.preedit.str[0] == L'z') candidate_highlight = pDWR->reverse_highlight_color;
++  }
+   const std::vector<Text>& candidates(m_ctx.cinfo.candies);
+   const std::vector<Text>& comments(m_ctx.cinfo.comments);
+   const std::vector<Text>& labels(m_ctx.cinfo.labels);
+@@ -799,7 +807,7 @@
+       rect.InflateRect(DPI_SCALE(m_style.hilite_padding_x),
+                        DPI_SCALE(m_style.hilite_padding_y));
+       _HighlightText(dc, rect,
+-                     HALF_ALPHA_COLOR(m_style.hilited_candidate_back_color),
++                     HALF_ALPHA_COLOR(candidate_highlight),
+                      HALF_ALPHA_COLOR(m_style.hilited_candidate_shadow_color),
+                      DPI_SCALE(m_style.round_corner), bkType, rd,
+                      HALF_ALPHA_COLOR(m_style.hilited_candidate_border_color));
+@@ -815,7 +823,7 @@
+       }
+       rect.InflateRect(DPI_SCALE(m_style.hilite_padding_x),
+                        DPI_SCALE(m_style.hilite_padding_y));
+-      _HighlightText(dc, rect, m_style.hilited_candidate_back_color,
++      _HighlightText(dc, rect, candidate_highlight,
+                      markSt ? m_style.hilited_candidate_shadow_color : 0,
+                      DPI_SCALE(m_style.round_corner), bkType, rd,
+                      m_style.hilited_candidate_border_color);
+@@ -888,7 +896,16 @@
+                  txtFormat.Get());
+       }
+       // Draw comment
+-      std::wstring comment = comments.at(i).str;
++      const auto parts = m_layout->CommentParts(i);
++      const bool selected = i == m_ctx.cinfo.highlighted || i == m_hoverIndex;
++      if (!parts.first.empty()) {
++        rect = m_layout->subscript_rects[i];
++        if (m_istorepos) rect.OffsetRect(0, m_offsetys[i]);
++        _TextOut(rect, parts.first, parts.first.size(),
++                 selected ? m_style.hilited_comment_text_color : pDWR->subscript_color,
++                 pDWR->pSubscriptTextFormat.Get());
++      }
++      std::wstring comment = parts.second;
+       if (!comment.empty() && COLORNOTTRANSPARENT(comment_text_color)) {
+         rect = m_layout->GetCandidateCommentRect((int)i);
+         if (m_istorepos)
+@@ -1021,6 +1038,11 @@
+     // draw candidates string
+     if (m_candidateCount)
+       drawn |= _DrawCandidates(memDC);
++    if (!m_layout->footer_rect.IsRectEmpty()) {
++      _TextOut(m_layout->footer_rect, m_status.schema_name, m_status.schema_name.size(),
++               pDWR->footer_color, pDWR->pFooterTextFormat.Get());
++      drawn = true;
++    }
+     if (FAILED(pDWR->pRenderTarget->EndDraw())) {
+       _InitFontRes(true);
+       Refresh();
+@@ -1268,3 +1290,4 @@
+ #endif
+   }
+ }
++

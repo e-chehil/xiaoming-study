@@ -1,0 +1,21 @@
+{
+  "single_character_ipc": {
+    "count": 336,
+    "median_ms": 136.21,
+    "p95_ms": 197.46,
+    "max_ms": 298.68
+  },
+  "sentence_ipc": {
+    "count": 110,
+    "median_ms": 173.66,
+    "p95_ms": 209.06,
+    "max_ms": 216.24
+  },
+  "panel_open": {
+    "count": 10,
+    "median_ms": 426.94,
+    "p95_ms": 443.6,
+    "max_ms": 460.82
+  },
+  "persistent_host_pid": 5300
+}
