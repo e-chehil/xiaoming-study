@@ -493,8 +493,8 @@
     },
     {
       "path": "tests/wangma-browser.mjs",
-      "bytes": 3513,
-      "sha256": "918ea36ddc9db9942b2a162487622c6bdfa8f165e66b71327973fc188ee0cc0d"
+      "bytes": 4350,
+      "sha256": "60294855357de2c9b717eb58455742aa11cb23029cde79a5e7f33bdcc3604c1f"
     },
     {
       "path": "tests/wangma.test.mjs",

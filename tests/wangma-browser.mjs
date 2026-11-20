@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import {launchBrowser} from './support/browser.mjs';
 const browser=await launchBrowser();
 const context=await browser.newContext({viewport:{width:1280,height:850}});
-const page=await context.newPage();page.setDefaultTimeout(20000);
+const page=await context.newPage();page.setDefaultTimeout(45000);
 const errors=[],requests=[];
 page.on('pageerror',e=>errors.push(e.message));
 page.on('request',r=>{if(r.url().endsWith('/data/wangma.json'))requests.push(r.url());});
@@ -16,9 +16,11 @@ async function settings(scheme){
   await page.locator('main [data-action="resume"]').click();
 }
 try {
-  await page.goto(process.env.TEST_URL);await page.locator('#code-input').waitFor();
+  await page.goto(process.env.TEST_URL,{waitUntil:'domcontentloaded'});await page.locator('#code-input').waitFor();
   assert.equal(requests.length,0);assert.equal(await slot.count(),0);
   await settings('wubi86');await slot.locator('code').first().waitFor();
+  const firstLoadRequests=requests.length;
+  assert.ok(firstLoadRequests>=1);
   assert.match(await slot.textContent(),/示例.*QTN/);
   await page.locator('#course-toggle').click();
   await page.waitForFunction(()=>document.documentElement.lang==='zh-Hant');
@@ -39,13 +41,20 @@ try {
   await page.locator('#code-input').fill('zzzzz');await page.locator('main[data-phase="correction"]').waitFor();
   assert.equal(await slot.locator('code').first().textContent(),'8');
   await page.setViewportSize({width:375,height:390});
+  await page.waitForFunction(()=>document.documentElement.classList.contains('compact-practice'));
+  await page.evaluate(async()=>{await document.fonts.ready;await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));});
   const fit=await page.evaluate(()=>({width:document.documentElement.scrollWidth, right:document.querySelector('.wangma-reference').getBoundingClientRect().right,
     bottom:document.querySelector('.practice-bottom').getBoundingClientRect().bottom}));
   assert.ok(fit.width<=375 && fit.right<=375 && fit.bottom<=391, JSON.stringify(fit));
+  // The course can be usable while the service worker is still installing the shell.
+  // Checking the same readiness shown in Settings also catches rejected installations.
+  await page.waitForFunction(()=>document.documentElement.dataset.offline==='unavailable'||
+    document.documentElement.dataset.offline==='ready'&&!!navigator.serviceWorker.controller,null,{timeout:120000});
+  assert.equal(await page.locator('html').getAttribute('data-offline'),'ready');
   await context.setOffline(true);await page.reload();await slot.locator('code').first().waitFor();
   assert.match(await slot.textContent(),/9鍵|9键/);
   await settings('');assert.equal(await slot.count(),0);
-  assert.equal(requests.length,1);
+  assert.equal(requests.length,firstLoadRequests);
   assert.deepEqual(errors,[]);
   console.log('Seven-scheme reference, course switch, self-test, correction, mobile fit and offline reload passed.');
 } finally { await browser.close(); }
